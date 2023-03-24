@@ -15,3 +15,11 @@ body {
     width: 750px;
     height: 750px;
 }
+
+.dragging {
+    cursor: grabbing;
+    opacity: 1;
+    box-shadow: 0 0 0 0 #fff;
+    filter: drop-shadow(0 0 0 #fff);
+    border-radius: 100%;
+}

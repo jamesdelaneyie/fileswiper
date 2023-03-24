@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('versions', {
     files: () => ipcRenderer.invoke('files'),
     version: () => ipcRenderer.invoke('version'),
     fileDropped: (filenameAndLocation) => ipcRenderer.invoke('file-dropped', filenameAndLocation),
+    undo: () => ipcRenderer.invoke('undo')
 })
 
 

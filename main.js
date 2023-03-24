@@ -2,6 +2,8 @@ const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
+let fileMoves = []
+
 function moveFile(oldPath, newPath) {
   fs.rename(oldPath, newPath, function (err) {
     if (err) {
@@ -12,8 +14,10 @@ function moveFile(oldPath, newPath) {
       }
       return;
     }
-    console.log('file moved');
-  });
+    fs.utimesSync(newPath, new Date(), new Date());
+    fileMoves.push({oldPath: oldPath, newPath: newPath});
+  })
+
 }
 
 function createWindow () {
@@ -38,12 +42,28 @@ function createWindow () {
     let filename = filenameAndLocation.filename;
     let location = filenameAndLocation.location;
 
-    let oldPath = `/Users/jamesdelaney/Downloads/${filename}`;
-    let newPath = `${location}/${filename}`;
+    
+    if(location === "trash") {
+        import('trash').then((module) => {
+            const trash = module.default;
+            trash(`/Users/jamesdelaney/Downloads/${filename}`);
+            fileMoves.push({oldPath: `/Users/jamesdelaney/Downloads/${filename}`, newPath: `${process.env.HOME}/.Trash/${filename}`});
+            return;
+        });
+    } else {
+        let oldPath = `/Users/jamesdelaney/Downloads/${filename}`;
+        let newPath = `${location}/${filename}`;
+    
+        moveFile(oldPath, newPath);    
+    }
 
-    //move the file to the new location
-    moveFile(oldPath, newPath);
-
+    ipcMain.handle('undo', () => {
+        //get last item in fileMoves and move it back
+        let lastMove = fileMoves.pop();
+        let oldPath = lastMove.newPath;
+        let newPath = lastMove.oldPath;
+        moveFile(oldPath, newPath);
+    })
 
   })
 
