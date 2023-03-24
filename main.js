@@ -1,4 +1,6 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+"strict mode"
+
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -42,7 +44,7 @@ function createWindow () {
     let filename = filenameAndLocation.filename;
     let location = filenameAndLocation.location;
 
-    
+
     if(location === "trash") {
         import('trash').then((module) => {
             const trash = module.default;
@@ -57,15 +59,29 @@ function createWindow () {
         moveFile(oldPath, newPath);    
     }
 
+  })
+
+  
+
+  ipcMain.handle('hey-open-my-dialog-now', () => {
+        dialog.showOpenDialog({properties: ['openDirectory']}).then(result => {
+            let location = result.filePaths[0];
+            win.webContents.send('folderLocation', location);
+        }).catch(err => {
+            console.log(err)
+        })
+    });
+
     ipcMain.handle('undo', () => {
-        //get last item in fileMoves and move it back
         let lastMove = fileMoves.pop();
         let oldPath = lastMove.newPath;
         let newPath = lastMove.oldPath;
         moveFile(oldPath, newPath);
     })
 
-  })
+    ipcMain.handle('quit', () => {
+        app.quit();
+    })
 
   win.loadFile('index.html')
 }

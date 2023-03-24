@@ -1,5 +1,7 @@
 "strict mode"
 
+let folderBeingChanged = null;
+
 const func = async () => {
 
 	let response = await window.versions.files();
@@ -67,12 +69,32 @@ const func = async () => {
         window.versions.undo();
     })
 
+    let quitButton = document.getElementById("quit");
+    quitButton.addEventListener("click", () => {
+        window.versions.quit();
+    })
 
-
-
-    function updateFileList() {
-        
+    let locations = document.getElementsByClassName("location");
+    for (let i = 0; i < locations.length; i++) {
+        const location = locations[i];
+        location.addEventListener("dragover", (e) => {
+            e.preventDefault();
+        })
+        location.addEventListener("click", (e) => {
+            window.versions.openDialog();
+            folderBeingChanged = e.target;
+        })
     }
+
+    window.versions.folderLocation((event, location) => {
+        let locationText = location.split("/");
+        locationText = locationText[locationText.length - 1];
+        folderBeingChanged.innerText = locationText;
+        folderBeingChanged.setAttribute("data-folder-location", location);
+        //console.log(location);
+    })
+
+
 };
 
 func();
