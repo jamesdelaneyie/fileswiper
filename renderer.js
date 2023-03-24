@@ -5,6 +5,11 @@ let folderBeingChanged = null;
 const func = async () => {
 
 	let response = await window.versions.files();
+    //remove .DS_Store from the array
+    response = response.filter(item => item !== ".DS_Store");
+    //remove .localized from the array
+    response = response.filter(item => item !== ".localized");
+
 	let currentFileName = document.getElementById("current-file-name");
 	let firstFile = response[0];
 	currentFileName.innerText = firstFile;
@@ -24,7 +29,7 @@ const func = async () => {
         this.style.dropShadow = "none";
         this.style.cursor = "move";
         this.style.filter = "drop-shadow(0 0 0 #000000)";
-        console.log(this.style)
+        //console.log(this.style)
 	}
 
 	function handleDragEnd(e) {
@@ -39,6 +44,24 @@ const func = async () => {
         let dropTarget = document.elementFromPoint(e.clientX, e.clientY);
         let location = dropTarget.getAttribute("data-folder-location");
 
+
+        if(location === "skip") {
+            response.shift();
+
+            let currentFileName = document.getElementById("current-file-name");
+            let firstFile = response[0];
+            currentFileName.innerText = firstFile;
+
+            let nextItems = document.getElementsByClassName("next-file");
+            for (let i = 0; i < nextItems.length; i++) {
+                const nextItem = nextItems[i];
+                const nextItemSpan = nextItem.getElementsByTagName("span")[0];
+                nextItemSpan.innerText = response[i + 1];
+            }
+
+            return;
+            
+        }
         if(location) {
             window.versions.fileDropped({filename: filename, location: location});
 
@@ -80,6 +103,11 @@ const func = async () => {
         window.versions.openDialog();
     })
 
+    let skipArea = document.getElementById("skip");
+    skipArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+    })
+
     let locations = document.getElementsByClassName("location");
     for (let i = 0; i < locations.length; i++) {
         const location = locations[i];
@@ -97,6 +125,9 @@ const func = async () => {
     }
 
     window.versions.folderLocation((event, location) => {
+        if(typeof location === "undefined") {
+            return;
+        }
         let locationText = location.split("/");
         locationText = locationText[locationText.length - 1];
         if (folderBeingChanged === null) {

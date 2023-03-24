@@ -1,8 +1,10 @@
 "strict mode"
 
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, Tray } = require('electron')
 const path = require('path')
 const fs = require('fs')
+
+
 
 let fileMoves = []
 
@@ -24,8 +26,8 @@ function moveFile(oldPath, newPath) {
 
 function createWindow () {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 900,
+    height: 780,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
@@ -64,7 +66,7 @@ function createWindow () {
   
 
   ipcMain.handle('hey-open-my-dialog-now', () => {
-        dialog.showOpenDialog({properties: ['openDirectory']}).then(result => {
+        dialog.showOpenDialog({properties: ['openDirectory', 'createDirectory']}).then(result => {
             let location = result.filePaths[0];
             win.webContents.send('folderLocation', location);
         }).catch(err => {
