@@ -16,10 +16,11 @@ body {
     height: 750px;
 }
 
-.dragging {
-    cursor: grabbing;
-    opacity: 1;
-    box-shadow: 0 0 0 0 #fff;
-    filter: drop-shadow(0 0 0 #fff);
-    border-radius: 100%;
+#current-file::before {
+    content: "" !important;
 }
+
+#current-file::after {
+    content: "" !important;
+}
+

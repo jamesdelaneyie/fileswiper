@@ -525,12 +525,12 @@ video {
   bottom: 0px;
 }
 
-.left-0 {
-  left: 0px;
-}
-
 .bottom-10 {
   bottom: 2.5rem;
+}
+
+.left-0 {
+  left: 0px;
 }
 
 .left-10 {
@@ -539,6 +539,10 @@ video {
 
 .right-10 {
   right: 2.5rem;
+}
+
+.top-10 {
+  top: 2.5rem;
 }
 
 .z-0 {
@@ -661,37 +665,28 @@ video {
   border-width: 4px;
 }
 
-.bg-white {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
 .bg-slate-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(241 245 249 / var(--tw-bg-opacity));
+}
+
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
 .p-10 {
   padding: 2.5rem;
 }
 
-.p-4 {
-  padding: 1rem;
-}
-
-.px-10 {
-  padding-left: 2.5rem;
-  padding-right: 2.5rem;
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
 }
 
 .py-2 {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
-}
-
-.px-5 {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
 }
 
 .text-center {
@@ -717,12 +712,12 @@ body {
   height: 750px;
 }
 
-.dragging {
-  cursor: grabbing;
-  opacity: 1;
-  box-shadow: 0 0 0 0 #fff;
-  filter: drop-shadow(0 0 0 #fff);
-  border-radius: 100%;
+#current-file::before {
+  content: "" !important;
+}
+
+#current-file::after {
+  content: "" !important;
 }
 
 .hover\:cursor-move:hover {
@@ -733,3 +728,4 @@ body {
   --tw-bg-opacity: 1;
   background-color: rgb(226 232 240 / var(--tw-bg-opacity));
 }
+

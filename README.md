@@ -10,4 +10,5 @@ To Do:
 - ~~Add undo functionality~~
 - Add a skip option on top of screen
 - Add ability to store the last directories used in local storage
-- Add ability to add and remove buckets from the UI 
+- ~~Add ability to add and remove buckets from the UI~~
+- Position buckets along circle path

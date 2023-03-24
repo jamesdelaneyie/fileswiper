@@ -24,6 +24,7 @@ const func = async () => {
         this.style.dropShadow = "none";
         this.style.cursor = "move";
         this.style.filter = "drop-shadow(0 0 0 #000000)";
+        console.log(this.style)
 	}
 
 	function handleDragEnd(e) {
@@ -74,6 +75,11 @@ const func = async () => {
         window.versions.quit();
     })
 
+    let addFolder = document.getElementById("add-folder");
+    addFolder.addEventListener("click", () => {
+        window.versions.openDialog();
+    })
+
     let locations = document.getElementsByClassName("location");
     for (let i = 0; i < locations.length; i++) {
         const location = locations[i];
@@ -84,13 +90,38 @@ const func = async () => {
             window.versions.openDialog();
             folderBeingChanged = e.target;
         })
+        location.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            e.target.remove();
+        })
     }
 
     window.versions.folderLocation((event, location) => {
         let locationText = location.split("/");
         locationText = locationText[locationText.length - 1];
+        if (folderBeingChanged === null) {
+            //create a new li element 
+            let div = document.createElement("div");
+            div.setAttribute("data-folder-location", location);
+            div.innerText = locationText;
+            div.classList.add("location");
+            div.classList.add("bg-white", "mt-10", "p-10", "h-40", "w-40", "rounded-full", "border", "flex", "items-center", "justify-center")
+            //add the li element to the ul element
+            let locationParent = document.getElementById("locations");
+            div.addEventListener("click", (e) => {
+                window.versions.openDialog();
+                folderBeingChanged = e.target;
+            })
+            div.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.target.remove();
+            })
+            locationParent.appendChild(div);
+            return;
+        }
         folderBeingChanged.innerText = locationText;
         folderBeingChanged.setAttribute("data-folder-location", location);
+        folderBeingChanged = null;
         //console.log(location);
     })
 
