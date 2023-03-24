@@ -13,5 +13,11 @@ To Do:
 - ~~Add ability to add and remove buckets from the UI~~
 - Position buckets along circle path
 - functionize the update file list
+- actually add file previews for jpg, png, gif, pdf, txt/code files 
+
+Possible Features:
+- add physics to main area so you can throw files into buckets, p2.js?
+- add "keeper" bucket that files can be moved to and then moved back to main area
+
 
 ![Fileswiper](https://github.com/jamesdelaneyie/fileswiper/blob/master/progress_gifs/fileswiper.gif)
