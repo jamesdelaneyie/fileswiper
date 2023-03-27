@@ -16,6 +16,24 @@ body {
     height: 680px;
 }
 
+.center-horizontally {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.text-xxs {
+    font-size: 0.65rem;
+}
+
+#current-file:after {
+    content: attr(data-content);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    font-size: 0.65rem;
+    transform: translateX(-50%);
+}
+
 .border-3 {
     border-width: 3px;
 }
@@ -33,12 +51,3 @@ body {
     height: 80px;
     mix-blend-mode: darken;
 }
-
-#current-file::before {
-    content: "" !important;
-}
-
-#current-file::after {
-    content: "" !important;
-}
-

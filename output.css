@@ -549,18 +549,6 @@ video {
   top: 2.5rem;
 }
 
-.top-5 {
-  top: 1.25rem;
-}
-
-.left-5 {
-  left: 1.25rem;
-}
-
-.top-7 {
-  top: 1.75rem;
-}
-
 .top-8 {
   top: 2rem;
 }
@@ -589,6 +577,10 @@ video {
   margin-bottom: -4rem;
 }
 
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
 .ml-10 {
   margin-left: 2.5rem;
 }
@@ -605,8 +597,16 @@ video {
   margin-top: 2.5rem;
 }
 
+.ml-20 {
+  margin-left: 5rem;
+}
+
 .block {
   display: block;
+}
+
+.inline-block {
+  display: inline-block;
 }
 
 .flex {
@@ -708,6 +708,11 @@ video {
   background-color: rgb(241 245 249 / var(--tw-bg-opacity));
 }
 
+.bg-slate-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(148 163 184 / var(--tw-bg-opacity));
+}
+
 .bg-slate-900 {
   --tw-bg-opacity: 1;
   background-color: rgb(15 23 42 / var(--tw-bg-opacity));
@@ -740,17 +745,22 @@ video {
   text-align: center;
 }
 
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
 }
 
-.font-medium {
-  font-weight: 500;
-}
-
 .font-bold {
   font-weight: 700;
+}
+
+.font-medium {
+  font-weight: 500;
 }
 
 .uppercase {
@@ -765,6 +775,11 @@ video {
   letter-spacing: 0.1em;
 }
 
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+
 .text-slate-500 {
   --tw-text-opacity: 1;
   color: rgb(100 116 139 / var(--tw-text-opacity));
@@ -775,17 +790,16 @@ video {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.text-slate-700 {
-  --tw-text-opacity: 1;
-  color: rgb(51 65 85 / var(--tw-text-opacity));
-}
-
 .opacity-50 {
   opacity: 0.5;
 }
 
 .opacity-75 {
   opacity: 0.75;
+}
+
+.opacity-0 {
+  opacity: 0;
 }
 
 html,
@@ -800,6 +814,24 @@ body {
   transform: translate(-50%, -50%);
   width: 680px;
   height: 680px;
+}
+
+.center-horizontally {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.text-xxs {
+  font-size: 0.65rem;
+}
+
+#current-file:after {
+  content: attr(data-content);
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  font-size: 0.65rem;
+  transform: translateX(-50%);
 }
 
 .border-3 {
@@ -820,25 +852,20 @@ body {
   mix-blend-mode: darken;
 }
 
-#current-file::before {
-  content: "" !important;
-}
-
-#current-file::after {
-  content: "" !important;
-}
-
 .hover\:cursor-move:hover {
   cursor: move;
 }
 
-.hover\:bg-slate-800:hover {
+.hover\:cursor-pointer:hover {
+  cursor: pointer;
+}
+
+.hover\:bg-slate-300:hover {
   --tw-bg-opacity: 1;
-  background-color: rgb(30 41 59 / var(--tw-bg-opacity));
+  background-color: rgb(203 213 225 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-slate-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(51 65 85 / var(--tw-bg-opacity));
 }
-

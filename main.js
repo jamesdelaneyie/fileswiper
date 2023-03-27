@@ -1,9 +1,8 @@
 "strict mode"
 
-const { app, BrowserWindow, ipcMain, dialog, Tray } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('path')
 const fs = require('fs')
-
 
 
 let fileMoves = []
@@ -23,6 +22,16 @@ function moveFile(oldPath, newPath) {
   })
 
 }
+
+function getFileListFromDirectory(dir) {
+  const files = []
+  fs.readdirSync(dir, {withFileTypes: true})
+  .filter(item => !item.isDirectory())
+  .map(item => item.name)
+  .forEach(item => files.push(item))
+  return files
+}
+
 
 function createWindow () {
   const win = new BrowserWindow({
@@ -73,6 +82,16 @@ function createWindow () {
             console.log(err)
         })
     });
+
+    ipcMain.handle('hey-open-my-root-dialog-now', () => {
+      dialog.showOpenDialog({properties: ['openDirectory', 'createDirectory']}).then(result => {
+        let location = result.filePaths[0];
+        let files = getFileListFromDirectory(location);
+        win.webContents.send('selectRootFolder', {location: location, files: files});
+      }).catch(err => {
+        console.log(err)
+      })
+    })
 
     ipcMain.handle('undo', () => {
         let lastMove = fileMoves.pop();

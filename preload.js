@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('versions', {
     undo: () => ipcRenderer.invoke('undo'),
     quit: () => ipcRenderer.invoke('quit'),
     openDialog: () => ipcRenderer.invoke('hey-open-my-dialog-now'),
+    openRootDialog: () => ipcRenderer.invoke('hey-open-my-root-dialog-now'),
+    selectRootFolder: (locationAndFiles) => ipcRenderer.on('selectRootFolder', locationAndFiles),
     folderLocation: (location) => ipcRenderer.on('folderLocation', location)
 })
 
