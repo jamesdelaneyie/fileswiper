@@ -4,6 +4,7 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
+app.setName('FileSwiper');
 
 let fileMoves = []
 
@@ -34,22 +35,72 @@ function getFileListFromDirectory(dir) {
 
 
 function createWindow () {
+
   const win = new BrowserWindow({
     width: 900,
     height: 780,
+    frame: false,
+    transparent: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   })
 
-  const files = []
 
+  ipcMain.handle('config', (event, config) => {
+
+    console.log("received config")
+
+    win.setSize(config.width, config.height);
+    win.setPosition(config.x, config.y);
+
+  })
+
+  
+
+ 
+
+  // undo the last move 
+  ipcMain.handle('undo', () => {
+      let lastMove = fileMoves.pop();
+      let oldPath = lastMove.newPath;
+      let newPath = lastMove.oldPath;
+      moveFile(oldPath, newPath);
+  })
+
+  // quit the app
+  ipcMain.handle('quit', () => {
+      const size = win.getSize(); // returns an array [width, height]
+      const position = win.getPosition();
+      const config = {
+        width: size[0],
+        height: size[1],
+        x: position[0],
+        y: position[1]
+      }
+      console.log(config)
+      console.log("sending config")
+      win.webContents.send('sendConfig', config);
+      app.quit();
+  })
+
+  // set the root folder
+
+  //win.setAlwaysOnTop(true, "floating");
+  const files = []
   fs.readdirSync('/Users/jamesdelaney/Downloads', {withFileTypes: true})
   .filter(item => !item.isDirectory())
   .map(item => item.name)
   .forEach(item => files.push(item))
-
+  
   ipcMain.handle('files', () => files)
+
+  /*ipcMain.handle('files', (event, rootFolder) => {
+    console.log(rootFolder)
+    let files = getFileListFromDirectory(rootFolder);
+    return files;
+  })*/
+
 
   ipcMain.handle('file-dropped', (event, filenameAndLocation) => {
     let filename = filenameAndLocation.filename;
@@ -93,16 +144,7 @@ function createWindow () {
       })
     })
 
-    ipcMain.handle('undo', () => {
-        let lastMove = fileMoves.pop();
-        let oldPath = lastMove.newPath;
-        let newPath = lastMove.oldPath;
-        moveFile(oldPath, newPath);
-    })
-
-    ipcMain.handle('quit', () => {
-        app.quit();
-    })
+    
 
   win.loadFile('index.html')
 }

@@ -1,7 +1,8 @@
 {
-  "name": "filetinder",
+  "name": "FileSwiper",
+  "productName": "FileSwiper",
   "version": "1.0.0",
-  "description": "interface for sorting files quickly",
+  "description": "An interface for sorting files quickly",
   "main": "main.js",
   "author": "jamesdelaney.ie",
   "license": "MIT",
