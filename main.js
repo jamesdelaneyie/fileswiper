@@ -1,6 +1,6 @@
 "strict mode"
 
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, protocol } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -42,14 +42,13 @@ function createWindow () {
     frame: false,
     transparent: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      webSecurity: false
     }
   })
 
 
   ipcMain.handle('config', (event, config) => {
-
-    console.log("received config")
 
     win.setSize(config.width, config.height);
     win.setPosition(config.x, config.y);
@@ -78,8 +77,7 @@ function createWindow () {
         x: position[0],
         y: position[1]
       }
-      console.log(config)
-      console.log("sending config")
+
       win.webContents.send('sendConfig', config);
       app.quit();
   })
@@ -150,6 +148,13 @@ function createWindow () {
 }
 
 app.whenReady().then(() => {
+
+  protocol.registerFileProtocol('atom', (request, callback) => {
+    console.log(request.url)
+    const url = request.url.substr(7)
+    callback(url)
+  })
+
   createWindow()
 
   app.on('activate', () => {

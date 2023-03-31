@@ -58,6 +58,10 @@ body {
     height: 85vw;
 }
 
+#current-file {
+    max-width: 33vw;
+}
+
 #current-file:after {
     content: attr(data-content);
     position: absolute;

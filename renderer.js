@@ -22,6 +22,9 @@ const func = async () => {
 	let firstFile = response[0];
 	currentFileName.innerText = firstFile;
 
+    // Add an image to Current File
+    //
+
 	let nextItems = document.getElementsByClassName("next-file");
 	for (let i = 0; i < nextItems.length; i++) {
 		const nextItem = nextItems[i];
@@ -130,6 +133,8 @@ const func = async () => {
             let firstFile = response[0];
             currentFileName.innerText = firstFile;
 
+
+
             let nextItems = document.getElementsByClassName("next-file");
             for (let i = 0; i < nextItems.length; i++) {
                 const nextItem = nextItems[i];
@@ -191,6 +196,7 @@ const func = async () => {
             return;
         }
         let locationText = locationAndFiles.location.split("/");
+        console.log(locationText)
         locationText = locationText[locationText.length - 1];
         let rootFolder = document.getElementById("current-file");
         rootFolder.setAttribute('data-content', locationText);
