@@ -5,6 +5,32 @@ let folderBeingChanged = null;
 const func = async () => {
 
 
+    // Add a folder to the DOM with event listeners
+    addFolderToDom = (location) => {
+        let locationParent = document.getElementById("locations");
+        let div = document.createElement("div");
+        div.setAttribute("data-folder-location", location);
+        let locationText = location.split("/").pop();
+        div.innerText = locationText;
+        div.classList.add("location");
+        div.classList.add("location", "bg-white", "border-3", "border-slate-300", "p-10", "h-40", "w-40", "rounded-full", "border", "flex", "items-center", "justify-center", "hover:cursor-pointer")
+        // Add Event Listeners
+        // Left click
+        div.addEventListener("click", (e) => {
+            window.versions.openDialog();
+            folderBeingChanged = e.target;
+        })
+        // Right click
+        div.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            e.target.remove();
+            let localLocations = JSON.parse(localStorage.getItem("locations"));
+            let location = e.target.getAttribute("data-folder-location");
+            let newLocations = localLocations.filter(item => item !== location);
+            localStorage.setItem("locations", JSON.stringify(newLocations));
+        })
+        locationParent.appendChild(div);
+    }
 
     //get the root folder from local storage
     //let rootFolder = localStorage.getItem("root-folder");
@@ -32,9 +58,16 @@ const func = async () => {
 		nextItemSpan.innerText = response[i + 1];
 	}
 
+    let localLocations = JSON.parse(localStorage.getItem("locations"));
+    if(localLocations !== null) {
+        for(let i = 0; i < localLocations.length; i++) {
+            addFolderToDom(localLocations[i]);
+        }
+    }
+
 
     // Load the locations from local storage and add them to the DOM
-    let localLocations = JSON.parse(localStorage.getItem("locations"));
+    /*let localLocations = JSON.parse(localStorage.getItem("locations"));
     if(localLocations !== null) {
 
         const radius = 340;
@@ -58,7 +91,7 @@ const func = async () => {
             locationDiv.style.top = y + "px";
             locationDiv.setAttribute(
                 "data-folder-location",
-                localLocations[i].location
+                localLocations[i]
             );
             locationDiv.classList.add(
                 "location",
@@ -75,13 +108,14 @@ const func = async () => {
                 "justify-center",
                 "hover:cursor-pointer"
             );
-            locationDiv.innerText = localLocations[i].locationText;
+            //get everything after the last slash
+            let locationText = localLocations[i].split("/").pop();
+            locationDiv.innerText = locationText;
             let locationsDiv = document.getElementById("locations");
             locationsDiv.appendChild(locationDiv);
         };
+    }*/
 
-        //console.log("local locations", localLocations)
-    }
 
 
 
@@ -147,7 +181,7 @@ const func = async () => {
 	}
 
 
-    //// Event gandlers
+    //**// Event handlers
     // Drag events for files
 	let items = document.querySelectorAll("#files li");
 	items.forEach(function (item) {
@@ -185,6 +219,7 @@ const func = async () => {
         window.versions.openRootDialog();
     })
 
+    // Save the config to local storage
     window.versions.sendConfig((event, config) => {
         localStorage.setItem("config", JSON.stringify(config));
     })
@@ -228,31 +263,7 @@ const func = async () => {
         }
     });
 
-    // Add a folder to the DOM with event listeners
-    addFolderToDom = (location, locationText) => {
-        let locationParent = document.getElementById("locations");
-        let div = document.createElement("div");
-        div.setAttribute("data-folder-location", location);
-        div.innerText = locationText;
-        div.classList.add("location");
-        div.classList.add("location", "bg-white", "border-3", "border-slate-300", "p-10", "h-40", "w-40", "rounded-full", "border", "flex", "items-center", "justify-center", "hover:cursor-pointer")
-        // Add Event Listeners
-        // Left click
-        div.addEventListener("click", (e) => {
-            window.versions.openDialog();
-            folderBeingChanged = e.target;
-        })
-        // Right click
-        div.addEventListener("contextmenu", (e) => {
-            e.preventDefault();
-            e.target.remove();
-            let localLocations = JSON.parse(localStorage.getItem("locations"));
-            let location = e.target.getAttribute("data-folder-location");
-            let newLocations = localLocations.filter(item => item.location !== location);
-            localStorage.setItem("locations", JSON.stringify(newLocations));
-        })
-        locationParent.appendChild(div);
-    }
+    
 
     
 
@@ -262,7 +273,6 @@ const func = async () => {
         }
         let locationText = location.split("/");
         locationText = locationText[locationText.length - 1];
-        //add location to local storage
         let locations = JSON.parse(localStorage.getItem("locations"));
         if(locations === null) {
             locations = [];

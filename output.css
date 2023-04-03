@@ -778,6 +778,18 @@ video {
   opacity: 0.75;
 }
 
+@property --angle {
+  syntax: '<angle>';
+
+  initial-value: 0deg;
+
+  inherits: true;
+}
+
+:root {
+  --angle: 1.5deg;
+}
+
 html,
 body {
   height: 100%;
@@ -792,6 +804,10 @@ body {
 
 .text-xxs {
   font-size: 0.65rem;
+}
+
+#locations div {
+  -webkit-user-select: none;
 }
 
 .translate-center {
@@ -832,6 +848,36 @@ body {
   max-height: 680px;
   width: 85vw;
   height: 85vw;
+  --radius: 320px;
+  --tracksize: 75px;
+}
+
+.translate-center-folders > div {
+  /* Spread the dots evenly over the circle.
+	   We do this by dividing 360deg by the number of children.
+       E.g. 360 degrees / 3 children = 120 degrees between each child element.	
+	*/
+  --offset-per-child: calc(var(--layout-angle) / (var(--nth-siblings) + 1));
+  /* Each child will that offset into account, based its index.
+	   E.g. - the 1st out of 3 children gets offset by 0 x 120deg = 0deg
+	        - the 2nd out of 3 children gets offset by 1 x 120deg = 120deg
+	        - the 3rd out of 3 children gets offset by 2 x 120deg = 240deg
+	*/
+  --angle-offset: calc(1 * var(--offset-per-child));
+  /* Make it round 
+	display: block;
+	
+	aspect-ratio: 1;*/
+  /*height: 150px;
+    width: 150px;
+    width: calc(var(--tracksize) * 3);*/
+  border-radius: 50%;
+  position: absolute;
+  left: calc(45% - (var(--tracksize) / 2));
+  top: calc(45% - (var(--tracksize) / 2));
+  translate: calc(cos((var(--angle) + var(--angle-offset))) * var(--radius))
+		         calc(sin((var(--angle) + var(--angle-offset))) * var(--radius) * -1);
+  transition: all 0.2s ease;
 }
 
 #current-file {
@@ -874,6 +920,51 @@ body {
   min-width: 145px;
 }
 
+[data-countchildren] > :nth-child(1) {
+  --nth-child: 2;
+  --layout-angle: 0deg;
+}
+
+[data-countchildren] > :nth-child(2) {
+  --nth-child: 2;
+  --layout-angle: 60deg;
+}
+
+[data-countchildren] > :nth-child(3) {
+  --nth-child: 2;
+  --layout-angle: -60deg;
+}
+
+[data-countchildren] > :nth-child(4) {
+  --nth-child: 4;
+  --layout-angle: 120deg;
+}
+
+[data-countchildren] > :nth-child(5) {
+  --nth-child: 4;
+  --layout-angle: -120deg;
+}
+
+[data-countchildren]:has(> :nth-child(1):last-child) > * {
+  --nth-siblings: 0;
+}
+
+[data-countchildren]:has(> :nth-child(2):last-child) > * {
+  --nth-siblings: 1;
+}
+
+[data-countchildren]:has(> :nth-child(3):last-child) > * {
+  --nth-siblings: 1;
+}
+
+[data-countchildren]:has(> :nth-child(4):last-child) > * {
+  --nth-siblings: 1;
+}
+
+[data-countchildren]:has(> :nth-child(5):last-child) > * {
+  --nth-siblings: 1;
+}
+
 .hover\:cursor-move:hover {
   cursor: move;
 }
@@ -887,3 +978,5 @@ body {
   --tw-bg-opacity: 1;
   background-color: rgb(51 65 85 / var(--tw-bg-opacity));
 }
+
+
