@@ -110,6 +110,13 @@ body {
     max-width: 33vw;
 }
 
+#current-file > img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
 #current-file:after {
     content: attr(data-content);
     position: absolute;
@@ -176,12 +183,14 @@ body {
 }
 [data-countchildren]:has(> :nth-child(2):last-child) > * {
     --nth-siblings: 1;
+    --angle: -13deg;
 }
 [data-countchildren]:has(> :nth-child(3):last-child) > * {
     --nth-siblings: 1;
 }
 [data-countchildren]:has(> :nth-child(4):last-child) > * {
     --nth-siblings: 1;
+    --angle: -13deg;
 }
 [data-countchildren]:has(> :nth-child(5):last-child) > * {
     --nth-siblings: 1;

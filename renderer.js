@@ -1,7 +1,5 @@
 "strict mode"
 
-let folderBeingChanged = null;
-
 const func = async () => {
 
 
@@ -18,7 +16,6 @@ const func = async () => {
         // Left click
         div.addEventListener("click", (e) => {
             window.versions.openDialog();
-            folderBeingChanged = e.target;
         })
         // Right click
         div.addEventListener("contextmenu", (e) => {
@@ -32,12 +29,15 @@ const func = async () => {
         locationParent.appendChild(div);
     }
 
+    // Update the file list
+    updateFileList = (files) => {
+
+    }
+
     //get the root folder from local storage
     //let rootFolder = localStorage.getItem("root-folder");
     //send the root folder to the main process
     //let response = await window.versions.files(rootFolder);
-
-
 	let response = await window.versions.files();
     //remove .DS_Store from the array
     response = response.filter(item => item !== ".DS_Store");
@@ -58,65 +58,14 @@ const func = async () => {
 		nextItemSpan.innerText = response[i + 1];
 	}
 
+
+    // Add the folders to the DOM from local storage
     let localLocations = JSON.parse(localStorage.getItem("locations"));
     if(localLocations !== null) {
         for(let i = 0; i < localLocations.length; i++) {
             addFolderToDom(localLocations[i]);
         }
     }
-
-
-    // Load the locations from local storage and add them to the DOM
-    /*let localLocations = JSON.parse(localStorage.getItem("locations"));
-    if(localLocations !== null) {
-
-        const radius = 340;
-        const centerX = 260;
-        const centerY = 260;
-        const distanceBetweenDivs = 0;
-
-        for (let i = 0; i < localLocations.length; i++) {
-            
-            let locationDiv = document.createElement("div");
-            
-            const angle = (Math.PI * 2) / (localLocations.length) - 1 * i - Math.PI / 2;
-            const x = Math.round(
-                centerX + radius * Math.cos(angle) - distanceBetweenDivs / 2
-            );
-            const y = Math.round(
-                centerY + radius * Math.sin(angle) - distanceBetweenDivs / 2
-            );
-            locationDiv.style.position = "absolute";
-            locationDiv.style.left = x + "px";
-            locationDiv.style.top = y + "px";
-            locationDiv.setAttribute(
-                "data-folder-location",
-                localLocations[i]
-            );
-            locationDiv.classList.add(
-                "location",
-                "bg-white",
-                "border-3",
-                "border-slate-300",
-                "p-10",
-                "h-40",
-                "w-40",
-                "rounded-full",
-                "border",
-                "flex",
-                "items-center",
-                "justify-center",
-                "hover:cursor-pointer"
-            );
-            //get everything after the last slash
-            let locationText = localLocations[i].split("/").pop();
-            locationDiv.innerText = locationText;
-            let locationsDiv = document.getElementById("locations");
-            locationsDiv.appendChild(locationDiv);
-        };
-    }*/
-
-
 
 
 
@@ -263,10 +212,9 @@ const func = async () => {
         }
     });
 
-    
 
     
-
+    // Handle the addition of a folder from the OpenDialog
     window.versions.folderLocation((event, location) => {
         if(typeof location === "undefined") {
             return;
@@ -280,15 +228,7 @@ const func = async () => {
         locations.push(location);
         localStorage.setItem("locations", JSON.stringify(locations));
 
-        if (folderBeingChanged === null) {
-
-            addFolderToDom(location, locationText);
-            return;
-
-        }
-        folderBeingChanged.innerText = locationText;
-        folderBeingChanged.setAttribute("data-folder-location", location);
-        folderBeingChanged = null;
+        addFolderToDom(location, locationText);
     })
 
 

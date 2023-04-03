@@ -649,6 +649,10 @@ video {
   justify-content: center;
 }
 
+.overflow-hidden {
+  overflow: hidden;
+}
+
 .rounded {
   border-radius: 0.25rem;
 }
@@ -715,6 +719,14 @@ video {
 .py-2 {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+
+.pb-1 {
+  padding-bottom: 0.25rem;
+}
+
+.pt-1 {
+  padding-top: 0.25rem;
 }
 
 .pt-3 {
@@ -884,6 +896,14 @@ body {
   max-width: 33vw;
 }
 
+#current-file > img {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
 #current-file:after {
   content: attr(data-content);
   position: absolute;
@@ -951,6 +971,7 @@ body {
 
 [data-countchildren]:has(> :nth-child(2):last-child) > * {
   --nth-siblings: 1;
+  --angle: -13deg;
 }
 
 [data-countchildren]:has(> :nth-child(3):last-child) > * {
@@ -959,6 +980,7 @@ body {
 
 [data-countchildren]:has(> :nth-child(4):last-child) > * {
   --nth-siblings: 1;
+  --angle: -13deg;
 }
 
 [data-countchildren]:has(> :nth-child(5):last-child) > * {
