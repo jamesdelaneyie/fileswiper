@@ -27,6 +27,7 @@
     "webpack-electron-reload": "^1.0.1"
   },
   "dependencies": {
+    "chokidar": "^3.5.3",
     "electron-squirrel-startup": "^1.0.0",
     "sound-play": "^1.1.0",
     "trash": "^8.1.1"

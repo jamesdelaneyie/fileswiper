@@ -5,11 +5,15 @@ window.ipcRenderer = ipcRenderer;
 
 // Get the config from local storage and send it to the main process
 const config = JSON.parse(localStorage.getItem('config'));
-ipcRenderer.invoke('config', config);
+if(config !== null) {
+    ipcRenderer.invoke('config', config);
+}
 
 // Get the root folder from local storage and send it to the main process
 const rootFolder = JSON.parse(localStorage.getItem('root-folder'));
-ipcRenderer.invoke('rootFolderStartUp', rootFolder);
+if(rootFolder !== null) {
+    ipcRenderer.invoke('rootFolderStartUp', rootFolder);
+}
 
 contextBridge.exposeInMainWorld('versions', {
 

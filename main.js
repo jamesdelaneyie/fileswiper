@@ -8,6 +8,52 @@ app.setName('FileSwiper');
 let fileMoves = []
 let rootFolder = null;
 
+function StartWatcher(win, path){
+  var chokidar = require("chokidar");
+
+  var watcher = chokidar.watch(path, {
+      ignored: /[\/\\]\./,
+      depth: 0,
+      ignoreInitial: false,
+      persistent: true
+  });
+
+  function onWatcherReady(){
+      console.info('From here can you check for real changes, the initial scan has been completed.');
+  }
+        
+  // Declare the listeners of the watcher
+  watcher
+  .on('add', function(path) {
+        console.log('File', path, 'has been added');
+        let files = getFileListFromDirectory(rootFolder)   
+        win.webContents.send('selectRootFolder', {location: rootFolder, files: files});
+        //console.log(files)
+  })
+  .on('addDir', function(path) {
+        console.log('Directory', path, 'has been added');
+  })
+  .on('change', function(path) {
+       console.log('File', path, 'has been changed');
+  })
+  .on('unlink', function(path) {
+       console.log('File', path, 'has been removed');
+       let files = getFileListFromDirectory(rootFolder)   
+       win.webContents.send('selectRootFolder', {location: rootFolder, files: files});
+  })
+  .on('unlinkDir', function(path) {
+       console.log('Directory', path, 'has been removed');
+  })
+  .on('error', function(error) {
+       console.log('Error happened', error);
+  })
+  .on('ready', onWatcherReady)
+  .on('raw', function(event, path, details) {
+       // This event should be triggered everytime something happens.
+       console.log('Raw event info:', event, path, details);
+  });
+}
+
 function moveFile(oldPath, newPath) {
   fs.rename(oldPath, newPath, function (err) {
     if (err) {
@@ -94,6 +140,7 @@ function createWindow () {
     rootFolder = rootFolderReceived;
     let location = rootFolderReceived;
     console.log(location)
+    StartWatcher(win, location);
     win.webContents.send('selectRootFolder', {location: location, files: files});
   })
 

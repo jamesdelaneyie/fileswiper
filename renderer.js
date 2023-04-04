@@ -1,57 +1,14 @@
 import { addFolderToDom } from "./addFolderToDom.js";
+import { updateFileList } from "./updateFileList.js";
+
 
 const func = async () => {
-
-    let filesToRemoveFromList = [
-        ".DS_Store",
-        ".localized",
-        "._data.txt"
-    ]
 
     let files = [];
 
     // Get the root folder from local storage and send it to the main process
     let rootFolderSave = JSON.parse(localStorage.getItem("root-folder"));
     window.versions.sendRootFolder(rootFolderSave);	
-
-    // Update the file list
-    let updateFileList = (fileList) => {
-
-        files = fileList;
-
-        console.log(files);
-
-        //filter out files that we don't want to show
-        files = files.filter(item => !filesToRemoveFromList.includes(item));
-        
-        let currentFile = files[0]
-        let currentFileName = document.getElementById("current-file-name");
-       //let currentFilePreview = document.getElementById("current-file-preview");
-        currentFileName.innerText = currentFile;
-        //currentFilePreview.src = currentFile;
-
-        let nextItems = document.getElementsByClassName("next-file");
-        for (let i = 0; i < nextItems.length; i++) {
-            const nextItem = nextItems[i];
-            const nextItemSpan = nextItem.getElementsByTagName("span")[0];
-            nextItemSpan.innerText = files[i + 1];
-            //if there is no next file then hide the next item
-            if(files[i + 1] === undefined) {
-                //console.log('no next file')
-                nextItem.style.display = "none";
-            }
-        }
-
-        //console.log(files)
-
-        //let currentFilePreview = document.getElementById("current-file-preview");
-        //encode the path to make it work with atom://
-        //firstFile = encodeURIComponent(firstFile);
-        //let fullPath = 'file://' + locationAndFiles.location + '/' + firstFile;
-        //currentFilePreview.src = fullPath
-    }
-
-    
 
 
     // Add the folders to the DOM from local storage
@@ -61,9 +18,6 @@ const func = async () => {
             addFolderToDom(localLocations[i]);
         }
     }
-
-
-
 
 	function handleDragStart(e) {
 		this.style.opacity = "0.1";
@@ -92,7 +46,7 @@ const func = async () => {
         if(location === "skip") {
             files.shift();
 
-            updateFileList(files);
+            files = updateFileList(files);
             
         }
         if(location) {
@@ -101,7 +55,7 @@ const func = async () => {
 
             files.shift();
 
-            updateFileList(files);
+            files = updateFileList(files);
 
         }
         
@@ -159,9 +113,6 @@ const func = async () => {
     // Handle the root folder selection
     window.versions.selectRootFolder((event, locationAndFiles) => {
 
-        //console.log('selectRootFolder')
-        //console.log(locationAndFiles)
-
         if(typeof locationAndFiles.location === "undefined") {
             return;
         }
@@ -176,7 +127,11 @@ const func = async () => {
 
         let filesList = locationAndFiles.files;
 
-        updateFileList(filesList);
+        console.log(filesList)
+
+        files = updateFileList(filesList);
+
+        console.log(files)
 
 
     });
