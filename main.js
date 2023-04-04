@@ -38,8 +38,8 @@ function StartWatcher(win, path){
   })
   .on('unlink', function(path) {
        console.log('File', path, 'has been removed');
-       let files = getFileListFromDirectory(rootFolder)   
-       win.webContents.send('selectRootFolder', {location: rootFolder, files: files});
+        let files = getFileListFromDirectory(rootFolder)   
+        win.webContents.send('selectRootFolder', {location: rootFolder, files: files});
   })
   .on('unlinkDir', function(path) {
        console.log('Directory', path, 'has been removed');
@@ -153,18 +153,23 @@ function createWindow () {
     //console.log(location)
     //console.log(rootFolder)
 
+    let oldPath = rootFolder + `/${filename}`;
+    let newPath = `${location}/${filename}`;
+
+    if(oldPath === newPath) {
+        console.log('same location')
+        return;
+    }
+
     if(location === "trash") {
         import('trash').then((module) => {
             const trash = module.default;
             trash(rootFolder + `/${filename}`);
             sound.play("empty_trash.aif");
             fileMoves.push({oldPath: rootFolder + `/${filename}`, newPath: `${process.env.HOME}/.Trash/${filename}`});
-            return;
         });
     } else {
-        let oldPath = rootFolder + `/${filename}`;
-        let newPath = `${location}/${filename}`;
-    
+        
         moveFile(oldPath, newPath);  
         //sound.play("move_to.aif");  
     }

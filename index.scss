@@ -66,6 +66,15 @@ body {
     --tracksize: 75px;
 }
 
+.congrats {
+    text-align: center;
+    .congrats-icon {
+        font-size: 3em;
+        display: block;
+    }
+    
+}
+
 .translate-center-folders > div {
 	--offset-per-child: calc(var(--layout-angle) / (var(--nth-siblings) + 1));
 	--angle-offset: calc(1 * var(--offset-per-child));

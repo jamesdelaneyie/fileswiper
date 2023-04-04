@@ -1,4 +1,5 @@
 import { filesToIgnore } from "./filesToIgnore.js";
+import { createCurrentFile } from "./createCurrentFile.js";
 
 export const updateFileList = (fileList) => {
 
@@ -6,6 +7,10 @@ export const updateFileList = (fileList) => {
 
     //filter out files that we don't want to show
     fileList = fileList.filter(item => !filesToIgnore.includes(item));
+
+    if(fileList.length > 0) {
+        //createCurrentFile()
+    }
     
     let currentFile = fileList[0]
     let currentFileName = document.getElementById("current-file-name");
@@ -22,6 +27,34 @@ export const updateFileList = (fileList) => {
         if(fileList[i + 1] === undefined) {
             //console.log('no next file')
             nextItem.style.display = "none";
+        }
+    }
+
+    if(fileList.length === 0) {
+        // create a div with the congrats emoji
+        //remove the current file name
+        let currentFileName = document.getElementById("current-file");
+        currentFileName.remove();
+
+        let congratsDiv = document.createElement("div");
+        congratsDiv.classList.add("congrats");
+        let congratsIcon = document.createElement("span");
+        congratsIcon.classList.add("congrats-icon");
+        congratsIcon.innerText = "🎉";
+        congratsDiv.appendChild(congratsIcon);
+
+        let congratsText = document.createElement("span");
+        congratsText.classList.add("congrats-text");
+        congratsText.innerText = "You've finished all the files in this folder!";
+        congratsDiv.appendChild(congratsText);
+
+        let files = document.getElementById("files");
+        files.appendChild(congratsDiv);
+    } else {
+        //remove the congrats div
+        let congratsDiv = document.getElementsByClassName("congrats")[0];
+        if(congratsDiv) {
+            congratsDiv.remove();
         }
     }
 

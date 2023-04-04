@@ -1,4 +1,5 @@
 import { addFolderToDom } from "./addFolderToDom.js";
+import { createCurrentFile } from "./createCurrentFile.js";
 import { updateFileList } from "./updateFileList.js";
 
 
@@ -26,7 +27,7 @@ const func = async () => {
         this.style.cursor = "move";
         this.style.filter = "drop-shadow(0 0 0 #000000)";
 
-        console.log(files)
+        //console.log(files)
 	}
 
 	function handleDragEnd(e) {
@@ -42,6 +43,11 @@ const func = async () => {
         let location = dropTarget.getAttribute("data-folder-location");
 
         console.log(filename, dropTarget, location)
+
+        if(location === rootFolderSave) {
+            console.log('same location')
+            return
+        }
 
         if(location === "skip") {
             files.shift();
@@ -117,21 +123,31 @@ const func = async () => {
             return;
         }
 
-        let locationText = locationAndFiles.location.split("/");
-        locationText = locationText[locationText.length - 1];
-
-        let rootFolder = document.getElementById("current-file");
-        rootFolder.setAttribute('data-content', locationText);
-
-        localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
+        
 
         let filesList = locationAndFiles.files;
 
-        console.log(filesList)
+        //console.log(filesList)
+
+        
 
         files = updateFileList(filesList);
 
-        console.log(files)
+        if(filesList.length > 0) {
+            //createCurrentFile()
+
+            let locationText = locationAndFiles.location.split("/");
+            locationText = locationText[locationText.length - 1];
+
+            let rootFolder = document.getElementById("current-file");
+            rootFolder.setAttribute('data-content', locationText);
+        }
+
+        
+
+        localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
+
+        //console.log(files)
 
 
     });
