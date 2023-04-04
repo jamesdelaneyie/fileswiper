@@ -45,12 +45,16 @@ body {
     border-color: #b4b9d4bf;
 }
 
+
 #trash {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     margin-left: -340px;
+    svg {
+        width: 60px;
+    }
 }
 
 .translate-center-folders {
@@ -138,6 +142,8 @@ body {
 #folder-select {
     min-width: 145px;
 }
+
+
 
 [data-countchildren] > :nth-child(1) {
     --nth-child: 2;
