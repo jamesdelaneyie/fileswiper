@@ -23,7 +23,7 @@ export const addFolderToDom = (location) => {
     div.setAttribute("draggable", true);
     //
     let innerDiv = document.createElement("div");
-    innerDiv.setAttribute("class", "text-center");
+    innerDiv.setAttribute("class", "text-center pointer-events-none");
     let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 50 50");
     svg.setAttribute("class", "fill-slate-400 w-9 inline");

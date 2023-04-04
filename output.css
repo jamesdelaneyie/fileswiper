@@ -513,6 +513,10 @@ video {
   --tw-backdrop-sepia:  ;
 }
 
+.pointer-events-none {
+  pointer-events: none;
+}
+
 .absolute {
   position: absolute;
 }
@@ -629,24 +633,12 @@ video {
   width: 15rem;
 }
 
-.w-full {
-  width: 100%;
-}
-
-.w-6 {
-  width: 1.5rem;
-}
-
-.w-10 {
-  width: 2.5rem;
-}
-
-.w-8 {
-  width: 2rem;
-}
-
 .w-9 {
   width: 2.25rem;
+}
+
+.w-full {
+  width: 100%;
 }
 
 .cursor-pointer {
@@ -886,7 +878,7 @@ body {
   top: calc(45% - (var(--tracksize) / 2));
   translate: calc(cos((var(--angle) + var(--angle-offset))) * var(--radius))
 		         calc(sin((var(--angle) + var(--angle-offset))) * var(--radius) * -1);
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, transform 0.2s ease 0.2s;
 }
 
 #current-file {
@@ -941,48 +933,58 @@ body {
 [data-countchildren] > :nth-child(1) {
   --nth-child: 2;
   --layout-angle: 0deg;
+  transform: scale(0)
 }
 
 [data-countchildren] > :nth-child(2) {
   --nth-child: 2;
   --layout-angle: 60deg;
+  transform: scale(0)
 }
 
 [data-countchildren] > :nth-child(3) {
   --nth-child: 2;
   --layout-angle: -60deg;
+  transform: scale(0)
 }
 
 [data-countchildren] > :nth-child(4) {
   --nth-child: 4;
   --layout-angle: 120deg;
+  transform: scale(0)
 }
 
 [data-countchildren] > :nth-child(5) {
   --nth-child: 4;
   --layout-angle: -120deg;
+  transform: scale(0)
 }
 
 [data-countchildren]:has(> :nth-child(1):last-child) > * {
   --nth-siblings: 0;
+  transform: scale(1)
 }
 
 [data-countchildren]:has(> :nth-child(2):last-child) > * {
   --nth-siblings: 1;
   --angle: -13deg;
+  transform: scale(1)
 }
 
 [data-countchildren]:has(> :nth-child(3):last-child) > * {
   --nth-siblings: 1;
+  transform: scale(1)
 }
 
 [data-countchildren]:has(> :nth-child(4):last-child) > * {
   --nth-siblings: 1;
   --angle: -13deg;
+  transform: scale(1)
 }
 
 [data-countchildren]:has(> :nth-child(5):last-child) > * {
   --nth-siblings: 1;
+  transform: scale(1)
 }
 
 .hover\:cursor-move:hover {

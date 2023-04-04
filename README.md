@@ -1,8 +1,8 @@
-![Fileswiper](https://github.com/jamesdelaneyie/fileswiper/blob/master/progress_gifs/fileswiper-progress-1.png)
+![Fileswiper](https://github.com/jamesdelaneyie/fileswiper/blob/master/progress_gifs/fileswiper-progress-2.png)
 
 # Fileswiper
 
-A tiny mac app to sort out the contents of a directory into buckets by swiping
+A tiny Mac OSX app that lets you sort out the contents of a folder by dragging and dropping files into buckets. Built with Electron. 
 
 To Do:
 - ~~Drag main file list into bucket to move file~~
@@ -15,6 +15,7 @@ To Do:
 - ~~functionize the update file list ~~
 - ~~actually add file previews for jpg, png, gif, pdf, txt/code files ~~
 - ~~add file dialog to select directory for swiping !!~~ 
+- ~~add trash and folder icons !!~~ 
 - Restructure code, re-factor, clean up, name things better etc. 
 
 Possible Features:
