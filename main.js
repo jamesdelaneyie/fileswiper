@@ -1,12 +1,12 @@
-"strict mode"
-
 const { app, BrowserWindow, ipcMain, dialog, protocol } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const sound = require("sound-play");
 
 app.setName('FileSwiper');
 
 let fileMoves = []
+let rootFolder = null;
 
 function moveFile(oldPath, newPath) {
   fs.rename(oldPath, newPath, function (err) {
@@ -33,19 +33,25 @@ function getFileListFromDirectory(dir) {
   return files
 }
 
-
 function createWindow () {
 
   const win = new BrowserWindow({
     width: 900,
     height: 780,
     frame: false,
-    transparent: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      webSecurity: false
+      nodeIntegration: true,
+      webSecurity: false,
+      webviewTag: true,
+     // enableRemoteModule: true,
+      contextIsolation: true,
+      worldSafeExecuteJavaScript: true,
     }
   })
+
+  //open the dev tools
+  win.webContents.openDevTools()
 
 
   ipcMain.handle('config', (event, config) => {
@@ -54,10 +60,6 @@ function createWindow () {
     win.setPosition(config.x, config.y);
 
   })
-
-  
-
- 
 
   // undo the last move 
   ipcMain.handle('undo', () => {
@@ -82,44 +84,73 @@ function createWindow () {
       app.quit();
   })
 
-  // set the root folder
 
-  //win.setAlwaysOnTop(true, "floating");
-  const files = []
-  fs.readdirSync('/Users/jamesdelaney/Downloads', {withFileTypes: true})
-  .filter(item => !item.isDirectory())
-  .map(item => item.name)
-  .forEach(item => files.push(item))
-  
-  ipcMain.handle('files', () => files)
+  let files = []
 
-  /*ipcMain.handle('files', (event, rootFolder) => {
-    console.log(rootFolder)
-    let files = getFileListFromDirectory(rootFolder);
-    return files;
-  })*/
+  ipcMain.handle('rootFolderStartUp', (event, rootFolderReceived) => {
+    console.log(rootFolderReceived)
+    files = getFileListFromDirectory(rootFolderReceived);
+    console.log(files)
+    rootFolder = rootFolderReceived;
+    let location = rootFolderReceived;
+    console.log(location)
+    win.webContents.send('selectRootFolder', {location: location, files: files});
+  })
 
 
   ipcMain.handle('file-dropped', (event, filenameAndLocation) => {
     let filename = filenameAndLocation.filename;
     let location = filenameAndLocation.location;
 
+    //console.log(filename)
+    //console.log(location)
+    //console.log(rootFolder)
 
     if(location === "trash") {
         import('trash').then((module) => {
             const trash = module.default;
-            trash(`/Users/jamesdelaney/Downloads/${filename}`);
-            fileMoves.push({oldPath: `/Users/jamesdelaney/Downloads/${filename}`, newPath: `${process.env.HOME}/.Trash/${filename}`});
+            trash(rootFolder + `/${filename}`);
+            sound.play("empty_trash.aif");
+            fileMoves.push({oldPath: rootFolder + `/${filename}`, newPath: `${process.env.HOME}/.Trash/${filename}`});
             return;
         });
     } else {
-        let oldPath = `/Users/jamesdelaney/Downloads/${filename}`;
+        let oldPath = rootFolder + `/${filename}`;
         let newPath = `${location}/${filename}`;
     
-        moveFile(oldPath, newPath);    
+        moveFile(oldPath, newPath);  
+        //sound.play("move_to.aif");  
     }
 
   })
+
+  ipcMain.handle('sendRootFolder', (event, saveRootFolder) => {
+    let location = saveRootFolder;
+    console.log(location)
+    win.webContents.send('selectRootFolder', {location: location, files: files});
+    
+    if(files[0].includes('.doc') || files[0].includes('.pdf')) {
+      //win.webContents.send('sendDocImage', files[0]);
+    } else {
+      /*
+      const w = new BrowserWindow({ show: false })
+
+      let URLtoLoad = 'file:///' + result.filePaths[0] + '/' + files[0]
+      URLtoLoad = encodeURI(URLtoLoad)
+      //console.log(URLtoLoad)
+      w.loadURL(URLtoLoad)
+      //console.log('loading')
+      w.webContents.on('did-finish-load', async() => {
+          //console.log('did-finish-load')
+          let image = await w.webContents.capturePage()
+          //console.log(image.toDataURL())
+          win.webContents.send('sendPreviewImage', image.toDataURL());
+      })*/
+    }
+
+
+  })
+
 
   
 
@@ -132,11 +163,41 @@ function createWindow () {
         })
     });
 
+    
     ipcMain.handle('hey-open-my-root-dialog-now', () => {
       dialog.showOpenDialog({properties: ['openDirectory', 'createDirectory']}).then(result => {
         let location = result.filePaths[0];
+        rootFolder = location;
         let files = getFileListFromDirectory(location);
+        //remove ._data.txt from files
+        files = files.filter(item => item !== '._data.txt')
+        //remove .DS_Store from files
+        files = files.filter(item => item !== '.DS_Store')
+        //remove .localized from files
+        files = files.filter(item => item !== '.localized')
+
         win.webContents.send('selectRootFolder', {location: location, files: files});
+
+        //if file is doc or pdf then show preview
+        if(files[0].includes('.doc') || files[0].includes('.pdf')) {
+          win.webContents.send('sendDocImage', files[0]);
+        } else {
+
+          const w = new BrowserWindow({ show: false })
+
+          let URLtoLoad = 'file:///' + result.filePaths[0] + '/' + files[0]
+          URLtoLoad = encodeURI(URLtoLoad)
+          //console.log(URLtoLoad)
+          w.loadURL(URLtoLoad)
+          //console.log('loading')
+          w.webContents.on('did-finish-load', async() => {
+              //console.log('did-finish-load')
+              let image = await w.webContents.capturePage()
+              //console.log(image.toDataURL())
+              win.webContents.send('sendPreviewImage', image.toDataURL());
+          })
+        }
+
       }).catch(err => {
         console.log(err)
       })
@@ -150,7 +211,7 @@ function createWindow () {
 app.whenReady().then(() => {
 
   protocol.registerFileProtocol('atom', (request, callback) => {
-    console.log(request.url)
+    //console.log(request.url)
     const url = request.url.substr(7)
     callback(url)
   })

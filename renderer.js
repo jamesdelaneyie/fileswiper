@@ -1,62 +1,57 @@
-"strict mode"
+import { addFolderToDom } from "./addFolderToDom.js";
 
 const func = async () => {
 
+    let filesToRemoveFromList = [
+        ".DS_Store",
+        ".localized",
+        "._data.txt"
+    ]
 
-    // Add a folder to the DOM with event listeners
-    addFolderToDom = (location) => {
-        let locationParent = document.getElementById("locations");
-        let div = document.createElement("div");
-        div.setAttribute("data-folder-location", location);
-        let locationText = location.split("/").pop();
-        div.innerText = locationText;
-        div.classList.add("location");
-        div.classList.add("location", "bg-white", "border-3", "border-slate-300", "p-10", "h-40", "w-40", "rounded-full", "border", "flex", "items-center", "justify-center", "hover:cursor-pointer")
-        // Add Event Listeners
-        // Left click
-        div.addEventListener("click", (e) => {
-            window.versions.openDialog();
-        })
-        // Right click
-        div.addEventListener("contextmenu", (e) => {
-            e.preventDefault();
-            e.target.remove();
-            let localLocations = JSON.parse(localStorage.getItem("locations"));
-            let location = e.target.getAttribute("data-folder-location");
-            let newLocations = localLocations.filter(item => item !== location);
-            localStorage.setItem("locations", JSON.stringify(newLocations));
-        })
-        locationParent.appendChild(div);
-    }
+    let files = [];
+
+    // Get the root folder from local storage and send it to the main process
+    let rootFolderSave = JSON.parse(localStorage.getItem("root-folder"));
+    window.versions.sendRootFolder(rootFolderSave);	
 
     // Update the file list
-    updateFileList = (files) => {
+    let updateFileList = (fileList) => {
 
+        files = fileList;
+
+        console.log(files);
+
+        //filter out files that we don't want to show
+        files = files.filter(item => !filesToRemoveFromList.includes(item));
+        
+        let currentFile = files[0]
+        let currentFileName = document.getElementById("current-file-name");
+       //let currentFilePreview = document.getElementById("current-file-preview");
+        currentFileName.innerText = currentFile;
+        //currentFilePreview.src = currentFile;
+
+        let nextItems = document.getElementsByClassName("next-file");
+        for (let i = 0; i < nextItems.length; i++) {
+            const nextItem = nextItems[i];
+            const nextItemSpan = nextItem.getElementsByTagName("span")[0];
+            nextItemSpan.innerText = files[i + 1];
+            //if there is no next file then hide the next item
+            if(files[i + 1] === undefined) {
+                //console.log('no next file')
+                nextItem.style.display = "none";
+            }
+        }
+
+        //console.log(files)
+
+        //let currentFilePreview = document.getElementById("current-file-preview");
+        //encode the path to make it work with atom://
+        //firstFile = encodeURIComponent(firstFile);
+        //let fullPath = 'file://' + locationAndFiles.location + '/' + firstFile;
+        //currentFilePreview.src = fullPath
     }
 
-    //get the root folder from local storage
-    //let rootFolder = localStorage.getItem("root-folder");
-    //send the root folder to the main process
-    //let response = await window.versions.files(rootFolder);
-	let response = await window.versions.files();
-    //remove .DS_Store from the array
-    response = response.filter(item => item !== ".DS_Store");
-    //remove .localized from the array
-    response = response.filter(item => item !== ".localized");
-
-	let currentFileName = document.getElementById("current-file-name");
-	let firstFile = response[0];
-	currentFileName.innerText = firstFile;
-
-    // Add an image to Current File
-    //
-
-	let nextItems = document.getElementsByClassName("next-file");
-	for (let i = 0; i < nextItems.length; i++) {
-		const nextItem = nextItems[i];
-		const nextItemSpan = nextItem.getElementsByTagName("span")[0];
-		nextItemSpan.innerText = response[i + 1];
-	}
+    
 
 
     // Add the folders to the DOM from local storage
@@ -69,12 +64,15 @@ const func = async () => {
 
 
 
+
 	function handleDragStart(e) {
 		this.style.opacity = "0.1";
         this.style.boxShadow = "none";
         this.style.dropShadow = "none";
         this.style.cursor = "move";
         this.style.filter = "drop-shadow(0 0 0 #000000)";
+
+        console.log(files)
 	}
 
 	function handleDragEnd(e) {
@@ -89,48 +87,32 @@ const func = async () => {
         let dropTarget = document.elementFromPoint(e.clientX, e.clientY);
         let location = dropTarget.getAttribute("data-folder-location");
 
+        console.log(filename, dropTarget, location)
 
         if(location === "skip") {
-            response.shift();
+            files.shift();
 
-            let currentFileName = document.getElementById("current-file-name");
-            let firstFile = response[0];
-            currentFileName.innerText = firstFile;
-
-            let nextItems = document.getElementsByClassName("next-file");
-            for (let i = 0; i < nextItems.length; i++) {
-                const nextItem = nextItems[i];
-                const nextItemSpan = nextItem.getElementsByTagName("span")[0];
-                nextItemSpan.innerText = response[i + 1];
-            }
-
-            return;
+            updateFileList(files);
             
         }
         if(location) {
+            
             window.versions.fileDropped({filename: filename, location: location});
 
-            response.shift();
+            files.shift();
 
-            let currentFileName = document.getElementById("current-file-name");
-            let firstFile = response[0];
-            currentFileName.innerText = firstFile;
+            updateFileList(files);
 
-
-
-            let nextItems = document.getElementsByClassName("next-file");
-            for (let i = 0; i < nextItems.length; i++) {
-                const nextItem = nextItems[i];
-                const nextItemSpan = nextItem.getElementsByTagName("span")[0];
-                nextItemSpan.innerText = response[i + 1];
-            }
         }
         
 
 	}
 
 
-    //**// Event handlers
+    //
+    // Event handlers
+    // 
+
     // Drag events for files
 	let items = document.querySelectorAll("#files li");
 	items.forEach(function (item) {
@@ -176,42 +158,53 @@ const func = async () => {
 
     // Handle the root folder selection
     window.versions.selectRootFolder((event, locationAndFiles) => {
+
+        //console.log('selectRootFolder')
+        //console.log(locationAndFiles)
+
         if(typeof locationAndFiles.location === "undefined") {
             return;
         }
+
         let locationText = locationAndFiles.location.split("/");
-        console.log(locationText)
         locationText = locationText[locationText.length - 1];
+
         let rootFolder = document.getElementById("current-file");
         rootFolder.setAttribute('data-content', locationText);
 
-        let rootFolderSave = JSON.parse(localStorage.getItem("root-folder"));
-        if(rootFolderSave) {
-            rootFolderSave.location = locationAndFiles.location;
-            rootFolderSave.locationText = locationText;
-            localStorage.setItem("root-folder", JSON.stringify(rootFolderSave));
-        } else {
-            localStorage.setItem("root-folder", JSON.stringify({location: locationAndFiles.location, locationText: locationText}));
-        }
+        localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
 
-        let files = locationAndFiles.files;
-        // remove .DS_Store and .localized
-        files = files.filter(item => item !== ".DS_Store");
-        files = files.filter(item => item !== ".localized");
+        let filesList = locationAndFiles.files;
 
-        let currentFileName = document.getElementById("current-file-name");
-        let firstFile = files[0];
-        currentFileName.innerText = firstFile;
-        
+        updateFileList(filesList);
 
-        let nextItems = document.getElementsByClassName("next-file");
-        for (let i = 0; i < nextItems.length; i++) {
-            const nextItem = nextItems[i];
-            const nextItemSpan = nextItem.getElementsByTagName("span")[0];
-            nextItemSpan.innerText = files[i + 1];
-        }
+
     });
 
+
+    window.versions.sendPreviewImage((event, image) => {
+        let currentFilePreview = document.getElementById("current-file-preview");
+        currentFilePreview.src = image;
+    })
+
+    window.versions.sendDocImage((event, image) => {
+        //console.log(image)
+        //create new webview element and set the src to the image
+        let webview = document.createElement("webview");
+        //get the root folder location
+        let rootFolderSave = JSON.parse(localStorage.getItem("root-folder"));
+        let fullPath = 'file://' + rootFolderSave + '/' + image;
+        webview.setAttribute("src", fullPath);
+        webview.setAttribute("style", "width: 100%; height: 100%;");
+        webview.setAttribute("nodeintegration", "true");
+        webview.setAttribute("plugins", "true");
+        webview.setAttribute("allowpopups", "true");
+        webview.setAttribute("webpreferences", "allowRunningInsecureContent");
+        webview.setAttribute("webpreferences", "allowDisplayingInsecureContent");
+        //add the webview to the dom
+        let preview = document.getElementById("files");
+        preview.appendChild(webview);
+    })
 
     
     // Handle the addition of a folder from the OpenDialog

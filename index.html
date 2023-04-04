@@ -14,17 +14,13 @@
     
     <div id="background-circle" class="absolute w-80vh h-80vw border-4 border-slate-300 rounded-full translate-center z-0"></div>
     
-    <div class="trash-wrapper">
-        <div data-folder-location="trash" class="ui-button trash absolute bg-white border-3 border-slate-300 p-10 h-40 w-40 rounded-full border flex items-center justify-center">
-            Trash
-        </div>
-    </div>
-    
     <div class="flex items-center justify-center h-screen z-50 relative">
         
         <ul id="files" class="flex flex-col items-center">
-            <li id="current-file" data-content="" draggable="true" class="ui-button bg-white border-slate-300 w-60 h-80 z-50 border-2 rounded relative text-center overflow-hidden hover:cursor-move">
-                <img src="atom://Users/jamesdelaney/Downloads/##3_house_in_field.jpg">
+            <li id="current-file" data-content="" draggable="true" class="ui-button bg-white border-slate-300 w-60 h-80 z-50 border-2 rounded relative text-center hover:cursor-move">
+                
+                <!--<webview id="current-file-preview" plugins="true" src="file:///Users/jamesdelaney/Desktop/00001-PS-10057-AI-AS-1310-Liquid-Sampling-Automation-Product-Specifications.pdf" preload="./test.js" style="display:inline-flex; width:235px; height:320px;"></webview>-->
+                <img id="current-file-preview" src="">
                 <span id="current-file-name" class="absolute bottom-0 w-full left-0 text-xs bg-white pt-1 pb-1">Filename</span>
             </li>
             <li class="next-file w-52 h-10 mt-10 border-2 -mb-16 bg-white p-10 border-slate-300 rounded relative text-center z-30">
@@ -40,6 +36,11 @@
         <div id="locations" class="translate-center-folders" data-countchildren>
             
         </div>
+
+        <div id="trash" data-folder-location="trash" class="ui-button trash absolute bg-white border-3 border-slate-300 p-10 h-40 w-40 rounded-full border flex items-center justify-center z-50">
+            Trash
+        </div>
+       
     </div>
 
     <div id="add-folder" class="ui-button absolute top-10 right-10 py-2 px-5 bg-slate-900 text-white text-sm rounded-md border z-50 hover:bg-slate-700 cursor-pointer">Add Folder</div>
@@ -52,7 +53,8 @@
 
 
 
+
 </body>
 
-<script src="./renderer.js"></script>
+<script src="./dist/bundle.js"></script>
 </html>

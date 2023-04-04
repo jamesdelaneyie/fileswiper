@@ -7,23 +7,32 @@
   "author": "jamesdelaney.ie",
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4",
     "@electron-forge/cli": "^6.0.5",
     "@electron-forge/maker-deb": "^6.0.5",
     "@electron-forge/maker-rpm": "^6.0.5",
     "@electron-forge/maker-squirrel": "^6.0.5",
     "@electron-forge/maker-zip": "^6.0.5",
+    "babel-loader": "^9.1.2",
     "electron": "^24.0.0-beta.7",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-reloader": "^1.2.3",
+    "postcss-import": "^15.1.0",
     "postcss-loader": "^7.1.0",
-    "tailwindcss": "^3.2.7"
+    "tailwindcss": "^3.2.7",
+    "webpack": "^5.77.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.13.2",
+    "webpack-electron-reload": "^1.0.1"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
+    "sound-play": "^1.1.0",
     "trash": "^8.1.1"
   },
   "scripts": {
-    "start": "electron .",
+    "start": "webpack --mode development && electron .",
     "start-full": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make"

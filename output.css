@@ -649,10 +649,6 @@ video {
   justify-content: center;
 }
 
-.overflow-hidden {
-  overflow: hidden;
-}
-
 .rounded {
   border-radius: 0.25rem;
 }
@@ -834,21 +830,12 @@ body {
   border-color: #b4b9d4bf;
 }
 
-.trash-wrapper {
+#trash {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: 680px;
-  max-height: 680px;
-  width: 85vw;
-  height: 85vw;
-}
-
-.trash-wrapper .trash {
-  top: 50%;
-  transform: translateY(-50%);
-  left: -50px;
+  margin-left: -340px;
 }
 
 .translate-center-folders {
@@ -865,24 +852,8 @@ body {
 }
 
 .translate-center-folders > div {
-  /* Spread the dots evenly over the circle.
-	   We do this by dividing 360deg by the number of children.
-       E.g. 360 degrees / 3 children = 120 degrees between each child element.	
-	*/
   --offset-per-child: calc(var(--layout-angle) / (var(--nth-siblings) + 1));
-  /* Each child will that offset into account, based its index.
-	   E.g. - the 1st out of 3 children gets offset by 0 x 120deg = 0deg
-	        - the 2nd out of 3 children gets offset by 1 x 120deg = 120deg
-	        - the 3rd out of 3 children gets offset by 2 x 120deg = 240deg
-	*/
   --angle-offset: calc(1 * var(--offset-per-child));
-  /* Make it round 
-	display: block;
-	
-	aspect-ratio: 1;*/
-  /*height: 150px;
-    width: 150px;
-    width: calc(var(--tracksize) * 3);*/
   border-radius: 50%;
   position: absolute;
   left: calc(45% - (var(--tracksize) / 2));
@@ -894,24 +865,25 @@ body {
 
 #current-file {
   max-width: 33vw;
-}
-
-#current-file > img {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-}
-
-#current-file:after {
-  content: attr(data-content);
-  position: absolute;
-  bottom: -30px;
-  left: 50%;
-  font-size: 0.65rem;
-  opacity: 0.8;
-  transform: translateX(-50%);
+  > img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    -o-object-fit: cover;
+       object-fit: cover;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    overflow: hidden;
+  }
+  &::after {
+    content: attr(data-content);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    font-size: 0.65rem;
+    opacity: 0.8;
+    transform: translateX(-50%);
+  }
 }
 
 .border-3 {
