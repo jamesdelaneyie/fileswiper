@@ -1,6 +1,6 @@
 ![Fileswiper](https://github.com/jamesdelaneyie/fileswiper/blob/master/progress_gifs/fileswiper-progress-2.png)
 
-# Fileswiper
+# ✨File*swiper*
 
 A tiny Mac OSX app that lets you sort out the contents of a folder by dragging and dropping files into buckets. Built with Electron. 
 
