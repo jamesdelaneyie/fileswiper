@@ -11,10 +11,11 @@ To Do:
 - ~~Add a skip option on top of screen~~
 - ~~Add ability to store the last directories used in local storage~~
 - ~~Add ability to add and remove buckets from the UI~~
-- Position buckets along circle path
-- functionize the update file list
-- actually add file previews for jpg, png, gif, pdf, txt/code files
+- ~~Position buckets along circle path ~~
+- ~~functionize the update file list ~~
+- ~~actually add file previews for jpg, png, gif, pdf, txt/code files ~~
 - ~~add file dialog to select directory for swiping !!~~ 
+- Restructure code, re-factor, clean up, name things better etc. 
 
 Possible Features:
 - add physics to main area so you can throw files into buckets, p2.js?
