@@ -1,8 +1,11 @@
 const path = require("path");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 
 module.exports = {
   //target: "electron-renderer",
   entry: "./renderer.js", // Path to your renderer.js file
+  //watch: true,
   output: {
     path: __dirname + "/dist",
     publicPath: "./",
@@ -13,6 +16,16 @@ module.exports = {
   },
   devtool: 'source-map',
   mode: "development", // or "production"
+  devServer: {
+    static: './',
+    hot: true,
+    port: 8080
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './index.html'
+    })
+  ],
   module: {
     rules: [
       {

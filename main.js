@@ -1,17 +1,22 @@
 const { app, BrowserWindow, ipcMain, dialog, protocol } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const url = require('url')
 const sound = require("sound-play");
 const chokidar = require("chokidar");
+const electronConnect = require('electron-connect').server;
+// load in the filesToIgnore.js file
+const filesToIgnore = require('./filesToIgnore.js');
+
+console.log(filesToIgnore)
 
 app.setName('FileSwiper');
 
 let fileMoves = []
 let rootFolder = null;
 
-function StartWatcher(win, path){
+function startWatcher(win, path){
   
-
   var watcher = chokidar.watch(path, {
       ignored: /[\/\\]\./,
       depth: 0,
@@ -22,13 +27,13 @@ function StartWatcher(win, path){
   // Declare the listeners of the watcher
   watcher
   .on('add', function(path) {
-        console.log('File', path, 'has been added');
+        //console.log('File', path, 'has been added');
         let files = getFileListFromDirectory(rootFolder)   
         win.webContents.send('selectRootFolder', {location: rootFolder, files: files});
         //console.log(files)
   })
   .on('unlink', function(path) {
-       console.log('File', path, 'has been removed');
+       //console.log('File', path, 'has been removed');
         let files = getFileListFromDirectory(rootFolder)   
         win.webContents.send('selectRootFolder', {location: rootFolder, files: files});
   })
@@ -54,17 +59,17 @@ function moveFile(oldPath, newPath) {
 }
 
 function getFileListFromDirectory(dir) {
-  const files = []
-  fs.readdirSync(dir, {withFileTypes: true})
-  .filter(item => !item.isDirectory())
-  .map(item => item.name)
-  .forEach(item => files.push(item))
-  return files
+  let fileList = []
+  fs.readdirSync(dir, {withFileTypes: true}).filter(item => !item.isDirectory()).map(item => item.name).forEach(item => fileList.push(item))
+  fileList = fileList.filter(item => !filesToIgnore.includes(item));
+  return fileList
 }
 
 function createWindow () {
 
-  const win = new BrowserWindow({
+  let client;
+
+  let win = new BrowserWindow({
     width: 900,
     height: 780,
     frame: false,
@@ -78,16 +83,45 @@ function createWindow () {
       worldSafeExecuteJavaScript: true,
     }
   })
+   
+  win.loadURL(url.format({
+    pathname: path.join(__dirname, 'dist', 'index.html'),
+    protocol: 'file:',
+    slashes: true
+  }));
+
+   // Open the DevTools in development mode
+  if (process.env.NODE_ENV === 'development') {
+    win.webContents.openDevTools();
+  }
+
+  // Start the Electron-Connect server in development mode
+  if (process.env.NODE_ENV === 'development') {
+    client = electronConnect.create(win);
+    client.start();
+  }
 
   //open the dev tools
   win.webContents.openDevTools()
 
+  let files = []
+
+
+
+
+  // Cleanup when the window is closed
+  win.on('closed', () => {
+    win = null;
+    if (client) {
+      client.stop();
+      client = null;
+    }
+  });
+
 
   ipcMain.handle('config', (event, config) => {
-
     win.setSize(config.width, config.height);
     win.setPosition(config.x, config.y);
-
   })
 
   // undo the last move 
@@ -108,24 +142,12 @@ function createWindow () {
         x: position[0],
         y: position[1]
       }
-
       win.webContents.send('sendConfig', config);
       app.quit();
   })
 
 
-  let files = []
-
-  ipcMain.handle('rootFolderStartUp', (event, rootFolderReceived) => {
-    console.log(rootFolderReceived)
-    files = getFileListFromDirectory(rootFolderReceived);
-    console.log(files)
-    rootFolder = rootFolderReceived;
-    let location = rootFolderReceived;
-    console.log(location)
-    StartWatcher(win, location);
-    win.webContents.send('selectRootFolder', {location: location, files: files});
-  })
+  
 
 
   ipcMain.handle('file-dropped', (event, filenameAndLocation) => {
@@ -159,7 +181,7 @@ function createWindow () {
 
   })
 
-  ipcMain.handle('sendRootFolder', (event, saveRootFolder) => {
+  /*ipcMain.handle('sendRootFolder', (event, saveRootFolder) => {
     let location = saveRootFolder;
     console.log(location)
     win.webContents.send('selectRootFolder', {location: location, files: files});
@@ -180,11 +202,11 @@ function createWindow () {
           let image = await w.webContents.capturePage()
           //console.log(image.toDataURL())
           win.webContents.send('sendPreviewImage', image.toDataURL());
-      })*/
+      })
     }
 
 
-  })
+  })*/
 
 
   
@@ -198,39 +220,52 @@ function createWindow () {
         })
     });
 
-    
+
+    const sendFilesToWindow = (win, location) => {
+      let files = getFileListFromDirectory(location);
+      startWatcher(win, location);
+      console.log("sending files to window")
+      win.webContents.send('selectRootFolder', {location: location, files: files});
+      //rootFolder = location;
+  }
+
+
+    ipcMain.handle('rootFolderStartUp', (_event, location) => {
+      //wait for the window to be ready then send the files
+      win.webContents.on('did-finish-load', () => {
+        sendFilesToWindow(win, location);
+      })
+    })
+
+
     ipcMain.handle('hey-open-my-root-dialog-now', () => {
+
       dialog.showOpenDialog({properties: ['openDirectory', 'createDirectory']}).then(result => {
-        let location = result.filePaths[0];
-        rootFolder = location;
-        let files = getFileListFromDirectory(location);
-        //remove ._data.txt from files
-        files = files.filter(item => item !== '._data.txt')
-        //remove .DS_Store from files
-        files = files.filter(item => item !== '.DS_Store')
-        //remove .localized from files
-        files = files.filter(item => item !== '.localized')
 
-        win.webContents.send('selectRootFolder', {location: location, files: files});
+        if(result.filePaths.length > 0) {
 
-        //if file is doc or pdf then show preview
-        if(files[0].includes('.doc') || files[0].includes('.pdf')) {
-          win.webContents.send('sendDocImage', files[0]);
-        } else {
+          let location = result.filePaths[0];
+          sendFilesToWindow(win, location);
 
-          const w = new BrowserWindow({ show: false })
+          //if file is doc or pdf then show preview
+          /*if(files[0].includes('.doc') || files[0].includes('.pdf')) {
+            win.webContents.send('sendDocImage', files[0]);
+          } else {
 
-          let URLtoLoad = 'file:///' + result.filePaths[0] + '/' + files[0]
-          URLtoLoad = encodeURI(URLtoLoad)
-          //console.log(URLtoLoad)
-          w.loadURL(URLtoLoad)
-          //console.log('loading')
-          w.webContents.on('did-finish-load', async() => {
-              //console.log('did-finish-load')
-              let image = await w.webContents.capturePage()
-              //console.log(image.toDataURL())
-              win.webContents.send('sendPreviewImage', image.toDataURL());
-          })
+            const w = new BrowserWindow({ show: false })
+
+            let URLtoLoad = 'file:///' + result.filePaths[0] + '/' + files[0]
+            URLtoLoad = encodeURI(URLtoLoad)
+            //console.log(URLtoLoad)
+            w.loadURL(URLtoLoad)
+            //console.log('loading')
+            w.webContents.on('did-finish-load', async() => {
+                //console.log('did-finish-load')
+                let image = await w.webContents.capturePage()
+                //console.log(image.toDataURL())
+                win.webContents.send('sendPreviewImage', image.toDataURL());
+            })
+          }*/
         }
 
       }).catch(err => {
@@ -239,8 +274,6 @@ function createWindow () {
     })
 
     
-
-  win.loadFile('index.html')
 }
 
 app.whenReady().then(() => {

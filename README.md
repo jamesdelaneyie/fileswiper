@@ -2,7 +2,7 @@
 
 # ✨File*swiper*
 
-A tiny Mac OSX app that lets you sort out the contents of a folder by dragging and dropping files into buckets. Built with Electron. 
+A tiny Mac OSX app to be used with an iPad in sidecar mode that lets you sort out the contents of a folder by swiping files into buckets. Built with Electron. 
 
 To Do:
 - ~~Drag main file list into bucket to move file~~
@@ -21,6 +21,11 @@ To Do:
 Possible Features:
 - add physics to main area so you can throw files into buckets, p2.js?
 - add "keeper" bucket that files can be moved to and then moved back to main area
+
+Development:
+
+- `npm install`
+- `npm start`
 
 
 ![Fileswiper](https://github.com/jamesdelaneyie/fileswiper/blob/master/progress_gifs/fileswiper.gif)

@@ -1,80 +1,28 @@
 import { addFolderToDom } from "./addFolderToDom.js";
 import { createCurrentFile } from "./createCurrentFile.js";
 import { updateFileList } from "./updateFileList.js";
-
+import { handleDragStart } from "./dragAndDrop.js";
+import { handleDragEnd } from "./dragAndDrop.js";
 
 const func = async () => {
 
     let files = [];
 
-    // Get the root folder from local storage and send it to the main process
-    let rootFolderSave = JSON.parse(localStorage.getItem("root-folder"));
-    window.versions.sendRootFolder(rootFolderSave);	
-
-
-    // Add the folders to the DOM from local storage
-    let localLocations = JSON.parse(localStorage.getItem("locations"));
-    if(localLocations !== null) {
-        for(let i = 0; i < localLocations.length; i++) {
-            addFolderToDom(localLocations[i]);
+    // Load the last folders used by the user    
+    let listOfFolders = JSON.parse(localStorage.getItem("locations"));
+    if(listOfFolders !== null) {
+        for(let i = 0; i < listOfFolders.length; i++) {
+            // Add the folders used by the user to the DOM
+            addFolderToDom(listOfFolders[i]);
         }
     }
-
-	function handleDragStart(e) {
-		this.style.opacity = "0.1";
-        this.style.boxShadow = "none";
-        this.style.dropShadow = "none";
-        this.style.cursor = "move";
-        this.style.filter = "drop-shadow(0 0 0 #000000)";
-
-        //console.log(files)
-	}
-
-	function handleDragEnd(e) {
-		this.style.opacity = "1";
-        this.style.boxShadow = "none";
-        this.style.dropShadow = "none";
-        this.style.cursor = "move";
-        this.style.filter = "drop-shadow(0 0 0 #000000)";
-
-        let filename = e.target.innerText;
-        
-        let dropTarget = document.elementFromPoint(e.clientX, e.clientY);
-        let location = dropTarget.getAttribute("data-folder-location");
-
-        console.log(filename, dropTarget, location)
-
-        if(location === rootFolderSave) {
-            console.log('same location')
-            return
-        }
-
-        if(location === "skip") {
-            files.shift();
-
-            files = updateFileList(files);
-            
-        }
-        if(location) {
-            
-            window.versions.fileDropped({filename: filename, location: location});
-
-            files.shift();
-
-            files = updateFileList(files);
-
-        }
-        
-
-	}
-
 
     //
     // Event handlers
     // 
 
     // Drag events for files
-	let items = document.querySelectorAll("#files li");
+	/*let items = document.querySelectorAll("#files li");
 	items.forEach(function (item) {
 		item.addEventListener("dragstart", handleDragStart);
 		item.addEventListener("dragend", handleDragEnd);
@@ -83,54 +31,55 @@ const func = async () => {
     // Undo button
     let undoButton = document.getElementById("undo");
     undoButton.addEventListener("click", () => {
-        window.versions.undo();
-    })
+        window.fileswiper.undo();
+    })*/
 
     // Quit button
     let quitButton = document.getElementById("quit");
     quitButton.addEventListener("click", () => {
-        window.versions.quit();
+        window.fileswiper.quit();
     })
 
     // Add folder button
-    let addFolder = document.getElementById("add-folder");
+    /*let addFolder = document.getElementById("add-folder");
     addFolder.addEventListener("click", () => {
-        window.versions.openDialog();
+        window.fileswiper.openDialog();
     })
 
     // Skip Button / Skip Area
     let skipArea = document.getElementById("skip");
     skipArea.addEventListener("dragover", (e) => {
         e.preventDefault();
-    })
+    })*/
 
     // Select root folder
     let folderSelect = document.getElementById("folder-select");
     folderSelect.addEventListener("click", () => {
-        window.versions.openRootDialog();
+        window.fileswiper.openRootDialog();
     })
 
     // Save the config to local storage
-    window.versions.sendConfig((event, config) => {
+    window.fileswiper.sendConfig((event, config) => {
         localStorage.setItem("config", JSON.stringify(config));
     })
     
 
     // Handle the root folder selection
-    window.versions.selectRootFolder((event, locationAndFiles) => {
+    window.fileswiper.selectRootFolder((event, locationAndFiles) => {
+
+        //console.log(locationAndFiles)
 
         if(typeof locationAndFiles.location === "undefined") {
             return;
         }
 
-        
+        //remove the intro screen
+        let introScreen = document.getElementById("intro-screen");
+        introScreen.style.display = "none";
 
         let filesList = locationAndFiles.files;
 
         //console.log(filesList)
-
-        
-
         files = updateFileList(filesList);
 
         if(filesList.length > 0) {
@@ -140,7 +89,7 @@ const func = async () => {
             locationText = locationText[locationText.length - 1];
 
             let rootFolder = document.getElementById("current-file");
-            rootFolder.setAttribute('data-content', locationText);
+            //rootFolder.setAttribute('data-content', locationText);
         }
 
         
@@ -153,15 +102,15 @@ const func = async () => {
     });
 
 
-    window.versions.sendPreviewImage((event, image) => {
+    window.fileswiper.sendPreviewImage((event, image) => {
         let currentFilePreview = document.getElementById("current-file-preview");
         currentFilePreview.src = image;
     })
 
-    window.versions.sendDocImage((event, image) => {
+    window.fileswiper.sendDocImage((event, image) => {
         //console.log(image)
         //create new webview element and set the src to the image
-        let webview = document.createElement("webview");
+        /*let webview = document.createElement("webview");
         //get the root folder location
         let rootFolderSave = JSON.parse(localStorage.getItem("root-folder"));
         let fullPath = 'file://' + rootFolderSave + '/' + image;
@@ -174,12 +123,13 @@ const func = async () => {
         webview.setAttribute("webpreferences", "allowDisplayingInsecureContent");
         //add the webview to the dom
         let preview = document.getElementById("files");
-        preview.appendChild(webview);
+        preview.appendChild(webview);*/
     })
 
     
-    // Handle the addition of a folder from the OpenDialog
-    window.versions.folderLocation((event, location) => {
+    // Handle the addition of a new folder to the DOM
+    // Add it to the local storage for the user
+    window.fileswiper.folderLocation((event, location) => {
         if(typeof location === "undefined") {
             return;
         }

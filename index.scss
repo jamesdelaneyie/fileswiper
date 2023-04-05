@@ -24,6 +24,13 @@ body {
     transform: translateX(-50%);
 }
 
+.center-all {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .text-xxs {
     font-size: 0.65rem;
 }
@@ -45,6 +52,22 @@ body {
     border-color: #b4b9d4bf;
 }
 
+#folder-select-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 680px;
+    max-height: 680px;
+    width: 85vw;
+    height: 85vw;
+    z-index: 100;
+}
+
+#intro-screen p {
+    min-width: 210px;
+    max-width: 300px;
+}
 
 #trash {
     position: absolute;
@@ -95,6 +118,7 @@ body {
 
 #current-file {
     max-width: 33vw;
+    max-height: 50vw;
     > img {
         position: absolute;
         height: 100%;

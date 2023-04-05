@@ -15,7 +15,9 @@ if(rootFolder !== null) {
     ipcRenderer.invoke('rootFolderStartUp', rootFolder);
 }
 
-contextBridge.exposeInMainWorld('versions', {
+
+
+contextBridge.exposeInMainWorld('fileswiper', {
 
     selectRootFolder: (locationAndFiles) => ipcRenderer.on('selectRootFolder', locationAndFiles),
     folderLocation: (location) => ipcRenderer.on('folderLocation', location), 
