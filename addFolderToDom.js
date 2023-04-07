@@ -39,6 +39,7 @@ export const addFolderToDom = (location) => {
     locationTextDiv.classList.add("text-slate-500", "text-sm");
     innerDiv.appendChild(locationTextDiv);
     div.appendChild(innerDiv);
+
     // Add Event Listeners
     // Left click
     div.addEventListener("click", (e) => {

@@ -1,11 +1,9 @@
 import { addFolderToDom } from "./addFolderToDom.js";
-import { createCurrentFile } from "./createCurrentFile.js";
 import { updateFileList } from "./updateFileList.js";
-
+import { createTrash } from "./createTrash.js";
+import { updateSavedFolders } from "./updateSavedFolders.js";
 
 const func = async () => {
-
-    let files = [];
 
      // Quit button
      let quitButton = document.getElementById("quit");
@@ -24,6 +22,11 @@ const func = async () => {
     } else {
         console.log('No folders found in local storage')
     }
+
+    let trash = createTrash();
+    let main = document.querySelector("main");
+    main.appendChild(trash);
+    
 
     // Handle the root folder selection
     window.fileswiper.selectRootFolder((event, locationAndFiles) => {
@@ -54,23 +57,12 @@ const func = async () => {
     //
     // Event handlers
     // 
-
-    // Drag events for files
-	/*let items = document.querySelectorAll("#files li");
-	items.forEach(function (item) {
-		item.addEventListener("dragstart", handleDragStart);
-		item.addEventListener("dragend", handleDragEnd);
-	});
-
+    /*
     // Undo button
     let undoButton = document.getElementById("undo");
     undoButton.addEventListener("click", () => {
         window.fileswiper.undo();
     })*/
-
-   
-
-    
 
     // Skip Button / Skip Area
     /*let skipArea = document.getElementById("skip");
@@ -127,14 +119,6 @@ const func = async () => {
         webview.setAttribute("allowpopups", "true");
         webview.setAttribute("webpreferences", "allowRunningInsecureContent");
         webview.setAttribute("webpreferences", "allowDisplayingInsecureContent");
-        //inject css into the webview
-        webview.addEventListener("dom-ready", () => {
-            webview.insertCSS(`
-                #toolbar {
-                    display: none;
-                }
-            `);
-        })
         let preview = document.getElementById("current-file");
         preview.appendChild(webview);
     })
@@ -146,16 +130,8 @@ const func = async () => {
         if(typeof location === "undefined") {
             return;
         }
-        let locationText = location.split("/");
-        locationText = locationText[locationText.length - 1];
-        let locations = JSON.parse(localStorage.getItem("locations"));
-        if(locations === null) {
-            locations = [];
-        }
-        locations.push(location);
-        localStorage.setItem("locations", JSON.stringify(locations));
-
-        addFolderToDom(location, locationText);
+        updateSavedFolders(location);
+        addFolderToDom(location);
     })
 
 

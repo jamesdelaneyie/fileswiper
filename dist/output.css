@@ -666,9 +666,9 @@ video {
   background-color: rgb(74 222 128 / var(--tw-bg-opacity));
 }
 
-.bg-slate-400 {
+.bg-slate-300 {
   --tw-bg-opacity: 1;
-  background-color: rgb(148 163 184 / var(--tw-bg-opacity));
+  background-color: rgb(203 213 225 / var(--tw-bg-opacity));
 }
 
 .bg-slate-900 {
@@ -686,9 +686,19 @@ video {
   padding-right: 0.5rem;
 }
 
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
 .px-5 {
   padding-left: 1.25rem;
   padding-right: 1.25rem;
+}
+
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 }
 
 .py-2 {
@@ -747,11 +757,6 @@ video {
   letter-spacing: 0.1em;
 }
 
-.text-black {
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
-}
-
 .text-slate-500 {
   --tw-text-opacity: 1;
   color: rgb(100 116 139 / var(--tw-text-opacity));
@@ -807,10 +812,31 @@ main {
     text-align: center;
     font-size: 40px;
     font-weight: 300;
-    line-height: 21px;
+    line-height: 20px;
     right: 110px;
     top: 50%;
     transform: translateY(-50%);
+  }
+  #trash {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-left: -340px;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    > div {
+      text-align: center;
+      > svg {
+        width: 40px;
+        > path {
+          fill: #777ea2;
+        }
+      }
+    }
   }
   #files {
     position: absolute;
@@ -867,6 +893,9 @@ main {
           max-width: 34px;
           display: block;
           margin: 0 auto;
+          > path {
+            fill: #777ea2;
+          }
         }
       }
     }
@@ -904,17 +933,6 @@ main {
 #intro-screen p {
   min-width: 210px;
   max-width: 300px;
-}
-
-#trash {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin-left: -340px;
-  svg {
-    width: 60px;
-  }
 }
 
 .congrats {
@@ -1012,9 +1030,9 @@ main {
   background-color: rgb(134 239 172 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-slate-300:hover {
+.hover\:bg-slate-400:hover {
   --tw-bg-opacity: 1;
-  background-color: rgb(203 213 225 / var(--tw-bg-opacity));
+  background-color: rgb(148 163 184 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-slate-700:hover {
