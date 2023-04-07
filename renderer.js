@@ -31,10 +31,14 @@ const func = async () => {
 
     // Interact.js set as dropzone
     interact('.location').dropzone({
+        overlap: 0.01,
         ondrop: function (event) {
             console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id)
             //alert(event.relatedTarget.id + ' was dropped into ' + event.target.id)
           },
+        ondragenter: function (event) {
+            console.log('drag enter')
+        }
     }).on('dropactivate', function (event) {
         event.target.classList.add('drop-active')
         console.log('drop activate')

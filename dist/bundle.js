@@ -458,9 +458,14 @@ var func = /*#__PURE__*/function () {
 
           // Interact.js set as dropzone
           interactjs__WEBPACK_IMPORTED_MODULE_4___default()('.location').dropzone({
+            overlap: 0.01,
             ondrop: function ondrop(event) {
               console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id);
               //alert(event.relatedTarget.id + ' was dropped into ' + event.target.id)
+            },
+
+            ondragenter: function ondragenter(event) {
+              console.log('drag enter');
             }
           }).on('dropactivate', function (event) {
             event.target.classList.add('drop-active');
