@@ -17,7 +17,7 @@ module.exports = {
   devtool: 'source-map',
   mode: "development", // or "production"
   devServer: {
-    static: './',
+    static: './dist/',
     hot: true,
     port: 8080
   },

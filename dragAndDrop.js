@@ -1,17 +1,24 @@
-const handleDragStart = (e) => {
-    this.style.opacity = "0.1";
+export const handleDragStart = (e) => {
+    /*this.style.opacity = "0.1";
     this.style.boxShadow = "none";
     this.style.dropShadow = "none";
     this.style.cursor = "move";
-    this.style.filter = "drop-shadow(0 0 0 #000000)";
+    this.style.filter = "drop-shadow(0 0 0 #000000)";*/
+
+    console.log('drag start')
+    e.dataTransfer.effectAllowed = "move";
+
+    //move the ghost image to the top left corner
+    
 }
 
-const handleDragEnd = (e, files, rootFolderSave) => {
-    this.style.opacity = "1";
+export const handleDragEnd = (e, files, rootFolderSave) => {
+    console.log('drag end')
+    /*this.style.opacity = "1";
     this.style.boxShadow = "none";
     this.style.dropShadow = "none";
     this.style.cursor = "move";
-    this.style.filter = "drop-shadow(0 0 0 #000000)";
+    this.style.filter = "drop-shadow(0 0 0 #000000)";*/
 
     let filename = e.target.innerText;
     
@@ -20,7 +27,7 @@ const handleDragEnd = (e, files, rootFolderSave) => {
 
     console.log(filename, dropTarget, location)
 
-    if(location === rootFolderSave) {
+    /*if(location === rootFolderSave) {
         console.log('same location')
         return
     }
@@ -39,6 +46,6 @@ const handleDragEnd = (e, files, rootFolderSave) => {
 
         files = updateFileList(files);
 
-    }
+    }*/
     
 }

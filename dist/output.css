@@ -557,6 +557,10 @@ video {
   top: 2.5rem;
 }
 
+.top-12 {
+  top: 3rem;
+}
+
 .z-0 {
   z-index: 0;
 }
@@ -565,16 +569,8 @@ video {
   z-index: 20;
 }
 
-.z-30 {
-  z-index: 30;
-}
-
 .z-50 {
   z-index: 50;
-}
-
-.-mb-16 {
-  margin-bottom: -4rem;
 }
 
 .mb-5 {
@@ -583,10 +579,6 @@ video {
 
 .ml-1 {
   margin-left: 0.25rem;
-}
-
-.mt-10 {
-  margin-top: 2.5rem;
 }
 
 .block {
@@ -601,44 +593,12 @@ video {
   display: flex;
 }
 
-.h-10 {
-  height: 2.5rem;
-}
-
-.h-40 {
-  height: 10rem;
-}
-
 .h-80 {
   height: 20rem;
 }
 
-.h-screen {
-  height: 100vh;
-}
-
-.w-40 {
-  width: 10rem;
-}
-
-.w-44 {
-  width: 11rem;
-}
-
-.w-48 {
-  width: 12rem;
-}
-
-.w-52 {
-  width: 13rem;
-}
-
 .w-60 {
   width: 15rem;
-}
-
-.w-9 {
-  width: 2.25rem;
 }
 
 .w-full {
@@ -655,10 +615,6 @@ video {
 
 .items-center {
   align-items: center;
-}
-
-.justify-center {
-  justify-content: center;
 }
 
 .rounded {
@@ -685,6 +641,16 @@ video {
   border-width: 4px;
 }
 
+.border-green-400 {
+  --tw-border-opacity: 1;
+  border-color: rgb(74 222 128 / var(--tw-border-opacity));
+}
+
+.border-green-500 {
+  --tw-border-opacity: 1;
+  border-color: rgb(34 197 94 / var(--tw-border-opacity));
+}
+
 .border-slate-300 {
   --tw-border-opacity: 1;
   border-color: rgb(203 213 225 / var(--tw-border-opacity));
@@ -693,6 +659,11 @@ video {
 .border-slate-400 {
   --tw-border-opacity: 1;
   border-color: rgb(148 163 184 / var(--tw-border-opacity));
+}
+
+.bg-green-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(74 222 128 / var(--tw-bg-opacity));
 }
 
 .bg-slate-400 {
@@ -710,12 +681,9 @@ video {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.fill-slate-400 {
-  fill: #94a3b8;
-}
-
-.p-10 {
-  padding: 2.5rem;
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .px-5 {
@@ -804,14 +772,6 @@ video {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.opacity-50 {
-  opacity: 0.5;
-}
-
-.opacity-75 {
-  opacity: 0.75;
-}
-
 @property --angle {
   syntax: '<angle>';
 
@@ -821,7 +781,7 @@ video {
 }
 
 :root {
-  --angle: 1.5deg;
+  --angle: 3.5deg;
 }
 
 html,
@@ -829,6 +789,88 @@ body {
   height: 100%;
   -webkit-app-region: drag;
   background: radial-gradient(290px 290px at center, rgb(214, 190, 242) 0%, rgba(241,246,249,1) 100%);
+}
+
+main {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 680px;
+  max-height: 680px;
+  width: 85vw;
+  height: 85vw;
+  #add-folder {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    text-align: center;
+    font-size: 40px;
+    font-weight: 300;
+    line-height: 21px;
+    right: 110px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  #files {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    #current-file {
+      max-width: 33vw;
+      max-height: 50vw;
+      overflow: hidden;
+      background: white url('loading.gif') no-repeat center center;
+      background-size: 20px 20px;
+      > img {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        -o-object-fit: cover;
+           object-fit: cover;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+        overflow: hidden;
+        pointer-events: none;
+      }
+    }
+    li {
+      span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+  #locations {
+    --radius: 320px;
+    --tracksize: 75px;
+    > div {
+      width: 120px;
+      height: 120px;
+      -webkit-user-select: none;
+      --offset-per-child: calc(var(--layout-angle) / (var(--nth-siblings) + 1));
+      --angle-offset: calc(1 * var(--offset-per-child));
+      border-radius: 50%;
+      position: absolute;
+      left: calc(50% - (var(--tracksize) / 2));
+      top: calc(50% - (var(--tracksize) / 2));
+      translate: calc(cos((var(--angle) + var(--angle-offset))) * var(--radius))
+                        calc(sin((var(--angle) + var(--angle-offset))) * var(--radius) * -1);
+      transition: all 0.2s ease, transform 0.2s ease 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      > div {
+        > svg {
+          max-width: 34px;
+          display: block;
+          margin: 0 auto;
+        }
+      }
+    }
+  }
 }
 
 .center-horizontally {
@@ -847,10 +889,6 @@ body {
   font-size: 0.65rem;
 }
 
-#locations div {
-  -webkit-user-select: none;
-}
-
 .translate-center {
   position: absolute;
   top: 50%;
@@ -861,18 +899,6 @@ body {
   width: 85vw;
   height: 85vw;
   border-color: #b4b9d4bf;
-}
-
-#folder-select-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 680px;
-  max-height: 680px;
-  width: 85vw;
-  height: 85vw;
-  z-index: 100;
 }
 
 #intro-screen p {
@@ -891,19 +917,6 @@ body {
   }
 }
 
-.translate-center-folders {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 680px;
-  max-height: 680px;
-  width: 85vw;
-  height: 85vw;
-  --radius: 320px;
-  --tracksize: 75px;
-}
-
 .congrats {
   text-align: center;
   .congrats-icon {
@@ -912,50 +925,8 @@ body {
   }
 }
 
-.translate-center-folders > div {
-  --offset-per-child: calc(var(--layout-angle) / (var(--nth-siblings) + 1));
-  --angle-offset: calc(1 * var(--offset-per-child));
-  border-radius: 50%;
-  position: absolute;
-  left: calc(45% - (var(--tracksize) / 2));
-  top: calc(45% - (var(--tracksize) / 2));
-  translate: calc(cos((var(--angle) + var(--angle-offset))) * var(--radius))
-		         calc(sin((var(--angle) + var(--angle-offset))) * var(--radius) * -1);
-  transition: all 0.2s ease, transform 0.2s ease 0.2s;
-}
-
-#current-file {
-  max-width: 33vw;
-  max-height: 50vw;
-  > img {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    -o-object-fit: cover;
-       object-fit: cover;
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
-    overflow: hidden;
-  }
-  &::after {
-    content: attr(data-content);
-    position: absolute;
-    bottom: -30px;
-    left: 50%;
-    font-size: 0.65rem;
-    opacity: 0.8;
-    transform: translateX(-50%);
-  }
-}
-
 .border-3 {
   border-width: 3px;
-}
-
-#files li span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 #skip {
@@ -972,6 +943,7 @@ body {
 
 #folder-select {
   min-width: 145px;
+  z-index: 100;
 }
 
 [data-countchildren] > :nth-child(1) {
@@ -1033,6 +1005,11 @@ body {
 
 .hover\:cursor-move:hover {
   cursor: move;
+}
+
+.hover\:bg-green-300:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(134 239 172 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-slate-300:hover {

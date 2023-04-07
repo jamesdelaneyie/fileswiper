@@ -2,22 +2,24 @@ import { createCurrentFile } from "./createCurrentFile.js";
 
 export const updateFileList = (fileList) => {
 
-    //console.log(fileList);
+    console.log(fileList);
 
     if(fileList.length > 0) {
+
+        let introScreen = document.getElementById("intro-screen");
+        introScreen.style.display = "none";
         
-    
-        let currentFile = fileList[0]
+        let currentFile = fileList[0].name
         let currentFileName = document.getElementById("current-file-name");
         
-        // if current file name is undefined then create it
         if(currentFileName === null) {
             createCurrentFile();
             currentFileName = document.getElementById("current-file-name");
         }
 
         currentFileName.innerText = currentFile;
-        currentFileName.classList.add("absolute", "bottom-0", "w-full", "left-0", "text-xs", "bg-white", "pt-1", "pb-1");
+        currentFileName.classList.add("absolute", "bottom-0", "text-slate-700", "w-full", "left-0", "text-xxs", "bg-white", "p-3")
+        
         
         //let currentFilePreview = document.getElementById("current-file-preview");
         //currentFilePreview.src = currentFile;

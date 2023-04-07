@@ -9,7 +9,7 @@
 }
 
 :root {
-    --angle: 1.5deg;
+    --angle: 3.5deg;
 }
 
 html,
@@ -17,6 +17,88 @@ body {
     height: 100%;
     -webkit-app-region: drag;
     background: radial-gradient(290px 290px at center, rgb(214, 190, 242) 0%, rgba(241,246,249,1) 100%);
+}
+
+
+main {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 680px;
+    max-height: 680px;
+    width: 85vw;
+    height: 85vw;
+    #add-folder {
+        position: absolute;
+        width: 44px;
+        height: 44px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 300;
+        line-height: 21px;
+        right: 110px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    #files {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        #current-file {
+            max-width: 33vw;
+            max-height: 50vw;
+            overflow: hidden;
+            background: white url('loading.gif') no-repeat center center;
+            background-size: 20px 20px;
+            > img {
+                position: absolute;
+                height: 100%;
+                width: 100%;
+                object-fit: cover;
+                border-top-left-radius: 0.25rem;
+                border-top-right-radius: 0.25rem;
+                overflow: hidden;
+                pointer-events: none;
+            }
+        }
+        li {
+            span {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+    #locations {
+        --radius: 320px;
+        --tracksize: 75px;
+        > div {
+            width: 120px;
+            height: 120px;
+            -webkit-user-select: none;
+            --offset-per-child: calc(var(--layout-angle) / (var(--nth-siblings) + 1));
+            --angle-offset: calc(1 * var(--offset-per-child));
+            border-radius: 50%;
+            position: absolute;
+            left: calc(50% - (var(--tracksize) / 2));
+            top: calc(50% - (var(--tracksize) / 2));
+            translate: calc(cos((var(--angle) + var(--angle-offset))) * var(--radius))
+                        calc(sin((var(--angle) + var(--angle-offset))) * var(--radius) * -1);
+            transition: all 0.2s ease, transform 0.2s ease 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            > div {
+                > svg {
+                    max-width: 34px;
+                    display: block;
+                    margin: 0 auto;
+                }
+            }
+        }
+    } 
 }
 
 .center-horizontally {
@@ -36,10 +118,6 @@ body {
 }
 
 
-#locations div {
-    -webkit-user-select: none;
-}
-
 .translate-center {
     position: absolute;
     top: 50%;
@@ -52,17 +130,6 @@ body {
     border-color: #b4b9d4bf;
 }
 
-#folder-select-wrapper {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 680px;
-    max-height: 680px;
-    width: 85vw;
-    height: 85vw;
-    z-index: 100;
-}
 
 #intro-screen p {
     min-width: 210px;
@@ -80,18 +147,6 @@ body {
     }
 }
 
-.translate-center-folders {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 680px;
-    max-height: 680px;
-    width: 85vw;
-    height: 85vw;
-    --radius: 320px;
-    --tracksize: 75px;
-}
 
 .congrats {
     text-align: center;
@@ -102,42 +157,6 @@ body {
     
 }
 
-.translate-center-folders > div {
-	--offset-per-child: calc(var(--layout-angle) / (var(--nth-siblings) + 1));
-	--angle-offset: calc(1 * var(--offset-per-child));
-	border-radius: 50%;
-	position: absolute;
-	left: calc(45% - (var(--tracksize) / 2));
-	top: calc(45% - (var(--tracksize) / 2));
-	translate: calc(cos((var(--angle) + var(--angle-offset))) * var(--radius))
-		         calc(sin((var(--angle) + var(--angle-offset))) * var(--radius) * -1);
-    transition: all 0.2s ease, transform 0.2s ease 0.2s;
-}
-
-
-
-#current-file {
-    max-width: 33vw;
-    max-height: 50vw;
-    > img {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-        border-top-left-radius: 0.25rem;
-        border-top-right-radius: 0.25rem;
-        overflow: hidden;
-    }
-    &::after {
-        content: attr(data-content);
-        position: absolute;
-        bottom: -30px;
-        left: 50%;
-        font-size: 0.65rem;
-        opacity: 0.8;
-        transform: translateX(-50%);
-    }
-}
 
 
 
@@ -145,11 +164,6 @@ body {
     border-width: 3px;
 }
 
-#files li span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 #skip {
     background: -webkit-radial-gradient(top, 50% 100%, #a9cff4, #F1F6F9);
@@ -165,6 +179,7 @@ body {
 
 #folder-select {
     min-width: 145px;
+    z-index: 100;
 }
 
 

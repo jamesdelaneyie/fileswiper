@@ -15,29 +15,26 @@ app.setName('FileSwiper');
 let fileMoves = []
 let rootFolder = null;
 
-function startWatcher(win, path){
+function startWatcher(win, location){
   
-  var watcher = chokidar.watch(path, {
+  var watcher = chokidar.watch(location, {
       ignored: /[\/\\]\./,
       depth: 0,
-      ignoreInitial: false,
+      ignoreInitial: true,
       persistent: true
   });
         
   // Declare the listeners of the watcher
-  watcher
-  .on('add', function(path) {
+  watcher.on('add', function(path) {
         //console.log('File', path, 'has been added');
-        let files = getFileListFromDirectory(rootFolder)   
-        win.webContents.send('selectRootFolder', {location: rootFolder, files: files});
+        let files = getFileListFromDirectory(location)   
+        win.webContents.send('selectRootFolder', {location: location, files: files});
         //console.log(files)
-  })
-  .on('unlink', function(path) {
-       //console.log('File', path, 'has been removed');
-        let files = getFileListFromDirectory(rootFolder)   
-        win.webContents.send('selectRootFolder', {location: rootFolder, files: files});
-  })
-  .on('error', function(error) {
+  }).on('unlink', function(path) {
+        //console.log('File', path, 'has been removed');
+        let files = getFileListFromDirectory(location)   
+        win.webContents.send('selectRootFolder', {location: location, files: files});
+  }).on('error', function(error) {
        console.log('Error happened', error);
   })
 }
@@ -60,9 +57,18 @@ function moveFile(oldPath, newPath) {
 
 function getFileListFromDirectory(dir) {
   let fileList = []
-  fs.readdirSync(dir, {withFileTypes: true}).filter(item => !item.isDirectory()).map(item => item.name).forEach(item => fileList.push(item))
-  fileList = fileList.filter(item => !filesToIgnore.includes(item));
-  return fileList
+  fs.readdirSync(dir, {withFileTypes: true})
+    .filter(item => !item.isDirectory())
+    .map(item => {
+      const name = item.name;
+      const stats = fs.statSync(dir + '/' + name);
+      const size = stats.size;
+      const lastModified = stats.mtime;
+      return { name, size, lastModified };
+    })
+    .forEach(item => fileList.push(item))
+  fileList = fileList.filter(item => !filesToIgnore.includes(item.name));
+  return fileList;
 }
 
 function createWindow () {
@@ -76,11 +82,8 @@ function createWindow () {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
-      webSecurity: false,
       webviewTag: true,
-     // enableRemoteModule: true,
       contextIsolation: true,
-      worldSafeExecuteJavaScript: true,
     }
   })
    
@@ -181,32 +184,6 @@ function createWindow () {
 
   })
 
-  /*ipcMain.handle('sendRootFolder', (event, saveRootFolder) => {
-    let location = saveRootFolder;
-    console.log(location)
-    win.webContents.send('selectRootFolder', {location: location, files: files});
-    
-    if(files[0].includes('.doc') || files[0].includes('.pdf')) {
-      //win.webContents.send('sendDocImage', files[0]);
-    } else {
-      /*
-      const w = new BrowserWindow({ show: false })
-
-      let URLtoLoad = 'file:///' + result.filePaths[0] + '/' + files[0]
-      URLtoLoad = encodeURI(URLtoLoad)
-      //console.log(URLtoLoad)
-      w.loadURL(URLtoLoad)
-      //console.log('loading')
-      w.webContents.on('did-finish-load', async() => {
-          //console.log('did-finish-load')
-          let image = await w.webContents.capturePage()
-          //console.log(image.toDataURL())
-          win.webContents.send('sendPreviewImage', image.toDataURL());
-      })
-    }
-
-
-  })*/
 
 
   
@@ -222,11 +199,38 @@ function createWindow () {
 
 
     const sendFilesToWindow = (win, location) => {
+
       let files = getFileListFromDirectory(location);
       startWatcher(win, location);
-      console.log("sending files to window")
+      //console.log("sending files to window")
+      console.log(files)
       win.webContents.send('selectRootFolder', {location: location, files: files});
-      //rootFolder = location;
+      //if the first file is a jpg, png, or gif then show preview
+      if(files[0].name.includes('.jpg') || files[0].name.includes('.png') || files[0].name.includes('.gif') || files[0].name.includes('.jpeg') || files[0].name.includes('.webp') || files[0].name.includes('.svg')) {
+        win.webContents.send('sendPreviewImage', location + '/' + files[0].name);
+      }
+      if(files[0].name.includes('.pdf')) {
+          
+            const w = new BrowserWindow({
+              width: 480,
+              show: false,
+            })
+            let URLtoLoad = 'file://' + location + '/' + files[0].name
+            URLtoLoad = encodeURI(URLtoLoad)
+            //console.log(URLtoLoad)
+            w.loadURL(URLtoLoad)
+            let rect = {x: 5, y: 93, width: 475, height: 520};
+            setTimeout(() => {
+              w.webContents.capturePage(rect).then((image) => {
+                //console.log(image.toDataURL())
+                win.webContents.send('sendPreviewImage', image.toDataURL());
+              })
+              
+            }, 1000);
+            
+        //win.webContents.send('sendDocImage', location + '/' + files[0]);
+      }
+      rootFolder = location;
   }
 
 
@@ -252,19 +256,7 @@ function createWindow () {
             win.webContents.send('sendDocImage', files[0]);
           } else {
 
-            const w = new BrowserWindow({ show: false })
-
-            let URLtoLoad = 'file:///' + result.filePaths[0] + '/' + files[0]
-            URLtoLoad = encodeURI(URLtoLoad)
-            //console.log(URLtoLoad)
-            w.loadURL(URLtoLoad)
-            //console.log('loading')
-            w.webContents.on('did-finish-load', async() => {
-                //console.log('did-finish-load')
-                let image = await w.webContents.capturePage()
-                //console.log(image.toDataURL())
-                win.webContents.send('sendPreviewImage', image.toDataURL());
-            })
+            
           }*/
         }
 
@@ -279,7 +271,6 @@ function createWindow () {
 app.whenReady().then(() => {
 
   protocol.registerFileProtocol('atom', (request, callback) => {
-    //console.log(request.url)
     const url = request.url.substr(7)
     callback(url)
   })
@@ -292,7 +283,10 @@ app.whenReady().then(() => {
     }
   })
 
+}).catch((err) => {
+  console.log(err)
 })
+
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

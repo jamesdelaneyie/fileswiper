@@ -1,21 +1,55 @@
 import { addFolderToDom } from "./addFolderToDom.js";
 import { createCurrentFile } from "./createCurrentFile.js";
 import { updateFileList } from "./updateFileList.js";
-import { handleDragStart } from "./dragAndDrop.js";
-import { handleDragEnd } from "./dragAndDrop.js";
+
 
 const func = async () => {
 
     let files = [];
 
+     // Quit button
+     let quitButton = document.getElementById("quit");
+     quitButton.addEventListener("click", () => {
+         window.fileswiper.quit();
+     })
+
     // Load the last folders used by the user    
-    let listOfFolders = JSON.parse(localStorage.getItem("locations"));
-    if(listOfFolders !== null) {
+    const listOfFolders = JSON.parse(localStorage.getItem("locations"));
+    //if list of folders is not null, add the folders to the DOM
+    if(Array.isArray(listOfFolders)) {
         for(let i = 0; i < listOfFolders.length; i++) {
             // Add the folders used by the user to the DOM
             addFolderToDom(listOfFolders[i]);
         }
+    } else {
+        console.log('No folders found in local storage')
     }
+
+    // Handle the root folder selection
+    window.fileswiper.selectRootFolder((event, locationAndFiles) => {
+            
+        localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
+        
+        let locationText = locationAndFiles.location.split("/");
+            locationText = locationText[locationText.length - 1];
+
+        let currentFolderName = document.getElementById("current-folder-name");
+            currentFolderName.textContent = locationText;
+
+        let filesList = locationAndFiles.files;
+
+        console.log('update file list')
+        files = updateFileList(filesList);
+
+    });
+
+    // Add folder button
+    let addFolder = document.getElementById("add-folder");
+    addFolder.addEventListener("click", () => {
+        window.fileswiper.openDialog();
+    })
+
+
 
     //
     // Event handlers
@@ -34,20 +68,12 @@ const func = async () => {
         window.fileswiper.undo();
     })*/
 
-    // Quit button
-    let quitButton = document.getElementById("quit");
-    quitButton.addEventListener("click", () => {
-        window.fileswiper.quit();
-    })
+   
 
-    // Add folder button
-    /*let addFolder = document.getElementById("add-folder");
-    addFolder.addEventListener("click", () => {
-        window.fileswiper.openDialog();
-    })
+    
 
     // Skip Button / Skip Area
-    let skipArea = document.getElementById("skip");
+    /*let skipArea = document.getElementById("skip");
     skipArea.addEventListener("dragover", (e) => {
         e.preventDefault();
     })*/
@@ -64,66 +90,53 @@ const func = async () => {
     })
     
 
-    // Handle the root folder selection
-    window.fileswiper.selectRootFolder((event, locationAndFiles) => {
-
-        //console.log(locationAndFiles)
-
-        if(typeof locationAndFiles.location === "undefined") {
-            return;
-        }
-
-        //remove the intro screen
-        let introScreen = document.getElementById("intro-screen");
-        introScreen.style.display = "none";
-
-        let filesList = locationAndFiles.files;
-
-        //console.log(filesList)
-        files = updateFileList(filesList);
-
-        if(filesList.length > 0) {
-            //createCurrentFile()
-
-            let locationText = locationAndFiles.location.split("/");
-            locationText = locationText[locationText.length - 1];
-
-            let rootFolder = document.getElementById("current-file");
-            //rootFolder.setAttribute('data-content', locationText);
-        }
-
-        
-
-        localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
-
-        //console.log(files)
-
-
-    });
+    
 
 
     window.fileswiper.sendPreviewImage((event, image) => {
+        let webview = document.getElementById("current-file").querySelector("webview");
+        if(webview !== null) {
+            webview.remove();
+        }
+        let imageElement = document.getElementById("current-file").querySelector("img");
+        if(imageElement === null) {
+            imageElement = document.createElement("img");
+            imageElement.setAttribute("id", "current-file-preview");
+            let preview = document.getElementById("current-file");
+            preview.appendChild(imageElement);
+        }
         let currentFilePreview = document.getElementById("current-file-preview");
         currentFilePreview.src = image;
     })
 
     window.fileswiper.sendDocImage((event, image) => {
-        //console.log(image)
-        //create new webview element and set the src to the image
-        /*let webview = document.createElement("webview");
-        //get the root folder location
-        let rootFolderSave = JSON.parse(localStorage.getItem("root-folder"));
-        let fullPath = 'file://' + rootFolderSave + '/' + image;
+        //if there is already a webview, remove it
+        let webview = document.getElementById("current-file").querySelector("webview");
+        if(webview !== null) {
+            webview.remove();
+        }
+        let imageElement = document.getElementById("current-file").querySelector("img");
+        if(imageElement !== null) {
+            imageElement.remove();
+        }
+        webview = document.createElement("webview");
+        let fullPath = 'file://' + image;
         webview.setAttribute("src", fullPath);
-        webview.setAttribute("style", "width: 100%; height: 100%;");
         webview.setAttribute("nodeintegration", "true");
         webview.setAttribute("plugins", "true");
         webview.setAttribute("allowpopups", "true");
         webview.setAttribute("webpreferences", "allowRunningInsecureContent");
         webview.setAttribute("webpreferences", "allowDisplayingInsecureContent");
-        //add the webview to the dom
-        let preview = document.getElementById("files");
-        preview.appendChild(webview);*/
+        //inject css into the webview
+        webview.addEventListener("dom-ready", () => {
+            webview.insertCSS(`
+                #toolbar {
+                    display: none;
+                }
+            `);
+        })
+        let preview = document.getElementById("current-file");
+        preview.appendChild(webview);
     })
 
     
