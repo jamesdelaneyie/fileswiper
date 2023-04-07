@@ -3,7 +3,11 @@ import { updateFileList } from "./updateFileList.js";
 import { createTrash } from "./createTrash.js";
 import { updateSavedFolders } from "./updateSavedFolders.js";
 
+import interact from "interactjs";
+
 const func = async () => {
+
+    let files = [];
 
      // Quit button
      let quitButton = document.getElementById("quit");
@@ -22,6 +26,21 @@ const func = async () => {
     } else {
         console.log('No folders found in local storage')
     }
+
+    window.interact = interact;
+
+    // Interact.js set as dropzone
+    interact('.location').dropzone({
+        ondrop: function (event) {
+            console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id)
+            //alert(event.relatedTarget.id + ' was dropped into ' + event.target.id)
+          },
+    }).on('dropactivate', function (event) {
+        event.target.classList.add('drop-active')
+        console.log('drop activate')
+    })
+    
+
 
     let trash = createTrash();
     let main = document.querySelector("main");

@@ -1,3 +1,5 @@
+import interact from "interactjs";
+
 export const addFolderToDom = (location) => {
     let locationParent = document.getElementById("locations");
     let div = document.createElement("div");
@@ -20,10 +22,10 @@ export const addFolderToDom = (location) => {
       "justify-center",
       "hover:cursor-pointer"
     );
-    div.setAttribute("draggable", true);
+    //div.setAttribute("draggable", true);
     //
     let innerDiv = document.createElement("div");
-    innerDiv.setAttribute("class", "text-center pointer-events-none");
+    innerDiv.setAttribute("class", "text-center");
     let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 50 50");
     svg.setAttribute("class", "fill-slate-400 w-9 inline");
@@ -43,7 +45,7 @@ export const addFolderToDom = (location) => {
     // Add Event Listeners
     // Left click
     div.addEventListener("click", (e) => {
-      window.versions.openDialog();
+      //window.versions.openDialog();
     });
     // Right click
     div.addEventListener("contextmenu", (e) => {

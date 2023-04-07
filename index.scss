@@ -15,7 +15,7 @@
 html,
 body {
     height: 100%;
-    -webkit-app-region: drag;
+    //-webkit-app-region: drag;
     background: radial-gradient(290px 290px at center, rgb(214, 190, 242) 0%, rgba(241,246,249,1) 100%);
 }
 
@@ -67,6 +67,7 @@ main {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        z-index: 100;
         #current-file {
             max-width: 33vw;
             max-height: 50vw;
@@ -95,10 +96,11 @@ main {
     #locations {
         --radius: 320px;
         --tracksize: 75px;
+        z-index: 100;
         > div {
             width: 120px;
             height: 120px;
-            -webkit-user-select: none;
+            //-webkit-user-select: none;
             --offset-per-child: calc(var(--layout-angle) / (var(--nth-siblings) + 1));
             --angle-offset: calc(1 * var(--offset-per-child));
             border-radius: 50%;
@@ -123,6 +125,10 @@ main {
             }
         }
     } 
+}
+
+.drop-active {
+    border: 3px solid red;
 }
 
 .center-horizontally {
@@ -188,8 +194,8 @@ main {
 }
 
 .ui-button {
-    -webkit-app-region: no-drag;
-    -webkit-user-select: none;
+    //-webkit-app-region: no-drag;
+    //-webkit-user-select: none;
 }
 
 #folder-select {
