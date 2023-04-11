@@ -1,8 +1,8 @@
-![Fileswiper](https://github.com/jamesdelaneyie/fileswiper/blob/master/progress_gifs/fileswiper-progress-2.png)
+![Fileswiper](https://github.com/jamesdelaneyie/fileswiper/blob/master/progress_gifs/fileswiper-progress-3.png)
 
 # ✨File*swiper*
 
-A tiny Mac OSX app to be used with an iPad in sidecar mode that lets you sort out the contents of a folder by swiping files into buckets. Built with Electron. 
+A tiny Mac OSX app that lets you sort out the contents of a folder by swiping files into buckets. Built with Electron. 
 
 To Do:
 - ~~Drag main file list into bucket to move file~~
