@@ -68,12 +68,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "createCurrentFile": () => (/* binding */ createCurrentFile)
 /* harmony export */ });
-/* harmony import */ var _dragAndDrop_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./dragAndDrop.js */ "./dragAndDrop.js");
-/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! interactjs */ "./node_modules/interactjs/dist/interact.min.js");
-/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(interactjs__WEBPACK_IMPORTED_MODULE_1__);
-
-
-//import the interactjs library
+/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! interactjs */ "./node_modules/interactjs/dist/interact.min.js");
+/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(interactjs__WEBPACK_IMPORTED_MODULE_0__);
 
 var createCurrentFile = function createCurrentFile() {
   var currentFile = document.createElement("li");
@@ -88,14 +84,6 @@ var createCurrentFile = function createCurrentFile() {
   currentFile.appendChild(currentFileTextTitle);
   var files = document.getElementById("files");
   files.appendChild(currentFile);
-
-  // Drag events for files
-  var items = document.querySelectorAll("#files li");
-  items.forEach(function (item) {
-    //console.log(item)
-    //item.addEventListener("dragstart", handleDragStart);
-    //item.addEventListener("dragend", handleDragEnd);
-  });
 
   //set the position of the current file
   var position = {
@@ -120,23 +108,50 @@ var createCurrentFile = function createCurrentFile() {
     event.target.style.transform = "translate(".concat(position.x, "px, ").concat(position.y, "px)");
 
     //make the element get smaller the further it is dragged
-    var scale = 1 - (Math.abs(position.x) + Math.abs(position.y)) / 1200;
+    var scale = 1 - (Math.abs(position.x) + Math.abs(position.y)) / 750;
     event.target.style.transform = "translate(".concat(position.x, "px, ").concat(position.y, "px) scale(").concat(scale, ")");
   }
-  interactjs__WEBPACK_IMPORTED_MODULE_1___default()('#current-file').draggable({
+  interactjs__WEBPACK_IMPORTED_MODULE_0___default()('#current-file').draggable({
     inertia: true,
     cursorChecker: function cursorChecker() {
       return 'grab';
     },
-    modifiers: [interactjs__WEBPACK_IMPORTED_MODULE_1___default().modifiers.restrictRect({
-      restriction: '.main-area',
+    modifiers: [interactjs__WEBPACK_IMPORTED_MODULE_0___default().modifiers.restrictRect({
+      restriction: 'parent',
       endOnly: true
     })],
     listeners: {
-      start: function start(event) {
-        //console.log(event.type, event.target)
-      },
       move: dragMoveListener
+    }
+  }).on('up', function (event) {
+    if (window.isOverDrop) {
+      interactjs__WEBPACK_IMPORTED_MODULE_0___default()('#current-file').unset();
+      document.getElementById('current-file').classList.add('dropping-file');
+      var dropTarget = document.querySelector('.drop-target');
+      var dropTargetX = dropTarget.getBoundingClientRect().x;
+      var dropTargetY = dropTarget.getBoundingClientRect().y;
+      var dropTargetWidth = dropTarget.getBoundingClientRect().width;
+      var dropTargetHeight = dropTarget.getBoundingClientRect().height;
+      var dropTargetCenterX = dropTargetX + dropTargetWidth / 2;
+      var dropTargetCenterY = dropTargetY + dropTargetHeight / 2;
+      var currentFileScale = document.getElementById('current-file').style.transform;
+      var currentFileScaleValue = parseFloat(currentFileScale.split('scale(')[1].split(')')[0]);
+      var screenWidth = window.innerWidth;
+      var screenHeight = window.innerHeight;
+      dropTargetCenterX = dropTargetCenterX - screenWidth / 2;
+      dropTargetCenterY = dropTargetCenterY - screenHeight / 2;
+      document.getElementById('current-file').style.transform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) scale(' + currentFileScaleValue + ')';
+      var filename = document.getElementById('current-file-name').innerText;
+      var location = dropTarget.getAttribute("data-folder-location");
+      window.fileswiper.fileDropped({
+        filename: filename,
+        location: location
+      });
+      setTimeout(function () {
+        //move the current file down by 60px and fade it out
+        document.getElementById('current-file').style.transform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) scale(' + currentFileScaleValue + ') translateY(100px)';
+        document.getElementById('current-file').style.opacity = '0';
+      }, 1000);
     }
   });
 };
@@ -161,62 +176,6 @@ var createTrash = function createTrash() {
   trash.classList.add('ui-button', 'trash', 'text-sm', 'absolute', 'bg-white', 'border-3', 'border-slate-300', 'p-10', 'h-40', 'w-40', 'rounded-full', 'border', 'flex', 'items-center', 'justify-center', 'z-50');
   trash.innerHTML = "\n        <div>\n            <svg xmlns=\"http://www.w3.org/2000/svg\"  viewBox=\"0 0 50 50\"><path d=\"M 19.875 2 C 19.691406 2.023438 19.519531 2.101563 19.375 2.21875 L 12.34375 8 L 8 8 C 7.96875 8 7.9375 8 7.90625 8 C 7.875 8 7.84375 8 7.8125 8 C 7.335938 8.089844 6.992188 8.511719 7 9 L 7 13 C 7 13.550781 7.449219 14 8 14 L 8.1875 14 L 11.125 29.75 C 11.105469 29.957031 11.148438 30.164063 11.25 30.34375 L 12.59375 37.53125 C 12.585938 37.691406 12.617188 37.855469 12.6875 38 L 13.40625 41.875 C 13.40625 41.886719 13.40625 41.894531 13.40625 41.90625 C 13.898438 44.234375 15.921875 46 18.3125 46 L 31.6875 46 C 34.070313 46 36.203125 44.261719 36.59375 41.875 C 36.59375 41.863281 36.59375 41.855469 36.59375 41.84375 L 37.3125 38 C 37.3125 37.988281 37.3125 37.980469 37.3125 37.96875 L 37.34375 37.90625 C 37.390625 37.777344 37.414063 37.636719 37.40625 37.5 L 38.75 30.375 C 38.867188 30.175781 38.910156 29.945313 38.875 29.71875 L 41.8125 14 L 42 14 C 42.550781 14 43 13.550781 43 13 L 43 9 C 43 8.449219 42.550781 8 42 8 L 39 8 L 32.46875 3.34375 C 32.289063 3.207031 32.066406 3.152344 31.84375 3.1875 C 31.789063 3.203125 31.738281 3.222656 31.6875 3.25 L 25.28125 6 L 20.625 2.21875 C 20.414063 2.046875 20.144531 1.96875 19.875 2 Z M 20 4.28125 L 24.59375 8 L 15.5 8 Z M 31.90625 4.9375 L 36.21875 8 L 27.75 8 L 26.71875 7.15625 Z M 9 10 L 41 10 L 41 12 L 32.21875 12 C 32.117188 11.972656 32.011719 11.960938 31.90625 11.96875 C 31.875 11.976563 31.84375 11.988281 31.8125 12 L 21.09375 12 C 21.019531 11.992188 20.949219 11.992188 20.875 12 L 9 12 Z M 12.4375 14 L 15.5625 14 L 14 15.5625 Z M 18.4375 14 L 20.5625 14 L 23.5625 17 L 19.5 21.0625 L 15.4375 17 Z M 23.4375 14 L 26.5625 14 L 25 15.5625 Z M 29.4375 14 L 31.5625 14 L 34.5625 17 L 30.5 21.0625 L 26.4375 17 Z M 34.4375 14 L 37.5625 14 L 36 15.5625 Z M 10.34375 14.78125 L 12.5625 17 L 11.0625 18.53125 Z M 39.65625 14.78125 L 38.96875 18.5625 L 37.4375 17 Z M 14 18.40625 L 18.09375 22.5 L 14 26.59375 L 12.40625 25 C 12.359375 24.953125 12.304688 24.910156 12.25 24.875 L 11.5 20.90625 Z M 25 18.4375 L 29.09375 22.5 L 25 26.59375 L 20.9375 22.5 Z M 36 18.4375 L 38.5 20.90625 L 37.78125 24.84375 C 37.710938 24.886719 37.648438 24.941406 37.59375 25 L 36 26.59375 L 31.90625 22.5 Z M 19.5 23.90625 L 23.59375 28 L 19.5 32.09375 L 15.40625 28 Z M 30.5 23.90625 L 34.59375 28 L 30.5 32.09375 L 26.40625 28 Z M 14 29.40625 L 18.09375 33.5 L 14.53125 37.0625 L 13.25 30.15625 Z M 25 29.40625 L 29.09375 33.5 L 25 37.59375 L 20.90625 33.5 Z M 36 29.40625 L 36.75 30.15625 L 35.46875 37.0625 L 31.90625 33.5 Z M 19.5 34.90625 L 23.59375 39 L 20 42.59375 L 15.90625 38.5 Z M 30.5 34.90625 L 34.09375 38.5 L 30 42.59375 L 26.40625 39 Z M 25 40.40625 L 28.59375 44 L 21.40625 44 Z M 15.21875 40.625 L 18.59375 44 L 18.3125 44 C 16.902344 44 15.683594 42.972656 15.375 41.5 Z M 34.78125 40.625 L 34.625 41.5 C 34.625 41.511719 34.625 41.519531 34.625 41.53125 C 34.402344 42.929688 33.097656 44 31.6875 44 L 31.40625 44 Z\"/></svg>\n            <span class=\"text-slate-500 text-sm\">Trash</span>\n        </div>\n    ";
   return trash;
-};
-
-/***/ }),
-
-/***/ "./dragAndDrop.js":
-/*!************************!*\
-  !*** ./dragAndDrop.js ***!
-  \************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "handleDragEnd": () => (/* binding */ handleDragEnd),
-/* harmony export */   "handleDragStart": () => (/* binding */ handleDragStart)
-/* harmony export */ });
-var handleDragStart = function handleDragStart(e) {
-  e.target.style.opacity = "0.1";
-  e.target.style.boxShadow = "none";
-  e.target.style.dropShadow = "none";
-  e.target.style.cursor = "move";
-  e.target.style.filter = "drop-shadow(0 0 0 #000000)";
-  console.log('drag start');
-  e.dataTransfer.effectAllowed = "move";
-  e.dataTransfer.setData("text/html", e.target);
-  e.dataTransfer.setDragImage(e.target, 0, 0);
-  //set drag opacity
-};
-
-var handleDragEnd = function handleDragEnd(e, files, rootFolderSave) {
-  console.log('drag end');
-  e.target.style.opacity = "1";
-  e.target.style.boxShadow = "none";
-  e.target.style.dropShadow = "none";
-  e.target.style.cursor = "move";
-  e.target.style.filter = "drop-shadow(0 0 0 #000000)";
-  var filename = e.target.innerText;
-  var dropTarget = document.elementFromPoint(e.clientX, e.clientY);
-  var location = dropTarget.getAttribute("data-folder-location");
-  console.log(filename, dropTarget, location);
-
-  /*if(location === rootFolderSave) {
-      console.log('same location')
-      return
-  }
-   if(location === "skip") {
-      files.shift();
-       files = updateFileList(files);
-      
-  }
-  if(location) {
-      
-      window.fileswiper.fileDropped({filename: filename, location: location});
-       files.shift();
-       files = updateFileList(files);
-   }*/
 };
 
 /***/ }),
@@ -454,22 +413,28 @@ var func = /*#__PURE__*/function () {
           } else {
             console.log('No folders found in local storage');
           }
-          window.interact = (interactjs__WEBPACK_IMPORTED_MODULE_4___default());
+          window.isOverDrop = false;
 
           // Interact.js set as dropzone
           interactjs__WEBPACK_IMPORTED_MODULE_4___default()('.location').dropzone({
             overlap: 0.01,
             ondrop: function ondrop(event) {
               console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id);
-              //alert(event.relatedTarget.id + ' was dropped into ' + event.target.id)
             },
-
             ondragenter: function ondragenter(event) {
               console.log('drag enter');
+              window.isOverDrop = true;
+              event.target.classList.add('drop-target');
+            },
+            ondragleave: function ondragleave(event) {
+              console.log('drag leave');
+              window.isOverDrop = false;
+              event.target.classList.remove('drop-target');
             }
           }).on('dropactivate', function (event) {
             event.target.classList.add('drop-active');
-            console.log('drop activate');
+          }).on('dropdeactivate', function (event) {
+            event.target.classList.remove('drop-active');
           });
           trash = (0,_createTrash_js__WEBPACK_IMPORTED_MODULE_2__.createTrash)();
           main = document.querySelector("main");

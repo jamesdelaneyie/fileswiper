@@ -792,7 +792,7 @@ video {
 html,
 body {
   height: 100%;
-  //-webkit-app-region: drag;
+  -webkit-app-region: drag;
   background: radial-gradient(290px 290px at center, rgb(214, 190, 242) 0%, rgba(241,246,249,1) 100%);
 }
 
@@ -850,6 +850,7 @@ main {
       overflow: hidden;
       background: white url('loading.gif') no-repeat center center;
       background-size: 20px 20px;
+      transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease;
       > img {
         position: absolute;
         height: 100%;
@@ -860,6 +861,17 @@ main {
         border-top-right-radius: 0.25rem;
         overflow: hidden;
         pointer-events: none;
+      }
+      &.dropping-file {
+        border: 3px solid blue;
+        height: 65px;
+        width: 65px;
+        border-radius: 100%;
+        pointer-events: none;
+        transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease, transform 0.5s ease;
+        > span {
+          display: none;
+        }
       }
     }
     li {
@@ -906,6 +918,10 @@ main {
 
 .drop-active {
   border: 3px solid red;
+}
+
+.drop-target {
+  border: 3px solid greenyellow !important;
 }
 
 .center-horizontally {
@@ -961,8 +977,8 @@ main {
 }
 
 .ui-button {
-  //-webkit-app-region: no-drag;
-  //-webkit-user-select: none;
+  -webkit-app-region: no-drag;
+  -webkit-user-select: none;
 }
 
 #folder-select {

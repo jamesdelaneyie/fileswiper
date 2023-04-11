@@ -1,6 +1,3 @@
-import { handleDragStart } from "./dragAndDrop.js";
-import { handleDragEnd } from "./dragAndDrop.js";
-//import the interactjs library
 import interact from "interactjs";
 
 export const createCurrentFile = () => {
@@ -20,15 +17,6 @@ export const createCurrentFile = () => {
         let files = document.getElementById("files");
         files.appendChild(currentFile);
 
-        // Drag events for files
-        let items = document.querySelectorAll("#files li");
-        items.forEach(function (item) {
-                //console.log(item)
-                //item.addEventListener("dragstart", handleDragStart);
-                //item.addEventListener("dragend", handleDragEnd);
-                }
-        );
-
         //set the position of the current file
         let position = { x: 0, y: 0 }
 
@@ -46,37 +34,65 @@ export const createCurrentFile = () => {
                 target.setAttribute('data-y', y)
 
                 position.x += event.dx
-                    position.y += event.dy
+                position.y += event.dy
 
+                event.target.style.cursor = 'grabbing'
+          
+                event.target.style.transform = `translate(${position.x}px, ${position.y}px)`
 
-                    event.target.style.cursor = 'grabbing'
-              
-                    event.target.style.transform =
-                      `translate(${position.x}px, ${position.y}px)`
-
-                    //make the element get smaller the further it is dragged
-                        let scale = 1 - (Math.abs(position.x) + Math.abs(position.y)) / 1200
-                        event.target.style.transform = `translate(${position.x}px, ${position.y}px) scale(${scale})`
+                //make the element get smaller the further it is dragged
+                let scale = 1 - (Math.abs(position.x) + Math.abs(position.y)) / 750
+                event.target.style.transform = `translate(${position.x}px, ${position.y}px) scale(${scale})`
               }
+              
               
 
         interact('#current-file').draggable({
                 inertia: true,
                 cursorChecker () {
-                     return 'grab'
+                  return 'grab'
                 },
                 modifiers: [
-                        interact.modifiers.restrictRect({
-                          restriction: '.main-area',
-                          endOnly: true
-                        })
-                      ],
+                  interact.modifiers.restrictRect({
+                    restriction: 'parent',
+                    endOnly: true
+                  })
+                ],
                 listeners: {
-                  start (event) {
-                    //console.log(event.type, event.target)
-                  },
                   move: dragMoveListener
                 }
+              }).on('up', function (event) {
+                if(window.isOverDrop) {
+                  interact('#current-file').unset();
+                  document.getElementById('current-file').classList.add('dropping-file')
+                  let dropTarget = document.querySelector('.drop-target')
+                  let dropTargetX = dropTarget.getBoundingClientRect().x
+                  let dropTargetY = dropTarget.getBoundingClientRect().y
+                  let dropTargetWidth = dropTarget.getBoundingClientRect().width
+                  let dropTargetHeight = dropTarget.getBoundingClientRect().height
+                  let dropTargetCenterX = dropTargetX + (dropTargetWidth / 2)
+                  let dropTargetCenterY = dropTargetY + (dropTargetHeight / 2)
+                  let currentFileScale = document.getElementById('current-file').style.transform
+                  let currentFileScaleValue = parseFloat(currentFileScale.split('scale(')[1].split(')')[0])
+                  let screenWidth = window.innerWidth
+                  let screenHeight = window.innerHeight
+                  dropTargetCenterX = dropTargetCenterX - (screenWidth / 2)
+                  dropTargetCenterY = dropTargetCenterY - (screenHeight / 2)
+                  document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) scale('+currentFileScaleValue+')'
+
+                  let filename = document.getElementById('current-file-name').innerText;
+                  let location = dropTarget.getAttribute("data-folder-location");
+
+                  window.fileswiper.fileDropped({filename: filename, location: location});
+
+                  setTimeout(() => {
+                    //move the current file down by 60px and fade it out
+                    document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) scale('+currentFileScaleValue+') translateY(100px)'
+                    document.getElementById('current-file').style.opacity = '0'
+
+                  }, 1000);
+                }
+
               })
 
 }
