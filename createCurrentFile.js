@@ -17,9 +17,6 @@ export const createCurrentFile = () => {
       }
        
 
-
-
-
         let currentFile = document.createElement("li");
         currentFile.setAttribute("id", "current-file");
         currentFile.setAttribute("draggable", "true");
@@ -101,7 +98,7 @@ export const createCurrentFile = () => {
                   let screenWidth = window.innerWidth
                   let screenHeight = window.innerHeight
                   dropTargetCenterX = dropTargetCenterX - (screenWidth / 2)
-                  dropTargetCenterY = dropTargetCenterY - (screenHeight / 2)
+                  dropTargetCenterY = dropTargetCenterY - (screenHeight / 2) + 60
                   document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) scale('+currentFileScaleValue+')'
 
                   let filename = document.getElementById('current-file-name').innerText;
@@ -124,11 +121,15 @@ export const createCurrentFile = () => {
                       document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) scale('+currentFileScaleValue+') translateY(100px)'
                       document.getElementById('current-file').style.opacity = '0'
 
+                      //remove drop-target class from the drop target
+                      document.querySelector('.drop-target').classList.remove('drop-target')
+
                     }, 1000);
 
                     setTimeout(() => {
                       //remove the current file
                       document.getElementById('current-file').remove()
+
                       let rootFolder = JSON.parse(localStorage.getItem('root-folder'));
                       window.fileswiper.sendRootFolder(rootFolder);
                     }, 1500);

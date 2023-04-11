@@ -150,7 +150,7 @@ var createCurrentFile = function createCurrentFile() {
       var screenWidth = window.innerWidth;
       var screenHeight = window.innerHeight;
       dropTargetCenterX = dropTargetCenterX - screenWidth / 2;
-      dropTargetCenterY = dropTargetCenterY - screenHeight / 2;
+      dropTargetCenterY = dropTargetCenterY - screenHeight / 2 + 60;
       document.getElementById('current-file').style.transform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) scale(' + currentFileScaleValue + ')';
       var filename = document.getElementById('current-file-name').innerText;
       var location = dropTarget.getAttribute("data-folder-location");
@@ -170,6 +170,9 @@ var createCurrentFile = function createCurrentFile() {
           //move the current file down by 60px and fade it out
           document.getElementById('current-file').style.transform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) scale(' + currentFileScaleValue + ') translateY(100px)';
           document.getElementById('current-file').style.opacity = '0';
+
+          //remove drop-target class from the drop target
+          document.querySelector('.drop-target').classList.remove('drop-target');
         }, 1000);
         setTimeout(function () {
           //remove the current file
@@ -445,14 +448,16 @@ var func = /*#__PURE__*/function () {
               event.target.classList.add('drop-target');
             },
             ondragleave: function ondragleave(event) {
-              //console.log('drag leave')
+              console.log('drag leave');
               window.isOverDrop = false;
               event.target.classList.remove('drop-target');
             }
           }).on('dropactivate', function (event) {
             event.target.classList.add('drop-active');
+            event.target.classList.remove('drop-target');
           }).on('dropdeactivate', function (event) {
             event.target.classList.remove('drop-active');
+            event.target.classList.remove('drop-target');
           });
           trash = (0,_createTrash_js__WEBPACK_IMPORTED_MODULE_2__.createTrash)();
           main = document.querySelector("main");
@@ -460,7 +465,6 @@ var func = /*#__PURE__*/function () {
 
           // Handle the root folder selection
           window.fileswiper.selectRootFolder(function (event, locationAndFiles) {
-            console.log('root folder selected');
             localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
             var locationText = locationAndFiles.location.split("/");
             locationText = locationText[locationText.length - 1];
