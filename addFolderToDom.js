@@ -47,6 +47,7 @@ export const addFolderToDom = (location) => {
     div.addEventListener("click", (e) => {
       //window.versions.openDialog();
     });
+    
     // Right click
     div.addEventListener("contextmenu", (e) => {
       e.preventDefault();

@@ -1,10 +1,29 @@
 import interact from "interactjs";
 
 export const createCurrentFile = () => {
+
+
+  let files = document.getElementById("files");
+
+      const numberOfFilesInStack = 3
+      for(let i = 0; i < numberOfFilesInStack; i++) {
+        let file = document.createElement("li");
+        file.classList.add("ui-button", "absolute", "bg-white","border-slate-300","w-60","h-80","z-50","border-2","rounded","cursor-grab", "text-center", "hover:cursor-grabbing");
+        // rotate the file at a random angle between -5 and 5 degrees
+        let randomAngle = Math.floor(Math.random() * 10) - 5;
+        file.style.transform = `rotate(${randomAngle}deg)`;
+        //add file to the stack
+        files.appendChild(file);
+      }
+       
+
+
+
+
         let currentFile = document.createElement("li");
         currentFile.setAttribute("id", "current-file");
         currentFile.setAttribute("draggable", "true");
-        currentFile.classList.add("ui-button","bg-white","border-slate-300","w-60","h-80","z-50","border-2","rounded","relative","cursor-grab", "text-center", "hover:cursor-grabbing");
+        currentFile.classList.add("ui-button","absolute","bg-white","border-slate-300","w-60","h-80","z-50","border-2","rounded","cursor-grab", "text-center", "hover:cursor-grabbing");
         
         let currentFilePreviewImage = document.createElement("img");
         currentFilePreviewImage.setAttribute("id", "current-file-preview");
@@ -14,22 +33,27 @@ export const createCurrentFile = () => {
         currentFileTextTitle.setAttribute("id", "current-file-name");
         currentFile.appendChild(currentFileTextTitle);
 
-        let files = document.getElementById("files");
+        let currentFileTypeText = document.createElement("span");
+        currentFileTypeText.setAttribute("id", "current-file-type");
+        currentFile.appendChild(currentFileTypeText);
+
+        let currentFileSizeText = document.createElement("span");
+        currentFileSizeText.setAttribute("id", "current-file-size");
+        currentFile.appendChild(currentFileSizeText);
+
+        //let files = document.getElementById("files");
         files.appendChild(currentFile);
 
-        //set the position of the current file
+
+
         let position = { x: 0, y: 0 }
 
         function dragMoveListener (event) {
                 var target = event.target
-                // keep the dragged position in the data-x/data-y attributes
+
                 var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
                 var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
               
-                // translate the element
-                //target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
-              
-                // update the posiion attributes
                 target.setAttribute('data-x', x)
                 target.setAttribute('data-y', y)
 
@@ -83,14 +107,35 @@ export const createCurrentFile = () => {
                   let filename = document.getElementById('current-file-name').innerText;
                   let location = dropTarget.getAttribute("data-folder-location");
 
-                  window.fileswiper.fileDropped({filename: filename, location: location});
+                  if(location == "skip") {
+                    console.log('skip file')
+                    setTimeout(() => {
+                      //move the current file down by 60px and fade it out
+                      document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) scale('+currentFileScaleValue+') translateY(-100px)'
+                      document.getElementById('current-file').style.opacity = '0'
 
-                  setTimeout(() => {
-                    //move the current file down by 60px and fade it out
-                    document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) scale('+currentFileScaleValue+') translateY(100px)'
-                    document.getElementById('current-file').style.opacity = '0'
+                    }, 500);
 
-                  }, 1000);
+                  } else {
+                    window.fileswiper.fileDropped({filename: filename, location: location});
+
+                    setTimeout(() => {
+                      //move the current file down by 60px and fade it out
+                      document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) scale('+currentFileScaleValue+') translateY(100px)'
+                      document.getElementById('current-file').style.opacity = '0'
+
+                    }, 1000);
+
+                    setTimeout(() => {
+                      //remove the current file
+                      document.getElementById('current-file').remove()
+                      let rootFolder = JSON.parse(localStorage.getItem('root-folder'));
+                      window.fileswiper.sendRootFolder(rootFolder);
+                    }, 1500);
+
+                  }
+
+                  
                 }
 
               })

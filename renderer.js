@@ -37,12 +37,12 @@ const func = async () => {
             console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id)
           },
         ondragenter: function (event) {
-            console.log('drag enter')
+            //console.log('drag enter')
             window.isOverDrop = true;
             event.target.classList.add('drop-target')
         }, 
         ondragleave: function (event) {
-            console.log('drag leave')
+            //console.log('drag leave')
             window.isOverDrop = false;
             event.target.classList.remove('drop-target')
         }
@@ -51,7 +51,6 @@ const func = async () => {
     }).on('dropdeactivate', function (event) {
         event.target.classList.remove('drop-active')
     })
-    
 
 
     let trash = createTrash();
@@ -61,6 +60,8 @@ const func = async () => {
 
     // Handle the root folder selection
     window.fileswiper.selectRootFolder((event, locationAndFiles) => {
+
+        console.log('root folder selected')
             
         localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
         
@@ -72,7 +73,7 @@ const func = async () => {
 
         let filesList = locationAndFiles.files;
 
-        console.log('update file list')
+        //console.log('update file list')
         files = updateFileList(filesList);
 
     });
@@ -95,11 +96,6 @@ const func = async () => {
         window.fileswiper.undo();
     })*/
 
-    // Skip Button / Skip Area
-    /*let skipArea = document.getElementById("skip");
-    skipArea.addEventListener("dragover", (e) => {
-        e.preventDefault();
-    })*/
 
     // Select root folder
     let folderSelect = document.getElementById("folder-select");
@@ -111,9 +107,6 @@ const func = async () => {
     window.fileswiper.sendConfig((event, config) => {
         localStorage.setItem("config", JSON.stringify(config));
     })
-    
-
-    
 
 
     window.fileswiper.sendPreviewImage((event, image) => {

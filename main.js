@@ -157,10 +157,6 @@ function createWindow () {
     let filename = filenameAndLocation.filename;
     let location = filenameAndLocation.location;
 
-    //console.log(filename)
-    //console.log(location)
-    //console.log(rootFolder)
-
     let oldPath = rootFolder + `/${filename}`;
     let newPath = `${location}/${filename}`;
 
@@ -209,7 +205,7 @@ function createWindow () {
       if(files[0].name.includes('.jpg') || files[0].name.includes('.png') || files[0].name.includes('.gif') || files[0].name.includes('.jpeg') || files[0].name.includes('.webp') || files[0].name.includes('.svg')) {
         win.webContents.send('sendPreviewImage', location + '/' + files[0].name);
       }
-      if(files[0].name.includes('.pdf')) {
+      if(files[0].name.includes('.pdf') || files[0].name.includes('.mp4')) {
           
             const w = new BrowserWindow({
               width: 480,
@@ -239,6 +235,11 @@ function createWindow () {
       win.webContents.on('did-finish-load', () => {
         sendFilesToWindow(win, location);
       })
+    })
+
+    ipcMain.handle('sendRootFolder', (_event, location) => {
+      console.log('sending updated files')
+      sendFilesToWindow(win, location);
     })
 
 
@@ -294,6 +295,3 @@ app.on('window-all-closed', () => {
   }
 })
 
-try {
-    require('electron-reloader')(module)
-  } catch (_) {}

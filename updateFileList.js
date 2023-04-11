@@ -2,7 +2,7 @@ import { createCurrentFile } from "./createCurrentFile.js";
 
 export const updateFileList = (fileList) => {
 
-    console.log(fileList);
+    //console.log(fileList);
 
     if(fileList.length > 0) {
 
@@ -11,35 +11,36 @@ export const updateFileList = (fileList) => {
         
         let currentFile = fileList[0].name
         let currentFileName = document.getElementById("current-file-name");
+        let currentFileType = document.getElementById("current-file-type");
+        let currentFileSize = document.getElementById("current-file-size");
         
         if(currentFileName === null) {
             createCurrentFile();
             currentFileName = document.getElementById("current-file-name");
+            currentFileType = document.getElementById("current-file-type");
+            currentFileSize = document.getElementById("current-file-size");
         }
 
         currentFileName.innerText = currentFile;
         currentFileName.classList.add("absolute", "bottom-0", "text-slate-700", "w-full", "left-0", "text-xxs", "bg-white", "p-3")
-        
-        
-        //let currentFilePreview = document.getElementById("current-file-preview");
-        //currentFilePreview.src = currentFile;
 
-        /*let nextItems = document.getElementsByClassName("next-file");
-        for (let i = 0; i < nextItems.length; i++) {
-            const nextItem = nextItems[i];
-            const nextItemSpan = nextItem.getElementsByTagName("span")[0];
-            nextItemSpan.innerText = fileList[i + 1];
-            //if there is no next file then hide the next item
-            if(fileList[i + 1] === undefined) {
-                //console.log('no next file')
-                nextItem.style.display = "none";
-            }
-        }*/
+        // get the file extension
+        currentFileType.innerText = currentFile.split(".").pop(); 
+
+        // get the file size
+        let currentFileSizeInBytes = fileList[0].size;
+        let currentFileSizeInKilobytes = currentFileSizeInBytes / 1000;
+        let currentFileSizeInMegabytes = currentFileSizeInKilobytes / 1000;
+        if (currentFileSizeInMegabytes > 1) {
+            currentFileSize.innerText = currentFileSizeInMegabytes.toFixed(2) + " MB";
+        } else {
+            currentFileSize.innerText = currentFileSizeInKilobytes.toFixed(2) + " KB";
+        }
+        
     }
 
     if(fileList.length === 0) {
-        // create a div with the congrats emoji
-        //remove the current file name
+       
         let currentFileName = document.getElementById("current-file");
         if(currentFileName) {
             currentFileName.remove();
@@ -72,11 +73,4 @@ export const updateFileList = (fileList) => {
 
     return fileList;
 
-    //console.log(files)
-
-    //let currentFilePreview = document.getElementById("current-file-preview");
-    //encode the path to make it work with atom://
-    //firstFile = encodeURIComponent(firstFile);
-    //let fullPath = 'file://' + locationAndFiles.location + '/' + firstFile;
-    //currentFilePreview.src = fullPath
 }

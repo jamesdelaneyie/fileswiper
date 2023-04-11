@@ -67,11 +67,13 @@ main {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        height: 350px;
+        width: 240px;
         z-index: 100;
         #current-file {
             max-width: 33vw;
             max-height: 50vw;
-            overflow: hidden;
+            //overflow: hidden;
             background: white url('loading.gif') no-repeat center center;
             background-size: 20px 20px;
             transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease;
@@ -126,6 +128,7 @@ main {
             align-items: center;
             justify-content: center;
             > div {
+                pointer-events: none;
                 > svg {
                     max-width: 34px;
                     display: block;
@@ -139,12 +142,39 @@ main {
     } 
 }
 
-.drop-active {
-    border: 3px solid red;
-}
 .drop-target {
     border: 3px solid greenyellow !important;
 }
+
+#current-file-type {
+    position: absolute;
+    bottom: -30px;
+    left: 10px;
+    padding: 3px 5px 2px;
+    background-color: white;
+    border: 1px solid #b4b9d4bf;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 3px;
+    color: #777ea2;
+}
+
+#current-file-size {
+    position: absolute;
+    bottom: -30px;
+    left: 60px;
+    padding: 3px 5px 2px;
+    background-color: white;
+    border: 1px solid #b4b9d4bf;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 3px;
+    color: #777ea2;
+}
+
+
 
 .center-horizontally {
     left: 50%;
@@ -200,13 +230,51 @@ main {
     border-width: 3px;
 }
 
-
+#current-folder-name {
+    vertical-align: text-top;
+}
 
 #skip {
-    background: -webkit-radial-gradient(top, 50% 100%, #a9cff4, #F1F6F9);
+    background: -webkit-radial-gradient(top, 50% 50%, #a9cff4, #F1F6F9);
     overflow: visible;
     height: 80px;
+    top: -80px;
     mix-blend-mode: darken;
+    transition: all 0.5s ease;
+    > span {
+        pointer-events: none;
+    }
+    &:after {
+        content: '';
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        transition: all 0.5s ease;
+        pointer-events: none;
+    }
+    &.drop-active {
+        border: 0;
+    }
+    &.drop-target {
+        border: 0 !important;
+        &:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: -webkit-radial-gradient(top, 50% 100%, #a9cff4, #F1F6F9);
+            background-position: 50% 50%;
+            mix-blend-mode: darken;
+            opacity: 1;
+            transition: all 0.5s ease;
+            pointer-events: none;
+        }
+    }
 }
 
 .ui-button {
