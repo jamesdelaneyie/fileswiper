@@ -37,12 +37,10 @@ const func = async () => {
             console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id)
           },
         ondragenter: function (event) {
-            //console.log('drag enter')
             window.isOverDrop = true;
             event.target.classList.add('drop-target')
         }, 
         ondragleave: function (event) {
-            console.log('drag leave')
             window.isOverDrop = false;
             event.target.classList.remove('drop-target')
         }
@@ -63,7 +61,10 @@ const func = async () => {
     // Handle the root folder selection
     window.fileswiper.selectRootFolder((event, locationAndFiles) => {
 
-        
+        let sortBy = locationAndFiles.sortBy;
+        let sortByText = document.getElementById("sort-by");
+        sortByText.textContent = sortBy;
+
         localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
         
         let locationText = locationAndFiles.location.split("/");

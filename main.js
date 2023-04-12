@@ -7,8 +7,11 @@ const chokidar = require("chokidar");
 const electronConnect = require('electron-connect').server;
 // load in the filesToIgnore.js file
 const filesToIgnore = require('./filesToIgnore.js');
+const fetch = require('node-fetch');
+const thumbnail = require('quicklook-thumbnail');
 
-console.log(filesToIgnore)
+
+//console.log(filesToIgnore)
 
 app.setName('FileSwiper');
 
@@ -55,7 +58,7 @@ function moveFile(oldPath, newPath) {
 
 }
 
-function getFileListFromDirectory(dir) {
+function getFileListFromDirectory(dir, sortBy = 'name') {
   let fileList = []
   fs.readdirSync(dir, {withFileTypes: true})
     .filter(item => !item.isDirectory())
@@ -63,11 +66,26 @@ function getFileListFromDirectory(dir) {
       const name = item.name;
       const stats = fs.statSync(dir + '/' + name);
       const size = stats.size;
+      const fileExtension = name.split('.').pop();
       const lastModified = stats.mtime;
-      return { name, size, lastModified };
+      return { name, size, fileExtension, lastModified };
     })
     .forEach(item => fileList.push(item))
   fileList = fileList.filter(item => !filesToIgnore.includes(item.name));
+  fileList.sort((a, b) => {
+    if (sortBy === 'name') {
+      return a.name.localeCompare(b.name);
+    } else if (sortBy === 'size') {
+      return a.size - b.size;
+    } else if (sortBy === 'lastModified') {
+      return a.lastModified - b.lastModified;
+    } else if (sortBy === 'fileExtension') {
+      return a.fileExtension.localeCompare(b.fileExtension);
+    }
+  });
+  if(sortBy === 'size') {
+    fileList.reverse();
+  }
   return fileList;
 }
 
@@ -194,13 +212,13 @@ function createWindow () {
     });
 
 
-    const sendFilesToWindow = (win, location) => {
+    const sendFilesToWindow = (win, location, sortBy='name') => {
 
-      let files = getFileListFromDirectory(location);
+      let files = getFileListFromDirectory(location, sortBy);
       startWatcher(win, location);
       //console.log("sending files to window")
       console.log(files)
-      win.webContents.send('selectRootFolder', {location: location, files: files});
+      win.webContents.send('selectRootFolder', {location: location, files: files, sortBy: sortBy});
       if(files.length > 0) {
         //if the first file is a jpg, png, or gif then show preview
         if(files[0].name.includes('.jpg') || files[0].name.includes('.png') || files[0].name.includes('.gif') || files[0].name.includes('.jpeg') || files[0].name.includes('.webp') || files[0].name.includes('.svg')) {
@@ -225,7 +243,24 @@ function createWindow () {
                 
               }, 1000);
               
-          //win.webContents.send('sendDocImage', location + '/' + files[0]);
+        }
+        if(files[0].name.includes('pptx')) {
+          
+          var options = {
+                size: 256,
+                folder: location
+          };
+          
+          thumbnail.create(location + '/' + files[0].name, options, function(err, result){
+            if (err) throw (err);
+            //load the image and convert to Data URL
+            var imageAsBase64 = fs.readFileSync(result, 'base64');
+            imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
+            win.webContents.send('sendPreviewImage', imageAsBase64);
+          })
+          
+          
+
         }
       }
       rootFolder = location;
@@ -235,7 +270,7 @@ function createWindow () {
     ipcMain.handle('rootFolderStartUp', (_event, location) => {
       //wait for the window to be ready then send the files
       win.webContents.on('did-finish-load', () => {
-        sendFilesToWindow(win, location);
+        sendFilesToWindow(win, location, 'lastModified');
       })
     })
 

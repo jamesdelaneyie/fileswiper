@@ -225,6 +225,9 @@ __webpack_require__.r(__webpack_exports__);
 var updateFileList = function updateFileList(fileList) {
   //console.log(fileList);
 
+  var totalNumberOfFiles = fileList.length;
+  var totalNumberOfFilesElement = document.getElementById("total-number-of-files");
+  totalNumberOfFilesElement.innerText = totalNumberOfFiles;
   if (fileList.length > 0) {
     var introScreen = document.getElementById("intro-screen");
     introScreen.style.display = "none";
@@ -443,12 +446,10 @@ var func = /*#__PURE__*/function () {
               console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id);
             },
             ondragenter: function ondragenter(event) {
-              //console.log('drag enter')
               window.isOverDrop = true;
               event.target.classList.add('drop-target');
             },
             ondragleave: function ondragleave(event) {
-              console.log('drag leave');
               window.isOverDrop = false;
               event.target.classList.remove('drop-target');
             }
@@ -465,6 +466,9 @@ var func = /*#__PURE__*/function () {
 
           // Handle the root folder selection
           window.fileswiper.selectRootFolder(function (event, locationAndFiles) {
+            var sortBy = locationAndFiles.sortBy;
+            var sortByText = document.getElementById("sort-by");
+            sortByText.textContent = sortBy;
             localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
             var locationText = locationAndFiles.location.split("/");
             locationText = locationText[locationText.length - 1];

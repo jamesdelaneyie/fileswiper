@@ -4,6 +4,10 @@ export const updateFileList = (fileList) => {
 
     //console.log(fileList);
 
+    let totalNumberOfFiles = fileList.length;
+    let totalNumberOfFilesElement = document.getElementById("total-number-of-files");
+    totalNumberOfFilesElement.innerText = totalNumberOfFiles;
+
     if(fileList.length > 0) {
 
         let introScreen = document.getElementById("intro-screen");
