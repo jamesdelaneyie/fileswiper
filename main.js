@@ -4,11 +4,11 @@ const fs = require('fs')
 const url = require('url')
 const sound = require("sound-play");
 const chokidar = require("chokidar");
-const electronConnect = require('electron-connect').server;
 
 const thumbnail = require('quicklook-thumbnail');
 
 const filesToIgnore = require('./filesToIgnore.js');
+const sharp = require('sharp');
 
 app.setName('FileSwiper');
 
@@ -28,12 +28,12 @@ function startWatcher(win, location){
   watcher.on('add', function(path) {
         //console.log('File', path, 'has been added');
         let files = getFileListFromDirectory(location)   
-        win.webContents.send('selectRootFolder', {location: location, files: files});
+        //win.webContents.send('selectRootFolder', {location: location, files: files});
         //console.log(files)
   }).on('unlink', function(path) {
         //console.log('File', path, 'has been removed');
         let files = getFileListFromDirectory(location)   
-        win.webContents.send('selectRootFolder', {location: location, files: files});
+        //win.webContents.send('selectRootFolder', {location: location, files: files});
   }).on('error', function(error) {
        console.log('Error happened', error);
   })
@@ -102,7 +102,7 @@ function createWindow () {
     }
   })
   
-   
+  
   win.loadURL(url.format({
     pathname: path.join(__dirname, 'dist', 'index.html'),
     protocol: 'file:',
@@ -112,18 +112,10 @@ function createWindow () {
 
 
 
-  // Start the Electron-Connect server in development mode
-  //if (process.env.NODE_ENV === 'development') {
-  //  client = electronConnect.create(win);
-  //  client.start();
- // }
-
   //open the dev tools
   win.webContents.openDevTools()
 
   let files = []
-
-
 
 
   // Cleanup when the window is closed
@@ -158,6 +150,10 @@ function createWindow () {
         height: size[1],
         x: position[0],
         y: position[1]
+      }
+      let thumbnailDir = rootFolder + '/.thumbnails';
+      if (fs.existsSync(thumbnailDir)){
+        fs.rmdirSync(thumbnailDir, { recursive: true });
       }
       win.webContents.send('sendConfig', config);
       app.quit();
@@ -211,7 +207,7 @@ function createWindow () {
     const sendFilesToWindow = (win, location, sortBy='name') => {
 
       let files = getFileListFromDirectory(location, sortBy);
-      startWatcher(win, location);
+      //startWatcher(win, location);
 
       // make a directory for the thumbnails 
       let thumbnailDir = location + '/.thumbnails';
@@ -220,22 +216,49 @@ function createWindow () {
       }
       console.log(location)
       console.log(files)
+      console.log(sortBy)
+
       win.webContents.send('selectRootFolder', {location: location, files: files, sortBy: sortBy});
+      
       if(files.length > 0) {
 
-              var options = {
-                size: 512,
+          var options = {
+                size: 1024,
                 folder: thumbnailDir
           };
+
+          console.log('sending thumb')
           
-          //thumbnail.create(location + '/' + files[0].name, options, function(err, result){
-          //  if (err) throw (err);
-          //  if(result) {
-              //var imageAsBase64 = fs.readFileSync(result, 'base64');
-              //imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
-              //win.webContents.send('sendPreviewImage', imageAsBase64);
-            //}
-          //})
+          try {
+            thumbnail.create(location + '/' + files[0].name, options, function(err, result){
+              if(result) {
+                var imageAsBase64 = fs.readFileSync(result, 'base64');
+                //crop the image using sharp
+                var buffer = Buffer.from(imageAsBase64, 'base64');
+                sharp(buffer).trim().toBuffer().then(data => { 
+                  var imageAsBase64 = data.toString('base64');
+                  imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
+                  //get the image size
+                  var image = sharp(data);
+                  image.metadata().then(function(metadata) {
+                    var width = metadata.width;
+                    var height = metadata.height;
+                    var imageData = {image: imageAsBase64, width: width, height: height};
+                    // Store the image data in a variable
+                    sendPreview(imageData);
+                  });
+                })
+              }
+            })
+          } catch (error) {
+            console.log(error)
+          }
+
+          function sendPreview(imageData) {
+            // Call the sendPreviewImage method once with the image data
+            win.webContents.send('sendPreviewImage', imageData);
+          }
+          
       }
       rootFolder = location;
   }
@@ -244,13 +267,13 @@ function createWindow () {
     ipcMain.handle('rootFolderStartUp', (_event, location) => {
       //wait for the window to be ready then send the files
       win.webContents.on('did-finish-load', () => {
-        sendFilesToWindow(win, location, 'lastModified');
+        sendFilesToWindow(win, location, 'name');
       })
     })
 
     ipcMain.handle('sendRootFolder', (_event, location) => {
       console.log('sending updated files')
-      sendFilesToWindow(win, location);
+      sendFilesToWindow(win, location, 'size');
     })
 
 
@@ -297,10 +320,6 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     //remove the thumbnails directory
-    let thumbnailDir = rootFolder + '/.thumbnails';
-    if (fs.existsSync(thumbnailDir)){
-      fs.rmdirSync(thumbnailDir, { recursive: true });
-    }
     app.quit()
   }
 })

@@ -76,18 +76,6 @@ __webpack_require__.r(__webpack_exports__);
 
 var createCurrentFile = function createCurrentFile() {
   var files = document.getElementById("files");
-
-  /*const numberOfFilesInStack = 3
-  for(let i = 0; i < numberOfFilesInStack; i++) {
-    let file = document.createElement("li");
-    file.classList.add("ui-button", "absolute", "bg-white","border-slate-300","w-60","h-80","z-50","border-2","rounded","cursor-grab", "text-center", "hover:cursor-grabbing");
-    // rotate the file at a random angle between -5 and 5 degrees
-    let randomAngle = Math.floor(Math.random() * 10) - 5;
-    file.style.transform = `rotate(${randomAngle}deg)`;
-    //add file to the stack
-    files.appendChild(file);
-  }*/
-
   var currentFile = document.createElement("li");
   currentFile.setAttribute("id", "current-file");
   currentFile.classList.add("ui-button", "absolute", "bg-white", "border-slate-300", "w-60", "h-80", "z-50", "border-2", "rounded", "cursor-grab", "text-center", "hover:cursor-grabbing");
@@ -120,6 +108,8 @@ var createCurrentFile = function createCurrentFile() {
       if (document.querySelector('.drop-target')) {
         interactjs__WEBPACK_IMPORTED_MODULE_1___default()('#current-file').unset();
         document.getElementById('current-file').classList.add('dropping-file');
+        //remove the currentfile id from the current file
+        document.getElementById('current-file').removeAttribute('id');
         var dropTarget = document.querySelector('.drop-target');
         var dropTargetX = dropTarget.getBoundingClientRect().x;
         var dropTargetY = dropTarget.getBoundingClientRect().y;
@@ -127,34 +117,41 @@ var createCurrentFile = function createCurrentFile() {
         var dropTargetHeight = dropTarget.getBoundingClientRect().height;
         var dropTargetCenterX = dropTargetX + dropTargetWidth / 2;
         var dropTargetCenterY = dropTargetY + dropTargetHeight / 2;
-        var currentFileScale = document.getElementById('current-file').style.transform;
+        var currentFileScale = document.querySelector('.dropping-file').style.transform;
         var currentFileScaleValue = parseFloat(currentFileScale.split('scale(')[1].split(')')[0]);
         var screenWidth = window.innerWidth;
         var screenHeight = window.innerHeight;
         dropTargetCenterX = dropTargetCenterX - screenWidth / 2;
         dropTargetCenterY = dropTargetCenterY - screenHeight / 2 + 60;
-        document.getElementById('current-file').style.transform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(100px) scale(' + currentFileScaleValue + ')';
-        var fileBeingDropped = document.querySelector('.dropping-file');
+        document.querySelector('.dropping-file').style.transform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(100px) scale(' + currentFileScaleValue + ')';
+        var fileBeingDroppedRef = document.querySelector('.dropping-file');
+        //add a unique randomized class to the file being dropped
+        var randomClass = Math.random().toString(36).substring(7);
+        //ensure there are no numbers in the class name
+        randomClass = randomClass.replace(/[0-9]/g, '');
+        fileBeingDroppedRef.classList.add(randomClass);
+        var fileBeingDropped = document.querySelector('.' + randomClass);
         var preFinal = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-150px) scale(0.25)';
-        var finalTransform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-50px) scale(0.25)';
+        var finalTransform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-75px) scale(0.25)';
         var filename = document.getElementById('current-file-name').innerText;
         var location = dropTarget.getAttribute("data-folder-location");
+        window.fileswiper.fileDropped({
+          filename: filename,
+          location: location
+        });
         setTimeout(function () {
           fileBeingDropped.style.transform = preFinal;
+          dropTarget.classList.remove('drop-target');
+          var rootFolder = JSON.parse(localStorage.getItem('root-folder'));
+          window.fileswiper.sendRootFolder(rootFolder);
         }, 200);
         setTimeout(function () {
           fileBeingDropped.style.transform = finalTransform;
           fileBeingDropped.style.opacity = 0;
-          window.fileswiper.fileDropped({
-            filename: filename,
-            location: location
-          });
         }, 800);
         setTimeout(function () {
           fileBeingDropped.remove();
-          var rootFolder = JSON.parse(localStorage.getItem('root-folder'));
-          window.fileswiper.sendRootFolder(rootFolder);
-        }, 1500);
+        }, 1000);
       }
     }
     var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
@@ -193,8 +190,8 @@ var createCurrentFile = function createCurrentFile() {
 
     // Calculate the width and height of the element being moved
     var elementTag = document.getElementById('current-file');
-    var elementWidth = elementTag.getBoundingClientRect().width * 1.2;
-    var elementHeight = elementTag.getBoundingClientRect().height * 1.2;
+    var elementWidth = elementTag.getBoundingClientRect().width * 2;
+    var elementHeight = elementTag.getBoundingClientRect().height * 2;
 
     // Calculate the maximum distance from the center of the circle that the element can be moved
     var maxDistance = radius - Math.sqrt(Math.pow(elementWidth, 2) + Math.pow(elementHeight, 2)) / 2;
@@ -204,6 +201,7 @@ var createCurrentFile = function createCurrentFile() {
     var maxHeight = maxDistance * 2;
     var maxX = centerX - maxWidth / 2;
     var maxY = centerY - maxHeight / 2;
+    console.log(maxX, maxY, maxWidth, maxHeight);
     return {
       x: maxX,
       y: maxY,
@@ -264,44 +262,6 @@ var createCurrentFile = function createCurrentFile() {
     (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('pointer up', 'interacting');
   }).on('dragend', function () {
     (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('dragend', 'interacting');
-    //let dropTarget = document.querySelector('.drop-target')
-    //onsole.log(window.isOverDrop)
-    //console.log(dropTarget)
-    //if(window.isOverDrop && dropTarget) {
-    //console.log('drop into folder')
-    /*
-     
-    if(location == "skip") {
-      console.log('skip file')
-      setTimeout(() => {
-        //move the current file down by 60px and fade it out
-        document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-100px)'// scale('+currentFileScaleValue+') '
-        document.getElementById('current-file').style.opacity = '0'
-       }, 500);
-     } else {
-      
-      //add a dropping class to the current file 
-      document.getElementById('current-file').classList.add('dropping-file')
-       //remove the current-file id from the current file
-      document.getElementById('current-file').removeAttribute('id')
-      
-      //position = { x: 0, y: 0 }
-       //get the current file with the dropping-file class
-      
-       //remove drop-target class from the drop target
-      document.querySelector('.drop-target').classList.remove('drop-target')
-       
-       setTimeout(() => {
-        //if the current file exists 
-        if(fileBeingDropped) {
-          //move the current file down by 60px and fade it out
-          
-        }
-        
-      }, 400);
-       
-     }*/
-    //}
   }).on('dragstart', function () {
     (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('dragstart', 'interacting');
   }).on('draginertiastart', function () {
@@ -372,22 +332,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _createCurrentFile_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./createCurrentFile.js */ "./createCurrentFile.js");
 
 var updateFileList = function updateFileList(fileList) {
-  //console.log(fileList);
-
+  console.log(fileList);
   var totalNumberOfFiles = fileList.length;
   var totalNumberOfFilesElement = document.getElementById("total-number-of-files");
   totalNumberOfFilesElement.innerText = totalNumberOfFiles + ' files';
   if (fileList.length > 0) {
     var currentFile = fileList[0].name;
-    var currentFileName = document.getElementById("current-file-name");
-    var currentFileType = document.getElementById("current-file-type");
-    var currentFileSize = document.getElementById("current-file-size");
-    if (currentFileName === null) {
+
+    //if the current file does not exist, create it
+    if (!document.querySelector("#current-file")) {
       (0,_createCurrentFile_js__WEBPACK_IMPORTED_MODULE_0__.createCurrentFile)();
-      currentFileName = document.getElementById("current-file-name");
-      currentFileType = document.getElementById("current-file-type");
-      currentFileSize = document.getElementById("current-file-size");
     }
+    var currentFileName = document.querySelector("#current-file #current-file-name");
+    var currentFileType = document.querySelector("#current-file #current-file-type");
+    var currentFileSize = document.querySelector("#current-file #current-file-size");
+
+    //console.log(currentFile)
+
     currentFileName.innerText = currentFile;
     currentFileType.innerText = currentFile.split(".").pop();
     currentFileType.classList.add(currentFileType.innerText.toLowerCase());
@@ -629,8 +590,7 @@ var func = /*#__PURE__*/function () {
             var currentFolderName = document.getElementById("current-folder-name");
             currentFolderName.textContent = locationText;
             var filesList = locationAndFiles.files;
-
-            //console.log('update file list')
+            console.log('update file list');
             files = (0,_updateFileList_js__WEBPACK_IMPORTED_MODULE_1__.updateFileList)(filesList);
           });
 
@@ -660,15 +620,23 @@ var func = /*#__PURE__*/function () {
             }
           });
           window.fileswiper.sendPreviewImage(function (event, image) {
-            var imageElement = document.getElementById("current-file").querySelector("img");
-            if (imageElement === null) {
-              imageElement = document.createElement("img");
-              imageElement.setAttribute("id", "current-file-preview");
-              var preview = document.getElementById("current-file");
-              preview.appendChild(imageElement);
+            console.log('recieving preview image');
+            console.log(image);
+            var currentFilePreview = document.querySelector("#current-file #current-file-preview");
+            currentFilePreview.src = image.image;
+            //the max width and height of the preview is 150px
+            // if the image is wider than it is tall, set the width to 150px and scale the height accordingly
+            var currentFile = document.querySelector("#current-file");
+            if (image.width > image.height) {
+              //currentFilePreview.style.width = "150px";
+              //currentFilePreview.style.height = "auto";
+            } else {
+              //currentFilePreview.style.height = "150px";
+              //currentFilePreview.style.width = "auto";
             }
-            var currentFilePreview = document.getElementById("current-file-preview");
-            currentFilePreview.src = image;
+
+            //console.log(image.width)
+            //console.log(image.height)
           });
 
           // Handle the addition of a new folder to the DOM
@@ -680,6 +648,18 @@ var func = /*#__PURE__*/function () {
             (0,_updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__.updateSavedFolders)(location);
             (0,_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(location);
           });
+
+          /*
+                /*const numberOfFilesInStack = 3
+            for(let i = 0; i < numberOfFilesInStack; i++) {
+              let file = document.createElement("li");
+              file.classList.add("ui-button", "absolute", "bg-white","border-slate-300","w-60","h-80","z-50","border-2","rounded","cursor-grab", "text-center", "hover:cursor-grabbing");
+              // rotate the file at a random angle between -5 and 5 degrees
+              let randomAngle = Math.floor(Math.random() * 10) - 5;
+              file.style.transform = `rotate(${randomAngle}deg)`;
+              //add file to the stack
+              files.appendChild(file);
+            }*/
         case 20:
         case "end":
           return _context.stop();

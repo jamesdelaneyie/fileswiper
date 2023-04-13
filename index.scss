@@ -79,7 +79,6 @@ main {
             background-size: 20px 20px;
             transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease;
             > img {
-                position: absolute;
                 height: 100%;
                 width: 100%;
                 object-fit: cover;
@@ -87,6 +86,7 @@ main {
                 border-top-right-radius: 0.25rem;
                 overflow: hidden;
                 pointer-events: none;
+                padding-bottom: 20px;
             }
         }
     }
@@ -97,7 +97,6 @@ main {
         > div {
             width: 120px;
             height: 120px;
-            //-webkit-user-select: none;
             --offset-per-child: calc(var(--layout-angle) / (var(--nth-siblings) + 1));
             --angle-offset: calc(1 * var(--offset-per-child));
             border-radius: 50%;
@@ -191,9 +190,19 @@ main {
         color: #9d3f3f;
         border-color: currentColor;
     }
-    &.docx {
+    &.docx, &.doc {
         background-color: #8cc5fe;
         color: #316599;
+        border-color: currentColor;
+    }
+    &.svg {
+        background-color: #e0e2ec;
+        color: #777ea2;
+        border-color: currentColor;
+    }
+    &.zip {
+        background-color: #f4b59f;
+        color: #795548;
         border-color: currentColor;
     }
 }
@@ -210,6 +219,9 @@ main {
     font-size: 12px;
     border-radius: 3px;
     color: #777ea2;
+    background-color: #bce7f4;
+    color: #30849d;
+    border-color: currentColor
 }
 
 #current-file-name {

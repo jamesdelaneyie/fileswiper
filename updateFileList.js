@@ -2,7 +2,7 @@ import { createCurrentFile } from "./createCurrentFile.js";
 
 export const updateFileList = (fileList) => {
 
-    //console.log(fileList);
+    console.log(fileList);
 
     let totalNumberOfFiles = fileList.length;
     let totalNumberOfFilesElement = document.getElementById("total-number-of-files");
@@ -11,16 +11,17 @@ export const updateFileList = (fileList) => {
     if(fileList.length > 0) {
         
         let currentFile = fileList[0].name
-        let currentFileName = document.getElementById("current-file-name");
-        let currentFileType = document.getElementById("current-file-type");
-        let currentFileSize = document.getElementById("current-file-size");
         
-        if(currentFileName === null) {
+        //if the current file does not exist, create it
+        if(!document.querySelector("#current-file")) {
             createCurrentFile();
-            currentFileName = document.getElementById("current-file-name");
-            currentFileType = document.getElementById("current-file-type");
-            currentFileSize = document.getElementById("current-file-size");
         }
+
+        let currentFileName = document.querySelector("#current-file #current-file-name");
+        let currentFileType = document.querySelector("#current-file #current-file-type");
+        let currentFileSize = document.querySelector("#current-file #current-file-size");
+
+        //console.log(currentFile)
 
         currentFileName.innerText = currentFile;
         currentFileType.innerText = currentFile.split(".").pop(); 

@@ -80,7 +80,7 @@ const func = async () => {
 
         let filesList = locationAndFiles.files;
 
-        //console.log('update file list')
+        console.log('update file list')
         files = updateFileList(filesList);
 
     });
@@ -116,15 +116,23 @@ const func = async () => {
 
 
     window.fileswiper.sendPreviewImage((event, image) => {
-        let imageElement = document.getElementById("current-file").querySelector("img");
-        if(imageElement === null) {
-            imageElement = document.createElement("img");
-            imageElement.setAttribute("id", "current-file-preview");
-            let preview = document.getElementById("current-file");
-            preview.appendChild(imageElement);
+        console.log('recieving preview image')
+        console.log(image)
+        let currentFilePreview = document.querySelector("#current-file #current-file-preview");
+        currentFilePreview.src = image.image;
+        //the max width and height of the preview is 150px
+        // if the image is wider than it is tall, set the width to 150px and scale the height accordingly
+        let currentFile = document.querySelector("#current-file")
+        if(image.width > image.height) {
+            //currentFilePreview.style.width = "150px";
+            //currentFilePreview.style.height = "auto";
+        } else {
+            //currentFilePreview.style.height = "150px";
+            //currentFilePreview.style.width = "auto";
         }
-        let currentFilePreview = document.getElementById("current-file-preview");
-        currentFilePreview.src = image;
+
+        //console.log(image.width)
+        //console.log(image.height)
     })
 
     
@@ -137,6 +145,18 @@ const func = async () => {
         updateSavedFolders(location);
         addFolderToDom(location);
     })
+
+    /*
+          /*const numberOfFilesInStack = 3
+      for(let i = 0; i < numberOfFilesInStack; i++) {
+        let file = document.createElement("li");
+        file.classList.add("ui-button", "absolute", "bg-white","border-slate-300","w-60","h-80","z-50","border-2","rounded","cursor-grab", "text-center", "hover:cursor-grabbing");
+        // rotate the file at a random angle between -5 and 5 degrees
+        let randomAngle = Math.floor(Math.random() * 10) - 5;
+        file.style.transform = `rotate(${randomAngle}deg)`;
+        //add file to the stack
+        files.appendChild(file);
+      }*/
 
 
 };

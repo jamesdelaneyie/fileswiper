@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 
 module.exports = {
-  //target: "electron-renderer",
+  target: "electron-renderer",
   entry: "./renderer.js", // Path to your renderer.js file
   //watch: true,
   output: {
