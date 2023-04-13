@@ -76,19 +76,20 @@ __webpack_require__.r(__webpack_exports__);
 
 var createCurrentFile = function createCurrentFile() {
   var files = document.getElementById("files");
-  var numberOfFilesInStack = 3;
-  for (var i = 0; i < numberOfFilesInStack; i++) {
-    var file = document.createElement("li");
-    file.classList.add("ui-button", "absolute", "bg-white", "border-slate-300", "w-60", "h-80", "z-50", "border-2", "rounded", "cursor-grab", "text-center", "hover:cursor-grabbing");
+
+  /*const numberOfFilesInStack = 3
+  for(let i = 0; i < numberOfFilesInStack; i++) {
+    let file = document.createElement("li");
+    file.classList.add("ui-button", "absolute", "bg-white","border-slate-300","w-60","h-80","z-50","border-2","rounded","cursor-grab", "text-center", "hover:cursor-grabbing");
     // rotate the file at a random angle between -5 and 5 degrees
-    var randomAngle = Math.floor(Math.random() * 10) - 5;
-    file.style.transform = "rotate(".concat(randomAngle, "deg)");
+    let randomAngle = Math.floor(Math.random() * 10) - 5;
+    file.style.transform = `rotate(${randomAngle}deg)`;
     //add file to the stack
     files.appendChild(file);
-  }
+  }*/
+
   var currentFile = document.createElement("li");
   currentFile.setAttribute("id", "current-file");
-  currentFile.setAttribute("draggable", "true");
   currentFile.classList.add("ui-button", "absolute", "bg-white", "border-slate-300", "w-60", "h-80", "z-50", "border-2", "rounded", "cursor-grab", "text-center", "hover:cursor-grabbing");
   var currentFilePreviewImage = document.createElement("img");
   currentFilePreviewImage.setAttribute("id", "current-file-preview");
@@ -115,53 +116,69 @@ var createCurrentFile = function createCurrentFile() {
   };
   function dragMoveListener(event) {
     var target = event.target;
-
-    //console.log(event)
-    //if the element is over a dropzone and the pointer is up, then drop the element into the dropzone
     if (event.dropzone) {
-      (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('dropping file', 'moving');
+      if (document.querySelector('.drop-target')) {
+        interactjs__WEBPACK_IMPORTED_MODULE_1___default()('#current-file').unset();
+        document.getElementById('current-file').classList.add('dropping-file');
+        var dropTarget = document.querySelector('.drop-target');
+        var dropTargetX = dropTarget.getBoundingClientRect().x;
+        var dropTargetY = dropTarget.getBoundingClientRect().y;
+        var dropTargetWidth = dropTarget.getBoundingClientRect().width;
+        var dropTargetHeight = dropTarget.getBoundingClientRect().height;
+        var dropTargetCenterX = dropTargetX + dropTargetWidth / 2;
+        var dropTargetCenterY = dropTargetY + dropTargetHeight / 2;
+        var currentFileScale = document.getElementById('current-file').style.transform;
+        var currentFileScaleValue = parseFloat(currentFileScale.split('scale(')[1].split(')')[0]);
+        var screenWidth = window.innerWidth;
+        var screenHeight = window.innerHeight;
+        dropTargetCenterX = dropTargetCenterX - screenWidth / 2;
+        dropTargetCenterY = dropTargetCenterY - screenHeight / 2 + 60;
+        document.getElementById('current-file').style.transform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(100px) scale(' + currentFileScaleValue + ')';
+        var fileBeingDropped = document.querySelector('.dropping-file');
+        var preFinal = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-150px) scale(0.25)';
+        var finalTransform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-50px) scale(0.25)';
+        var filename = document.getElementById('current-file-name').innerText;
+        var location = dropTarget.getAttribute("data-folder-location");
+        setTimeout(function () {
+          fileBeingDropped.style.transform = preFinal;
+        }, 200);
+        setTimeout(function () {
+          fileBeingDropped.style.transform = finalTransform;
+          fileBeingDropped.style.opacity = 0;
+          window.fileswiper.fileDropped({
+            filename: filename,
+            location: location
+          });
+        }, 800);
+        setTimeout(function () {
+          fileBeingDropped.remove();
+          var rootFolder = JSON.parse(localStorage.getItem('root-folder'));
+          window.fileswiper.sendRootFolder(rootFolder);
+        }, 1500);
+      }
     }
-
-    //console.log(event.dx, event.dy)
-
     var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
     var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
     target.setAttribute('data-x', x);
     target.setAttribute('data-y', y);
     position.x += event.dx;
     position.y += event.dy;
-
-    //console.log(position.x, position.y)
-
-    //set the transform-origin to the x, y coordinates of the mouse's location relative to the element
-    //event.target.style.transformOrigin = `${event.clientX - event.target.getBoundingClientRect().x}px ${event.clientY - event.target.getBoundingClientRect().y}px`
-
     event.target.style.cursor = 'grabbing';
-
-    //event.target.style.transform = `translate(${position.x}px, ${position.y}px)`
-
-    //make the element get smaller the further it is dragged
     var scale = 1 - Math.abs(position.x) / 450;
-    event.target.style.transform = "translate(".concat(position.x, "px, ").concat(position.y, "px)"); // scale(${scale})`
+    event.target.style.transform = "translate(".concat(position.x, "px, ").concat(position.y, "px) scale(").concat(scale, ")");
   }
-
-  var dropIntoFolder = function dropIntoFolder(event) {
-    console.log('drop into folder');
-  };
 
   //add a mouse up listener to the current file
   currentFile.addEventListener('mouseup', function () {
-    //currentFile.setCapture();
     (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('mouse up', 'interacting');
   });
   currentFile.addEventListener('mousedown', function () {
-    //document.releaseCapture();
     (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('mouse down', 'interacting');
   });
   window.addEventListener('mouseup', function () {
     (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('outside window mouse up', 'interacting');
   });
-  function getRestriction(x, y, element) {
+  function getRestriction() {
     var mainArea = document.getElementById('main-area');
     var mainAreaRect = mainArea.getBoundingClientRect();
     var mainAreaX = mainAreaRect.x;
@@ -176,8 +193,8 @@ var createCurrentFile = function createCurrentFile() {
 
     // Calculate the width and height of the element being moved
     var elementTag = document.getElementById('current-file');
-    var elementWidth = elementTag.getBoundingClientRect().width * 1.5;
-    var elementHeight = elementTag.getBoundingClientRect().height * 1.5;
+    var elementWidth = elementTag.getBoundingClientRect().width * 1.2;
+    var elementHeight = elementTag.getBoundingClientRect().height * 1.2;
 
     // Calculate the maximum distance from the center of the circle that the element can be moved
     var maxDistance = radius - Math.sqrt(Math.pow(elementWidth, 2) + Math.pow(elementHeight, 2)) / 2;
@@ -194,6 +211,32 @@ var createCurrentFile = function createCurrentFile() {
       height: maxHeight
     };
   }
+
+  //get the center point of all the .location elements
+  var centerPoints = [];
+  var locations = document.querySelectorAll('.location');
+  locations.forEach(function (location) {
+    var locationRect = location.getBoundingClientRect();
+    var locationX = locationRect.x;
+    var locationY = locationRect.y;
+    var locationWidth = locationRect.width;
+    var locationHeight = locationRect.height;
+    var locationCenterX = locationX + locationWidth / 2;
+    var locationCenterY = locationY + locationHeight / 2;
+    //if the location is the trash then set the range as 250
+    if (location.id === 'trash') {
+      centerPoints.push({
+        x: locationCenterX,
+        y: locationCenterY,
+        range: 150
+      });
+    } else {
+      centerPoints.push({
+        x: locationCenterX,
+        y: locationCenterY
+      });
+    }
+  });
   interactjs__WEBPACK_IMPORTED_MODULE_1___default()('#current-file').draggable({
     inertia: {
       resistance: 10,
@@ -203,20 +246,15 @@ var createCurrentFile = function createCurrentFile() {
       return 'grab';
     },
     modifiers: [interactjs__WEBPACK_IMPORTED_MODULE_1___default().modifiers.restrict({
-      restriction: function restriction(x, y, element) {
-        return getRestriction(x, y, element);
-      },
+      restriction: getRestriction(),
       endOnly: true
     }), interactjs__WEBPACK_IMPORTED_MODULE_1___default().modifiers.snap({
-      targets: [{
-        x: 750,
-        y: 360
-      }],
+      targets: centerPoints,
       relativePoints: [{
         x: 0.5,
         y: 0.5
       }],
-      range: 70,
+      range: 150,
       endOnly: true
     })],
     listeners: {
@@ -231,25 +269,9 @@ var createCurrentFile = function createCurrentFile() {
     //console.log(dropTarget)
     //if(window.isOverDrop && dropTarget) {
     //console.log('drop into folder')
-    /*interact('#current-file').unset();
-    document.getElementById('current-file').classList.add('dropping-file')
-    
-    let dropTargetX = dropTarget.getBoundingClientRect().x
-    let dropTargetY = dropTarget.getBoundingClientRect().y
-    let dropTargetWidth = dropTarget.getBoundingClientRect().width
-    let dropTargetHeight = dropTarget.getBoundingClientRect().height
-    let dropTargetCenterX = dropTargetX + (dropTargetWidth / 2)
-    let dropTargetCenterY = dropTargetY + (dropTargetHeight / 2)
-    //let currentFileScale = document.getElementById('current-file').style.transform
-    //let currentFileScaleValue = parseFloat(currentFileScale.split('scale(')[1].split(')')[0])
-    let screenWidth = window.innerWidth
-    let screenHeight = window.innerHeight
-    dropTargetCenterX = dropTargetCenterX - (screenWidth / 2)
-    dropTargetCenterY = dropTargetCenterY - (screenHeight / 2) + 60
-    document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px)'// scale('+currentFileScaleValue+')'
-     let filename = document.getElementById('current-file-name').innerText;
-    let location = dropTarget.getAttribute("data-folder-location");
-     if(location == "skip") {
+    /*
+     
+    if(location == "skip") {
       console.log('skip file')
       setTimeout(() => {
         //move the current file down by 60px and fade it out
@@ -257,46 +279,32 @@ var createCurrentFile = function createCurrentFile() {
         document.getElementById('current-file').style.opacity = '0'
        }, 500);
      } else {
-      window.fileswiper.fileDropped({filename: filename, location: location});
-       //add a dropping class to the current file 
+      
+      //add a dropping class to the current file 
       document.getElementById('current-file').classList.add('dropping-file')
        //remove the current-file id from the current file
       document.getElementById('current-file').removeAttribute('id')
       
       //position = { x: 0, y: 0 }
        //get the current file with the dropping-file class
-      let fileBeingDropped = document.querySelector('.dropping-file')
+      
        //remove drop-target class from the drop target
       document.querySelector('.drop-target').classList.remove('drop-target')
+       
        setTimeout(() => {
         //if the current file exists 
         if(fileBeingDropped) {
           //move the current file down by 60px and fade it out
-          fileBeingDropped.style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(100px)'// scale('+currentFileScaleValue+')'
-          fileBeingDropped.style.opacity = '0'
-        }
-        
-       }, 200);
-       setTimeout(() => {
-        //if the current file exists 
-        if(fileBeingDropped) {
-          //move the current file down by 60px and fade it out
-          fileBeingDropped.remove()
+          
         }
         
       }, 400);
-       setTimeout(() => {
-        let rootFolder = JSON.parse(localStorage.getItem('root-folder'));
-        window.fileswiper.sendRootFolder(rootFolder);
-        console.log('file dropped')
-        
-      }, 600)
+       
      }*/
     //}
   }).on('dragstart', function () {
-    //position = {x: 0, y: 0}
     (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('dragstart', 'interacting');
-  }).on('draginertiastart', function (event) {
+  }).on('draginertiastart', function () {
     (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('draginertiastart', 'interacting');
   });
 };
@@ -381,12 +389,8 @@ var updateFileList = function updateFileList(fileList) {
       currentFileSize = document.getElementById("current-file-size");
     }
     currentFileName.innerText = currentFile;
-    currentFileName.classList.add("absolute", "bottom-0", "text-slate-700", "w-full", "left-0", "text-xxs", "bg-white", "p-3");
-
-    // get the file extension
     currentFileType.innerText = currentFile.split(".").pop();
-
-    // get the file size
+    currentFileType.classList.add(currentFileType.innerText.toLowerCase());
     var currentFileSizeInBytes = fileList[0].size;
     var currentFileSizeInKilobytes = currentFileSizeInBytes / 1000;
     var currentFileSizeInMegabytes = currentFileSizeInKilobytes / 1000;
@@ -397,10 +401,6 @@ var updateFileList = function updateFileList(fileList) {
     }
   }
   if (fileList.length === 0) {
-    /*let currentFileName = document.getElementById("current-file");
-    if(currentFileName) {
-        currentFileName.remove();
-    }*/
     var congratsDiv = document.getElementsByClassName("congrats")[0];
     if (!congratsDiv) {
       var _congratsDiv = document.createElement("div");
@@ -417,7 +417,6 @@ var updateFileList = function updateFileList(fileList) {
       files.appendChild(_congratsDiv);
     }
   } else {
-    //remove the congrats div
     var _congratsDiv2 = document.getElementsByClassName("congrats")[0];
     if (_congratsDiv2) {
       _congratsDiv2.remove();
@@ -596,7 +595,7 @@ var func = /*#__PURE__*/function () {
               if (document.querySelector('.drop-target')) {
                 document.querySelector('.drop-target').classList.remove('drop-target');
               }
-              window.isOverDrop = true;
+              //window.isOverDrop = true;
               event.target.classList.add('drop-target');
               //console.log('isOverDrop = true')
             },
@@ -604,7 +603,7 @@ var func = /*#__PURE__*/function () {
             ondragleave: function ondragleave(event) {
               setTimeout(function () {
                 event.target.classList.remove('drop-target');
-                window.isOverDrop = false;
+                //window.isOverDrop = false;
                 //console.log('isOverDrop = false')
               }, 500);
             }
@@ -622,7 +621,7 @@ var func = /*#__PURE__*/function () {
           // Handle the root folder selection
           window.fileswiper.selectRootFolder(function (event, locationAndFiles) {
             var sortBy = locationAndFiles.sortBy;
-            var sortByText = document.getElementById("sort-by");
+            var sortByText = document.getElementById("sort-by-text");
             sortByText.textContent = sortBy;
             localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
             var locationText = locationAndFiles.location.split("/");

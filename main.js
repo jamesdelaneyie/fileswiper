@@ -101,6 +101,7 @@ function createWindow () {
       contextIsolation: true,
     }
   })
+  
    
   win.loadURL(url.format({
     pathname: path.join(__dirname, 'dist', 'index.html'),
@@ -108,16 +109,14 @@ function createWindow () {
     slashes: true
   }));
 
-   // Open the DevTools in development mode
-  if (process.env.NODE_ENV === 'development') {
-    win.webContents.openDevTools();
-  }
+
+
 
   // Start the Electron-Connect server in development mode
-  if (process.env.NODE_ENV === 'development') {
-    client = electronConnect.create(win);
-    client.start();
-  }
+  //if (process.env.NODE_ENV === 'development') {
+  //  client = electronConnect.create(win);
+  //  client.start();
+ // }
 
   //open the dev tools
   win.webContents.openDevTools()
@@ -213,12 +212,13 @@ function createWindow () {
 
       let files = getFileListFromDirectory(location, sortBy);
       startWatcher(win, location);
+
       // make a directory for the thumbnails 
       let thumbnailDir = location + '/.thumbnails';
       if (!fs.existsSync(thumbnailDir)){
-        fs.mkdirSync(thumbnailDir);
+        //fs.mkdirSync(thumbnailDir);
       }
-
+      console.log(location)
       console.log(files)
       win.webContents.send('selectRootFolder', {location: location, files: files, sortBy: sortBy});
       if(files.length > 0) {
@@ -228,46 +228,14 @@ function createWindow () {
                 folder: thumbnailDir
           };
           
-          thumbnail.create(location + '/' + files[0].name, options, function(err, result){
-            if (err) throw (err);
-            //load the image and convert to Data URL
-            var imageAsBase64 = fs.readFileSync(result, 'base64');
-            imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
-            win.webContents.send('sendPreviewImage', imageAsBase64);
-          })
-
-
-        //if the first file is a jpg, png, or gif then show preview
-        /*if(files[0].name.includes('.jpg') || files[0].name.includes('.png') || files[0].name.includes('.gif') || files[0].name.includes('.jpeg') || files[0].name.includes('.webp') || files[0].name.includes('.svg')) {
-          win.webContents.send('sendPreviewImage', location + '/' + files[0].name);
-        }
-        if(files[0].name.includes('.pdf') || files[0].name.includes('.mp4')) {
-            
-              const w = new BrowserWindow({
-                width: 480,
-                show: false,
-              })
-              let URLtoLoad = 'file://' + location + '/' + files[0].name
-              URLtoLoad = encodeURI(URLtoLoad)
-              //console.log(URLtoLoad)
-              w.loadURL(URLtoLoad)
-              let rect = {x: 5, y: 93, width: 475, height: 520};
-              setTimeout(() => {
-                w.webContents.capturePage(rect).then((image) => {
-                  //console.log(image.toDataURL())
-                  win.webContents.send('sendPreviewImage', image.toDataURL());
-                })
-                
-              }, 1000);
-              
-        }
-        if(files[0].name.includes('pptx')) {
-          
-          
-          
-          
-
-        }*/
+          //thumbnail.create(location + '/' + files[0].name, options, function(err, result){
+          //  if (err) throw (err);
+          //  if(result) {
+              //var imageAsBase64 = fs.readFileSync(result, 'base64');
+              //imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
+              //win.webContents.send('sendPreviewImage', imageAsBase64);
+            //}
+          //})
       }
       rootFolder = location;
   }
@@ -325,6 +293,7 @@ app.whenReady().then(() => {
 })
 
 
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     //remove the thumbnails directory
@@ -335,4 +304,8 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+try {
+  require('electron-reloader')(module);
+} catch {}
 

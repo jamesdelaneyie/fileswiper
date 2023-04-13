@@ -6,7 +6,7 @@ export const createCurrentFile = () => {
 
   let files = document.getElementById("files");
 
-      const numberOfFilesInStack = 3
+      /*const numberOfFilesInStack = 3
       for(let i = 0; i < numberOfFilesInStack; i++) {
         let file = document.createElement("li");
         file.classList.add("ui-button", "absolute", "bg-white","border-slate-300","w-60","h-80","z-50","border-2","rounded","cursor-grab", "text-center", "hover:cursor-grabbing");
@@ -15,12 +15,11 @@ export const createCurrentFile = () => {
         file.style.transform = `rotate(${randomAngle}deg)`;
         //add file to the stack
         files.appendChild(file);
-      }
+      }*/
        
 
         let currentFile = document.createElement("li");
         currentFile.setAttribute("id", "current-file");
-        currentFile.setAttribute("draggable", "true");
         currentFile.classList.add("ui-button","absolute","bg-white","border-slate-300","w-60","h-80","z-50","border-2","rounded","cursor-grab", "text-center", "hover:cursor-grabbing");
         
         let currentFilePreviewImage = document.createElement("img");
@@ -53,13 +52,46 @@ export const createCurrentFile = () => {
         function dragMoveListener (event) {
                 var target = event.target
 
-                //console.log(event)
-                //if the element is over a dropzone and the pointer is up, then drop the element into the dropzone
                 if(event.dropzone) {
-                  log('dropping file', 'moving')
-                }
+                  if(document.querySelector('.drop-target')) {
+                    interact('#current-file').unset();
+                    document.getElementById('current-file').classList.add('dropping-file')
+                    let dropTarget = document.querySelector('.drop-target')
+                    let dropTargetX = dropTarget.getBoundingClientRect().x
+                    let dropTargetY = dropTarget.getBoundingClientRect().y
+                    let dropTargetWidth = dropTarget.getBoundingClientRect().width
+                    let dropTargetHeight = dropTarget.getBoundingClientRect().height
+                    let dropTargetCenterX = dropTargetX + (dropTargetWidth / 2)
+                    let dropTargetCenterY = dropTargetY + (dropTargetHeight / 2)
+                    let currentFileScale = document.getElementById('current-file').style.transform
+                    let currentFileScaleValue = parseFloat(currentFileScale.split('scale(')[1].split(')')[0])
+                    let screenWidth = window.innerWidth
+                    let screenHeight = window.innerHeight
+                    dropTargetCenterX = dropTargetCenterX - (screenWidth / 2)
+                    dropTargetCenterY = dropTargetCenterY - (screenHeight / 2) + 60
+                    document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(100px) scale('+currentFileScaleValue+')'
+                    let fileBeingDropped = document.querySelector('.dropping-file')
+                    let preFinal = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-150px) scale(0.25)'
+                    let finalTransform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-50px) scale(0.25)'
+                    
+                    let filename = document.getElementById('current-file-name').innerText;
+                    let location = dropTarget.getAttribute("data-folder-location");
 
-                //console.log(event.dx, event.dy)
+                    setTimeout(() => {
+                      fileBeingDropped.style.transform = preFinal
+                    }, 200);
+                    setTimeout(() => {
+                      fileBeingDropped.style.transform = finalTransform
+                      fileBeingDropped.style.opacity = 0
+                      window.fileswiper.fileDropped({filename: filename, location: location});
+                    }, 800);
+                    setTimeout(() => {
+                      fileBeingDropped.remove()
+                      let rootFolder = JSON.parse(localStorage.getItem('root-folder'));
+                      window.fileswiper.sendRootFolder(rootFolder);
+                    }, 1500)
+                  }
+                }
 
                 var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
                 var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
@@ -70,32 +102,19 @@ export const createCurrentFile = () => {
                 position.x += event.dx
                 position.y += event.dy
 
-                //console.log(position.x, position.y)
-
-                //set the transform-origin to the x, y coordinates of the mouse's location relative to the element
-                //event.target.style.transformOrigin = `${event.clientX - event.target.getBoundingClientRect().x}px ${event.clientY - event.target.getBoundingClientRect().y}px`
-
                 event.target.style.cursor = 'grabbing'
-          
-                //event.target.style.transform = `translate(${position.x}px, ${position.y}px)`
 
-                //make the element get smaller the further it is dragged
                 let scale = 1 - (Math.abs(position.x)) / 450
-                event.target.style.transform = `translate(${position.x}px, ${position.y}px)`// scale(${scale})`
+                event.target.style.transform = `translate(${position.x}px, ${position.y}px) scale(${scale})`
               }
               
-        const dropIntoFolder = (event) => {
-          console.log('drop into folder')
-        }
 
         //add a mouse up listener to the current file
         currentFile.addEventListener('mouseup', function(){
-          //currentFile.setCapture();
           log('mouse up', 'interacting')
         })
 
         currentFile.addEventListener('mousedown', function(){
-          //document.releaseCapture();
           log('mouse down', 'interacting')
         })
 
@@ -103,7 +122,7 @@ export const createCurrentFile = () => {
           log('outside window mouse up', 'interacting')
         })
 
-        function getRestriction(x, y, element) {
+        function getRestriction() {
           let mainArea = document.getElementById('main-area')
           let mainAreaRect = mainArea.getBoundingClientRect()
           let mainAreaX = mainAreaRect.x
@@ -118,8 +137,8 @@ export const createCurrentFile = () => {
 
           // Calculate the width and height of the element being moved
           let elementTag = document.getElementById('current-file')
-          let elementWidth = elementTag.getBoundingClientRect().width * 1.5
-          let elementHeight = elementTag.getBoundingClientRect().height * 1.5
+          let elementWidth = elementTag.getBoundingClientRect().width * 1.2
+          let elementHeight = elementTag.getBoundingClientRect().height * 1.2
           
           // Calculate the maximum distance from the center of the circle that the element can be moved
           let maxDistance = radius - Math.sqrt(Math.pow(elementWidth, 2) + Math.pow(elementHeight, 2)) / 2
@@ -137,6 +156,26 @@ export const createCurrentFile = () => {
             height: maxHeight
           }
         }
+
+        //get the center point of all the .location elements
+        let centerPoints = []
+        let locations = document.querySelectorAll('.location')
+        locations.forEach(location => {
+          let locationRect = location.getBoundingClientRect()
+          let locationX = locationRect.x
+          let locationY = locationRect.y 
+          let locationWidth = locationRect.width
+          let locationHeight = locationRect.height
+          let locationCenterX = locationX + locationWidth / 2
+          let locationCenterY = locationY + locationHeight / 2
+          //if the location is the trash then set the range as 250
+          if(location.id === 'trash') {
+            centerPoints.push({x: locationCenterX, y: locationCenterY, range: 150})
+          } else {
+            centerPoints.push({x: locationCenterX, y: locationCenterY})
+          }
+        })
+
         
 
         interact('#current-file').draggable({
@@ -149,19 +188,15 @@ export const createCurrentFile = () => {
                 },
                 modifiers: [
                   interact.modifiers.restrict({
-                    restriction: function(x, y, element) {
-                      return getRestriction(x, y, element)
-                    },
+                    restriction: getRestriction(),
                     endOnly: true
                   }), 
                   interact.modifiers.snap({
-                    targets: [
-                      {x: 750, y: 360},
-                    ], 
+                    targets: centerPoints, 
                     relativePoints: [
                       {x: 0.5, y: 0.5}
                     ],
-                    range: 70,
+                    range: 150,
                     endOnly: true,
                   })
                 ],
@@ -177,26 +212,9 @@ export const createCurrentFile = () => {
                 //console.log(dropTarget)
                 //if(window.isOverDrop && dropTarget) {
                   //console.log('drop into folder')
-                  /*interact('#current-file').unset();
-                  document.getElementById('current-file').classList.add('dropping-file')
+                  /*
+
                   
-                  let dropTargetX = dropTarget.getBoundingClientRect().x
-                  let dropTargetY = dropTarget.getBoundingClientRect().y
-                  let dropTargetWidth = dropTarget.getBoundingClientRect().width
-                  let dropTargetHeight = dropTarget.getBoundingClientRect().height
-                  let dropTargetCenterX = dropTargetX + (dropTargetWidth / 2)
-                  let dropTargetCenterY = dropTargetY + (dropTargetHeight / 2)
-                  //let currentFileScale = document.getElementById('current-file').style.transform
-                  //let currentFileScaleValue = parseFloat(currentFileScale.split('scale(')[1].split(')')[0])
-                  let screenWidth = window.innerWidth
-                  let screenHeight = window.innerHeight
-                  dropTargetCenterX = dropTargetCenterX - (screenWidth / 2)
-                  dropTargetCenterY = dropTargetCenterY - (screenHeight / 2) + 60
-                  document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px)'// scale('+currentFileScaleValue+')'
-
-                  let filename = document.getElementById('current-file-name').innerText;
-                  let location = dropTarget.getAttribute("data-folder-location");
-
                   if(location == "skip") {
                     console.log('skip file')
                     setTimeout(() => {
@@ -207,8 +225,7 @@ export const createCurrentFile = () => {
                     }, 500);
 
                   } else {
-                    window.fileswiper.fileDropped({filename: filename, location: location});
-
+                    
                     //add a dropping class to the current file 
                     document.getElementById('current-file').classList.add('dropping-file')
 
@@ -218,44 +235,29 @@ export const createCurrentFile = () => {
                     //position = { x: 0, y: 0 }
 
                     //get the current file with the dropping-file class
-                    let fileBeingDropped = document.querySelector('.dropping-file')
+                    
 
                     //remove drop-target class from the drop target
                     document.querySelector('.drop-target').classList.remove('drop-target')
 
-                    setTimeout(() => {
-                      //if the current file exists 
-                      if(fileBeingDropped) {
-                        //move the current file down by 60px and fade it out
-                        fileBeingDropped.style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(100px)'// scale('+currentFileScaleValue+')'
-                        fileBeingDropped.style.opacity = '0'
-                      }
-                      
-
-                    }, 200);
+                    
 
                     setTimeout(() => {
                       //if the current file exists 
                       if(fileBeingDropped) {
                         //move the current file down by 60px and fade it out
-                        fileBeingDropped.remove()
+                        
                       }
                       
                     }, 400);
 
-                    setTimeout(() => {
-                      let rootFolder = JSON.parse(localStorage.getItem('root-folder'));
-                      window.fileswiper.sendRootFolder(rootFolder);
-                      console.log('file dropped')
-                      
-                    }, 600)
+                    
 
                   }*/
                 //}
               }).on('dragstart', function(){
-                //position = {x: 0, y: 0}
                 log('dragstart', 'interacting')
-              }).on('draginertiastart', function (event) {
+              }).on('draginertiastart', function () {
                 log('draginertiastart', 'interacting')
               })
 

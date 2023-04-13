@@ -37,14 +37,14 @@ const func = async () => {
             if(document.querySelector('.drop-target')) {
                 document.querySelector('.drop-target').classList.remove('drop-target')
             }
-            window.isOverDrop = true;
+            //window.isOverDrop = true;
             event.target.classList.add('drop-target')
             //console.log('isOverDrop = true')
         }, 
         ondragleave: function (event) {
             setTimeout(() => {
                 event.target.classList.remove('drop-target')
-                window.isOverDrop = false;
+                //window.isOverDrop = false;
                 //console.log('isOverDrop = false')
             }, 500)
         }
@@ -57,16 +57,17 @@ const func = async () => {
     })
 
 
+
+
     let trash = createTrash();
     const main = document.querySelector("main");
     main.appendChild(trash);
     
-
     // Handle the root folder selection
     window.fileswiper.selectRootFolder((event, locationAndFiles) => {
 
         let sortBy = locationAndFiles.sortBy;
-        let sortByText = document.getElementById("sort-by");
+        let sortByText = document.getElementById("sort-by-text");
         sortByText.textContent = sortBy;
 
         localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));

@@ -73,8 +73,8 @@ main {
         #current-file {
             max-width: 33vw;
             max-height: 50vw;
-            height: 100px;
-            width: 100px;
+            height: 150px;
+            width: 150px;
             background: white url('assets/loading.gif') no-repeat center center;
             background-size: 20px 20px;
             transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease;
@@ -87,13 +87,6 @@ main {
                 border-top-right-radius: 0.25rem;
                 overflow: hidden;
                 pointer-events: none;
-            }
-        }
-        li {
-            span {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
             }
         }
     }
@@ -117,6 +110,7 @@ main {
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 50;
             > div {
                 pointer-events: none;
                 > svg {
@@ -149,7 +143,7 @@ main {
     overflow: hidden;
     background: white url('assets/loading.gif') no-repeat center center;
     background-size: 20px 20px;
-    transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease;
+    transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease, transform 0.2s ease !important;
     > span {
         display: none;
     }
@@ -177,6 +171,31 @@ main {
     font-size: 12px;
     border-radius: 3px;
     color: #777ea2;
+    &.pptx {
+        background-color: #fdb7fe;
+        color: #914e92;
+        border-color: currentColor;
+    }
+    &.jpg {
+        background-color: #8ce3fe;
+        color: #3f8aa1;
+        border-color: currentColor;
+    }
+    &.png {
+        background-color: #8cfe99;
+        color: #539d5c;
+        border-color: currentColor;
+    }
+    &.pdf {
+        background-color: #fe8c8c;
+        color: #9d3f3f;
+        border-color: currentColor;
+    }
+    &.docx {
+        background-color: #8cc5fe;
+        color: #316599;
+        border-color: currentColor;
+    }
 }
 
 #current-file-size {
@@ -191,6 +210,20 @@ main {
     font-size: 12px;
     border-radius: 3px;
     color: #777ea2;
+}
+
+#current-file-name {
+    position: absolute;
+    bottom: 1px;
+    left: 1px;
+    width: calc(100% - 2px);
+    padding: 3px 0;
+    background-color: white;
+    font-size: 0.65rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 5px;
 }
 
 

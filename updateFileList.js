@@ -23,12 +23,9 @@ export const updateFileList = (fileList) => {
         }
 
         currentFileName.innerText = currentFile;
-        currentFileName.classList.add("absolute", "bottom-0", "text-slate-700", "w-full", "left-0", "text-xxs", "bg-white", "p-3")
-
-        // get the file extension
         currentFileType.innerText = currentFile.split(".").pop(); 
+        currentFileType.classList.add(currentFileType.innerText.toLowerCase());
 
-        // get the file size
         let currentFileSizeInBytes = fileList[0].size;
         let currentFileSizeInKilobytes = currentFileSizeInBytes / 1000;
         let currentFileSizeInMegabytes = currentFileSizeInKilobytes / 1000;
@@ -42,10 +39,6 @@ export const updateFileList = (fileList) => {
 
     if(fileList.length === 0) {
        
-        /*let currentFileName = document.getElementById("current-file");
-        if(currentFileName) {
-            currentFileName.remove();
-        }*/
         let congratsDiv = document.getElementsByClassName("congrats")[0];
         if(!congratsDiv) {
 
@@ -65,7 +58,6 @@ export const updateFileList = (fileList) => {
             files.appendChild(congratsDiv);
         }
     } else {
-        //remove the congrats div
         let congratsDiv = document.getElementsByClassName("congrats")[0];
         if(congratsDiv) {
             congratsDiv.remove();
