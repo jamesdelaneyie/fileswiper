@@ -5,13 +5,10 @@ const url = require('url')
 const sound = require("sound-play");
 const chokidar = require("chokidar");
 const electronConnect = require('electron-connect').server;
-// load in the filesToIgnore.js file
-const filesToIgnore = require('./filesToIgnore.js');
-const fetch = require('node-fetch');
+
 const thumbnail = require('quicklook-thumbnail');
 
-
-//console.log(filesToIgnore)
+const filesToIgnore = require('./filesToIgnore.js');
 
 app.setName('FileSwiper');
 
@@ -216,12 +213,32 @@ function createWindow () {
 
       let files = getFileListFromDirectory(location, sortBy);
       startWatcher(win, location);
-      //console.log("sending files to window")
+      // make a directory for the thumbnails 
+      let thumbnailDir = location + '/.thumbnails';
+      if (!fs.existsSync(thumbnailDir)){
+        fs.mkdirSync(thumbnailDir);
+      }
+
       console.log(files)
       win.webContents.send('selectRootFolder', {location: location, files: files, sortBy: sortBy});
       if(files.length > 0) {
+
+              var options = {
+                size: 512,
+                folder: thumbnailDir
+          };
+          
+          thumbnail.create(location + '/' + files[0].name, options, function(err, result){
+            if (err) throw (err);
+            //load the image and convert to Data URL
+            var imageAsBase64 = fs.readFileSync(result, 'base64');
+            imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
+            win.webContents.send('sendPreviewImage', imageAsBase64);
+          })
+
+
         //if the first file is a jpg, png, or gif then show preview
-        if(files[0].name.includes('.jpg') || files[0].name.includes('.png') || files[0].name.includes('.gif') || files[0].name.includes('.jpeg') || files[0].name.includes('.webp') || files[0].name.includes('.svg')) {
+        /*if(files[0].name.includes('.jpg') || files[0].name.includes('.png') || files[0].name.includes('.gif') || files[0].name.includes('.jpeg') || files[0].name.includes('.webp') || files[0].name.includes('.svg')) {
           win.webContents.send('sendPreviewImage', location + '/' + files[0].name);
         }
         if(files[0].name.includes('.pdf') || files[0].name.includes('.mp4')) {
@@ -246,22 +263,11 @@ function createWindow () {
         }
         if(files[0].name.includes('pptx')) {
           
-          var options = {
-                size: 256,
-                folder: location
-          };
           
-          thumbnail.create(location + '/' + files[0].name, options, function(err, result){
-            if (err) throw (err);
-            //load the image and convert to Data URL
-            var imageAsBase64 = fs.readFileSync(result, 'base64');
-            imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
-            win.webContents.send('sendPreviewImage', imageAsBase64);
-          })
           
           
 
-        }
+        }*/
       }
       rootFolder = location;
   }
@@ -289,13 +295,6 @@ function createWindow () {
           let location = result.filePaths[0];
           sendFilesToWindow(win, location);
 
-          //if file is doc or pdf then show preview
-          /*if(files[0].includes('.doc') || files[0].includes('.pdf')) {
-            win.webContents.send('sendDocImage', files[0]);
-          } else {
-
-            
-          }*/
         }
 
       }).catch(err => {
@@ -328,6 +327,11 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    //remove the thumbnails directory
+    let thumbnailDir = rootFolder + '/.thumbnails';
+    if (fs.existsSync(thumbnailDir)){
+      fs.rmdirSync(thumbnailDir, { recursive: true });
+    }
     app.quit()
   }
 })

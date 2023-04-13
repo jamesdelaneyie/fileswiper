@@ -69,8 +69,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "createCurrentFile": () => (/* binding */ createCurrentFile)
 /* harmony export */ });
-/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! interactjs */ "./node_modules/interactjs/dist/interact.min.js");
-/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(interactjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! interactjs */ "./node_modules/interactjs/dist/interact.min.js");
+/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(interactjs__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _logging_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./logging.js */ "./logging.js");
+
 
 var createCurrentFile = function createCurrentFile() {
   var files = document.getElementById("files");
@@ -101,6 +103,10 @@ var createCurrentFile = function createCurrentFile() {
   currentFileSizeText.setAttribute("id", "current-file-size");
   currentFile.appendChild(currentFileSizeText);
 
+  //set data-x and data-y attributes to 0
+  currentFile.setAttribute('data-x', 0);
+  currentFile.setAttribute('data-y', 0);
+
   //let files = document.getElementById("files");
   files.appendChild(currentFile);
   var position = {
@@ -109,79 +115,189 @@ var createCurrentFile = function createCurrentFile() {
   };
   function dragMoveListener(event) {
     var target = event.target;
+
+    //console.log(event)
+    //if the element is over a dropzone and the pointer is up, then drop the element into the dropzone
+    if (event.dropzone) {
+      (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('dropping file', 'moving');
+    }
+
+    //console.log(event.dx, event.dy)
+
     var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
     var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
     target.setAttribute('data-x', x);
     target.setAttribute('data-y', y);
     position.x += event.dx;
     position.y += event.dy;
+
+    //console.log(position.x, position.y)
+
+    //set the transform-origin to the x, y coordinates of the mouse's location relative to the element
+    //event.target.style.transformOrigin = `${event.clientX - event.target.getBoundingClientRect().x}px ${event.clientY - event.target.getBoundingClientRect().y}px`
+
     event.target.style.cursor = 'grabbing';
-    event.target.style.transform = "translate(".concat(position.x, "px, ").concat(position.y, "px)");
+
+    //event.target.style.transform = `translate(${position.x}px, ${position.y}px)`
 
     //make the element get smaller the further it is dragged
-    var scale = 1 - (Math.abs(position.x) + Math.abs(position.y)) / 750;
-    event.target.style.transform = "translate(".concat(position.x, "px, ").concat(position.y, "px) scale(").concat(scale, ")");
+    var scale = 1 - Math.abs(position.x) / 450;
+    event.target.style.transform = "translate(".concat(position.x, "px, ").concat(position.y, "px)"); // scale(${scale})`
   }
-  interactjs__WEBPACK_IMPORTED_MODULE_0___default()('#current-file').draggable({
-    inertia: true,
+
+  var dropIntoFolder = function dropIntoFolder(event) {
+    console.log('drop into folder');
+  };
+
+  //add a mouse up listener to the current file
+  currentFile.addEventListener('mouseup', function () {
+    //currentFile.setCapture();
+    (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('mouse up', 'interacting');
+  });
+  currentFile.addEventListener('mousedown', function () {
+    //document.releaseCapture();
+    (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('mouse down', 'interacting');
+  });
+  window.addEventListener('mouseup', function () {
+    (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('outside window mouse up', 'interacting');
+  });
+  function getRestriction(x, y, element) {
+    var mainArea = document.getElementById('main-area');
+    var mainAreaRect = mainArea.getBoundingClientRect();
+    var mainAreaX = mainAreaRect.x;
+    var mainAreaY = mainAreaRect.y;
+    var mainAreaWidth = mainAreaRect.width;
+    var mainAreaHeight = mainAreaRect.height;
+
+    // Calculate the center and radius of the circle
+    var centerX = mainAreaX + mainAreaWidth / 2;
+    var centerY = mainAreaY + mainAreaHeight / 2;
+    var radius = Math.min(mainAreaWidth, mainAreaHeight) / 2;
+
+    // Calculate the width and height of the element being moved
+    var elementTag = document.getElementById('current-file');
+    var elementWidth = elementTag.getBoundingClientRect().width * 1.5;
+    var elementHeight = elementTag.getBoundingClientRect().height * 1.5;
+
+    // Calculate the maximum distance from the center of the circle that the element can be moved
+    var maxDistance = radius - Math.sqrt(Math.pow(elementWidth, 2) + Math.pow(elementHeight, 2)) / 2;
+
+    // Calculate the maximum rectangle size based on the maximum allowed distance from the center of the circle
+    var maxWidth = maxDistance * 2;
+    var maxHeight = maxDistance * 2;
+    var maxX = centerX - maxWidth / 2;
+    var maxY = centerY - maxHeight / 2;
+    return {
+      x: maxX,
+      y: maxY,
+      width: maxWidth,
+      height: maxHeight
+    };
+  }
+  interactjs__WEBPACK_IMPORTED_MODULE_1___default()('#current-file').draggable({
+    inertia: {
+      resistance: 10,
+      smoothEndDuration: 100
+    },
     cursorChecker: function cursorChecker() {
       return 'grab';
     },
-    modifiers: [interactjs__WEBPACK_IMPORTED_MODULE_0___default().modifiers.restrictRect({
-      restriction: 'parent',
+    modifiers: [interactjs__WEBPACK_IMPORTED_MODULE_1___default().modifiers.restrict({
+      restriction: function restriction(x, y, element) {
+        return getRestriction(x, y, element);
+      },
+      endOnly: true
+    }), interactjs__WEBPACK_IMPORTED_MODULE_1___default().modifiers.snap({
+      targets: [{
+        x: 750,
+        y: 360
+      }],
+      relativePoints: [{
+        x: 0.5,
+        y: 0.5
+      }],
+      range: 70,
       endOnly: true
     })],
     listeners: {
       move: dragMoveListener
     }
-  }).on('up', function (event) {
-    if (window.isOverDrop) {
-      interactjs__WEBPACK_IMPORTED_MODULE_0___default()('#current-file').unset();
-      document.getElementById('current-file').classList.add('dropping-file');
-      var dropTarget = document.querySelector('.drop-target');
-      var dropTargetX = dropTarget.getBoundingClientRect().x;
-      var dropTargetY = dropTarget.getBoundingClientRect().y;
-      var dropTargetWidth = dropTarget.getBoundingClientRect().width;
-      var dropTargetHeight = dropTarget.getBoundingClientRect().height;
-      var dropTargetCenterX = dropTargetX + dropTargetWidth / 2;
-      var dropTargetCenterY = dropTargetY + dropTargetHeight / 2;
-      var currentFileScale = document.getElementById('current-file').style.transform;
-      var currentFileScaleValue = parseFloat(currentFileScale.split('scale(')[1].split(')')[0]);
-      var screenWidth = window.innerWidth;
-      var screenHeight = window.innerHeight;
-      dropTargetCenterX = dropTargetCenterX - screenWidth / 2;
-      dropTargetCenterY = dropTargetCenterY - screenHeight / 2 + 60;
-      document.getElementById('current-file').style.transform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) scale(' + currentFileScaleValue + ')';
-      var filename = document.getElementById('current-file-name').innerText;
-      var location = dropTarget.getAttribute("data-folder-location");
-      if (location == "skip") {
-        console.log('skip file');
-        setTimeout(function () {
+  }).on('up', function () {
+    (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('pointer up', 'interacting');
+  }).on('dragend', function () {
+    (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('dragend', 'interacting');
+    //let dropTarget = document.querySelector('.drop-target')
+    //onsole.log(window.isOverDrop)
+    //console.log(dropTarget)
+    //if(window.isOverDrop && dropTarget) {
+    //console.log('drop into folder')
+    /*interact('#current-file').unset();
+    document.getElementById('current-file').classList.add('dropping-file')
+    
+    let dropTargetX = dropTarget.getBoundingClientRect().x
+    let dropTargetY = dropTarget.getBoundingClientRect().y
+    let dropTargetWidth = dropTarget.getBoundingClientRect().width
+    let dropTargetHeight = dropTarget.getBoundingClientRect().height
+    let dropTargetCenterX = dropTargetX + (dropTargetWidth / 2)
+    let dropTargetCenterY = dropTargetY + (dropTargetHeight / 2)
+    //let currentFileScale = document.getElementById('current-file').style.transform
+    //let currentFileScaleValue = parseFloat(currentFileScale.split('scale(')[1].split(')')[0])
+    let screenWidth = window.innerWidth
+    let screenHeight = window.innerHeight
+    dropTargetCenterX = dropTargetCenterX - (screenWidth / 2)
+    dropTargetCenterY = dropTargetCenterY - (screenHeight / 2) + 60
+    document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px)'// scale('+currentFileScaleValue+')'
+     let filename = document.getElementById('current-file-name').innerText;
+    let location = dropTarget.getAttribute("data-folder-location");
+     if(location == "skip") {
+      console.log('skip file')
+      setTimeout(() => {
+        //move the current file down by 60px and fade it out
+        document.getElementById('current-file').style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-100px)'// scale('+currentFileScaleValue+') '
+        document.getElementById('current-file').style.opacity = '0'
+       }, 500);
+     } else {
+      window.fileswiper.fileDropped({filename: filename, location: location});
+       //add a dropping class to the current file 
+      document.getElementById('current-file').classList.add('dropping-file')
+       //remove the current-file id from the current file
+      document.getElementById('current-file').removeAttribute('id')
+      
+      //position = { x: 0, y: 0 }
+       //get the current file with the dropping-file class
+      let fileBeingDropped = document.querySelector('.dropping-file')
+       //remove drop-target class from the drop target
+      document.querySelector('.drop-target').classList.remove('drop-target')
+       setTimeout(() => {
+        //if the current file exists 
+        if(fileBeingDropped) {
           //move the current file down by 60px and fade it out
-          document.getElementById('current-file').style.transform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) scale(' + currentFileScaleValue + ') translateY(-100px)';
-          document.getElementById('current-file').style.opacity = '0';
-        }, 500);
-      } else {
-        window.fileswiper.fileDropped({
-          filename: filename,
-          location: location
-        });
-        setTimeout(function () {
+          fileBeingDropped.style.transform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(100px)'// scale('+currentFileScaleValue+')'
+          fileBeingDropped.style.opacity = '0'
+        }
+        
+       }, 200);
+       setTimeout(() => {
+        //if the current file exists 
+        if(fileBeingDropped) {
           //move the current file down by 60px and fade it out
-          document.getElementById('current-file').style.transform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) scale(' + currentFileScaleValue + ') translateY(100px)';
-          document.getElementById('current-file').style.opacity = '0';
-
-          //remove drop-target class from the drop target
-          document.querySelector('.drop-target').classList.remove('drop-target');
-        }, 1000);
-        setTimeout(function () {
-          //remove the current file
-          document.getElementById('current-file').remove();
-          var rootFolder = JSON.parse(localStorage.getItem('root-folder'));
-          window.fileswiper.sendRootFolder(rootFolder);
-        }, 1500);
-      }
-    }
+          fileBeingDropped.remove()
+        }
+        
+      }, 400);
+       setTimeout(() => {
+        let rootFolder = JSON.parse(localStorage.getItem('root-folder'));
+        window.fileswiper.sendRootFolder(rootFolder);
+        console.log('file dropped')
+        
+      }, 600)
+     }*/
+    //}
+  }).on('dragstart', function () {
+    //position = {x: 0, y: 0}
+    (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('dragstart', 'interacting');
+  }).on('draginertiastart', function (event) {
+    (0,_logging_js__WEBPACK_IMPORTED_MODULE_0__.log)('draginertiastart', 'interacting');
   });
 };
 
@@ -209,6 +325,31 @@ var createTrash = function createTrash() {
 
 /***/ }),
 
+/***/ "./logging.js":
+/*!********************!*\
+  !*** ./logging.js ***!
+  \********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "log": () => (/* binding */ log)
+/* harmony export */ });
+var log = function log(message, type) {
+  var messageStyle = '';
+  if (type === 'interacting') {
+    messageStyle = 'background: #222; color: #bada55';
+  } else if (type === 'moving') {
+    messageStyle = 'background: #222; color: #ff0000';
+  } else {
+    messageStyle = '';
+  }
+  console.log("%c".concat(message), messageStyle);
+};
+
+/***/ }),
+
 /***/ "./updateFileList.js":
 /*!***************************!*\
   !*** ./updateFileList.js ***!
@@ -227,10 +368,8 @@ var updateFileList = function updateFileList(fileList) {
 
   var totalNumberOfFiles = fileList.length;
   var totalNumberOfFilesElement = document.getElementById("total-number-of-files");
-  totalNumberOfFilesElement.innerText = totalNumberOfFiles;
+  totalNumberOfFilesElement.innerText = totalNumberOfFiles + ' files';
   if (fileList.length > 0) {
-    var introScreen = document.getElementById("intro-screen");
-    introScreen.style.display = "none";
     var currentFile = fileList[0].name;
     var currentFileName = document.getElementById("current-file-name");
     var currentFileType = document.getElementById("current-file-type");
@@ -258,10 +397,10 @@ var updateFileList = function updateFileList(fileList) {
     }
   }
   if (fileList.length === 0) {
-    var _currentFileName = document.getElementById("current-file");
-    if (_currentFileName) {
-      _currentFileName.remove();
-    }
+    /*let currentFileName = document.getElementById("current-file");
+    if(currentFileName) {
+        currentFileName.remove();
+    }*/
     var congratsDiv = document.getElementsByClassName("congrats")[0];
     if (!congratsDiv) {
       var _congratsDiv = document.createElement("div");
@@ -272,7 +411,7 @@ var updateFileList = function updateFileList(fileList) {
       _congratsDiv.appendChild(congratsIcon);
       var congratsText = document.createElement("span");
       congratsText.classList.add("congrats-text", "text-slate-600", "mt-5", "block");
-      congratsText.innerText = "This folder has no files! Pick another folder below.";
+      congratsText.innerText = "Folder Empty! No more files.";
       _congratsDiv.appendChild(congratsText);
       var files = document.getElementById("files");
       files.appendChild(_congratsDiv);
@@ -408,6 +547,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(interactjs__WEBPACK_IMPORTED_MODULE_4__);
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
@@ -417,7 +559,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var func = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var files, quitButton, listOfFolders, i, trash, main, addFolder, folderSelect;
+    var files, quitButton, listOfFolders, _iterator, _step, folder, trash, main, addFolder, undoButton, folderSelect;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
@@ -430,9 +572,17 @@ var func = /*#__PURE__*/function () {
           // Load the last folders used by the user    
           listOfFolders = JSON.parse(localStorage.getItem("locations")); //if list of folders is not null, add the folders to the DOM
           if (Array.isArray(listOfFolders)) {
-            for (i = 0; i < listOfFolders.length; i++) {
-              // Add the folders used by the user to the DOM
-              (0,_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(listOfFolders[i]);
+            _iterator = _createForOfIteratorHelper(listOfFolders);
+            try {
+              for (_iterator.s(); !(_step = _iterator.n()).done;) {
+                folder = _step.value;
+                // Add the folders used by the user to the DOM
+                (0,_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(folder);
+              }
+            } catch (err) {
+              _iterator.e(err);
+            } finally {
+              _iterator.f();
             }
           } else {
             console.log('No folders found in local storage');
@@ -442,23 +592,28 @@ var func = /*#__PURE__*/function () {
           // Interact.js set as dropzone
           interactjs__WEBPACK_IMPORTED_MODULE_4___default()('.location').dropzone({
             overlap: 0.01,
-            ondrop: function ondrop(event) {
-              console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id);
-            },
             ondragenter: function ondragenter(event) {
+              if (document.querySelector('.drop-target')) {
+                document.querySelector('.drop-target').classList.remove('drop-target');
+              }
               window.isOverDrop = true;
               event.target.classList.add('drop-target');
+              //console.log('isOverDrop = true')
             },
+
             ondragleave: function ondragleave(event) {
-              window.isOverDrop = false;
-              event.target.classList.remove('drop-target');
+              setTimeout(function () {
+                event.target.classList.remove('drop-target');
+                window.isOverDrop = false;
+                //console.log('isOverDrop = false')
+              }, 500);
             }
           }).on('dropactivate', function (event) {
             event.target.classList.add('drop-active');
-            event.target.classList.remove('drop-target');
+            //event.target.classList.remove('drop-target')
           }).on('dropdeactivate', function (event) {
             event.target.classList.remove('drop-active');
-            event.target.classList.remove('drop-target');
+            //event.target.classList.remove('drop-target')
           });
           trash = (0,_createTrash_js__WEBPACK_IMPORTED_MODULE_2__.createTrash)();
           main = document.querySelector("main");
@@ -485,16 +640,10 @@ var func = /*#__PURE__*/function () {
           addFolder.addEventListener("click", function () {
             window.fileswiper.openDialog();
           });
-
-          //
-          // Event handlers
-          // 
-          /*
-          // Undo button
-          let undoButton = document.getElementById("undo");
-          undoButton.addEventListener("click", () => {
-              window.fileswiper.undo();
-          })*/
+          undoButton = document.getElementById("undo");
+          undoButton.addEventListener("click", function () {
+            window.fileswiper.undo();
+          });
 
           // Select root folder
           folderSelect = document.getElementById("folder-select");
@@ -504,13 +653,14 @@ var func = /*#__PURE__*/function () {
 
           // Save the config to local storage
           window.fileswiper.sendConfig(function (event, config) {
-            localStorage.setItem("config", JSON.stringify(config));
+            if (typeof config === "undefined") {
+              var introScreen = document.getElementById("intro-screen");
+              introScreen.style.display = "block";
+            } else {
+              localStorage.setItem("config", JSON.stringify(config));
+            }
           });
           window.fileswiper.sendPreviewImage(function (event, image) {
-            var webview = document.getElementById("current-file").querySelector("webview");
-            if (webview !== null) {
-              webview.remove();
-            }
             var imageElement = document.getElementById("current-file").querySelector("img");
             if (imageElement === null) {
               imageElement = document.createElement("img");
@@ -520,27 +670,6 @@ var func = /*#__PURE__*/function () {
             }
             var currentFilePreview = document.getElementById("current-file-preview");
             currentFilePreview.src = image;
-          });
-          window.fileswiper.sendDocImage(function (event, image) {
-            //if there is already a webview, remove it
-            var webview = document.getElementById("current-file").querySelector("webview");
-            if (webview !== null) {
-              webview.remove();
-            }
-            var imageElement = document.getElementById("current-file").querySelector("img");
-            if (imageElement !== null) {
-              imageElement.remove();
-            }
-            webview = document.createElement("webview");
-            var fullPath = 'file://' + image;
-            webview.setAttribute("src", fullPath);
-            webview.setAttribute("nodeintegration", "true");
-            webview.setAttribute("plugins", "true");
-            webview.setAttribute("allowpopups", "true");
-            webview.setAttribute("webpreferences", "allowRunningInsecureContent");
-            webview.setAttribute("webpreferences", "allowDisplayingInsecureContent");
-            var preview = document.getElementById("current-file");
-            preview.appendChild(webview);
           });
 
           // Handle the addition of a new folder to the DOM
@@ -552,7 +681,7 @@ var func = /*#__PURE__*/function () {
             (0,_updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__.updateSavedFolders)(location);
             (0,_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(location);
           });
-        case 19:
+        case 20:
         case "end":
           return _context.stop();
       }

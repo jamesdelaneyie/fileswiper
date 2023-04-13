@@ -23,7 +23,6 @@ contextBridge.exposeInMainWorld('fileswiper', {
     folderLocation: (location) => ipcRenderer.on('folderLocation', location), 
     sendConfig: (config) => ipcRenderer.on('sendConfig', config),
     sendPreviewImage: (previewImage) => ipcRenderer.on('sendPreviewImage', previewImage),  
-    sendDocImage: (DocImage) => ipcRenderer.on('sendDocImage', DocImage),
     undo: () => ipcRenderer.invoke('undo'),
     quit: () => ipcRenderer.invoke('quit'), 
     sendRootFolder: (rootFolder) => ipcRenderer.invoke('sendRootFolder', rootFolder),

@@ -10,7 +10,7 @@ const func = async () => {
     let files = [];
 
      // Quit button
-     let quitButton = document.getElementById("quit");
+     const quitButton = document.getElementById("quit");
      quitButton.addEventListener("click", () => {
          window.fileswiper.quit();
      })
@@ -19,9 +19,9 @@ const func = async () => {
     const listOfFolders = JSON.parse(localStorage.getItem("locations"));
     //if list of folders is not null, add the folders to the DOM
     if(Array.isArray(listOfFolders)) {
-        for(let i = 0; i < listOfFolders.length; i++) {
+        for (const folder of listOfFolders) {
             // Add the folders used by the user to the DOM
-            addFolderToDom(listOfFolders[i]);
+            addFolderToDom(folder);
         }
     } else {
         console.log('No folders found in local storage')
@@ -33,28 +33,32 @@ const func = async () => {
     // Interact.js set as dropzone
     interact('.location').dropzone({
         overlap: 0.01,
-        ondrop: function (event) {
-            console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id)
-          },
         ondragenter: function (event) {
+            if(document.querySelector('.drop-target')) {
+                document.querySelector('.drop-target').classList.remove('drop-target')
+            }
             window.isOverDrop = true;
             event.target.classList.add('drop-target')
+            //console.log('isOverDrop = true')
         }, 
         ondragleave: function (event) {
-            window.isOverDrop = false;
-            event.target.classList.remove('drop-target')
+            setTimeout(() => {
+                event.target.classList.remove('drop-target')
+                window.isOverDrop = false;
+                //console.log('isOverDrop = false')
+            }, 500)
         }
     }).on('dropactivate', function (event) {
         event.target.classList.add('drop-active')
-        event.target.classList.remove('drop-target')
+        //event.target.classList.remove('drop-target')
     }).on('dropdeactivate', function (event) {
         event.target.classList.remove('drop-active')
-        event.target.classList.remove('drop-target')
+        //event.target.classList.remove('drop-target')
     })
 
 
     let trash = createTrash();
-    let main = document.querySelector("main");
+    const main = document.querySelector("main");
     main.appendChild(trash);
     
 
@@ -81,22 +85,15 @@ const func = async () => {
     });
 
     // Add folder button
-    let addFolder = document.getElementById("add-folder");
+    const addFolder = document.getElementById("add-folder");
     addFolder.addEventListener("click", () => {
         window.fileswiper.openDialog();
     })
 
-
-
-    //
-    // Event handlers
-    // 
-    /*
-    // Undo button
-    let undoButton = document.getElementById("undo");
+    const undoButton = document.getElementById("undo");
     undoButton.addEventListener("click", () => {
         window.fileswiper.undo();
-    })*/
+    })
 
 
     // Select root folder
@@ -107,15 +104,17 @@ const func = async () => {
 
     // Save the config to local storage
     window.fileswiper.sendConfig((event, config) => {
-        localStorage.setItem("config", JSON.stringify(config));
+        if(typeof config === "undefined") {
+            let introScreen = document.getElementById("intro-screen");
+            introScreen.style.display = "block";
+        } else {
+            localStorage.setItem("config", JSON.stringify(config));
+        }
+        
     })
 
 
     window.fileswiper.sendPreviewImage((event, image) => {
-        let webview = document.getElementById("current-file").querySelector("webview");
-        if(webview !== null) {
-            webview.remove();
-        }
         let imageElement = document.getElementById("current-file").querySelector("img");
         if(imageElement === null) {
             imageElement = document.createElement("img");
@@ -125,28 +124,6 @@ const func = async () => {
         }
         let currentFilePreview = document.getElementById("current-file-preview");
         currentFilePreview.src = image;
-    })
-
-    window.fileswiper.sendDocImage((event, image) => {
-        //if there is already a webview, remove it
-        let webview = document.getElementById("current-file").querySelector("webview");
-        if(webview !== null) {
-            webview.remove();
-        }
-        let imageElement = document.getElementById("current-file").querySelector("img");
-        if(imageElement !== null) {
-            imageElement.remove();
-        }
-        webview = document.createElement("webview");
-        let fullPath = 'file://' + image;
-        webview.setAttribute("src", fullPath);
-        webview.setAttribute("nodeintegration", "true");
-        webview.setAttribute("plugins", "true");
-        webview.setAttribute("allowpopups", "true");
-        webview.setAttribute("webpreferences", "allowRunningInsecureContent");
-        webview.setAttribute("webpreferences", "allowDisplayingInsecureContent");
-        let preview = document.getElementById("current-file");
-        preview.appendChild(webview);
     })
 
     

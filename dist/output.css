@@ -521,14 +521,6 @@ video {
   position: absolute;
 }
 
-.relative {
-  position: relative;
-}
-
-.bottom-0 {
-  bottom: 0px;
-}
-
 .bottom-10 {
   bottom: 2.5rem;
 }
@@ -593,14 +585,6 @@ video {
   display: none;
 }
 
-.h-80 {
-  height: 20rem;
-}
-
-.w-60 {
-  width: 15rem;
-}
-
 .w-full {
   width: 100%;
 }
@@ -617,10 +601,6 @@ video {
   align-items: center;
 }
 
-.rounded {
-  border-radius: 0.25rem;
-}
-
 .rounded-full {
   border-radius: 9999px;
 }
@@ -631,10 +611,6 @@ video {
 
 .border {
   border-width: 1px;
-}
-
-.border-2 {
-  border-width: 2px;
 }
 
 .border-4 {
@@ -708,14 +684,6 @@ video {
 .py-2 {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
-}
-
-.pb-1 {
-  padding-bottom: 0.25rem;
-}
-
-.pt-1 {
-  padding-top: 0.25rem;
 }
 
 .pt-3 {
@@ -853,7 +821,8 @@ main {
     #current-file {
       max-width: 33vw;
       max-height: 50vw;
-      //overflow: hidden;
+      height: 100px;
+      width: 100px;
       background: white url('assets/loading.gif') no-repeat center center;
       background-size: 20px 20px;
       transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease;
@@ -867,18 +836,6 @@ main {
         border-top-right-radius: 0.25rem;
         overflow: hidden;
         pointer-events: none;
-      }
-      &.dropping-file {
-        border: 3px solid blue;
-        height: 65px;
-        width: 65px;
-        border-radius: 100%;
-        pointer-events: none;
-        overflow: hidden;
-        transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease, transform 0.5s ease;
-        > span {
-          display: none;
-        }
       }
     }
     li {
@@ -926,6 +883,36 @@ main {
 
 .drop-target {
   border: 3px solid greenyellow !important;
+}
+
+#root-folder-info {
+  z-index: 150;
+}
+
+.dropping-file {
+  border: 3px solid blue;
+  height: 65px;
+  width: 65px;
+  border-radius: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  background: white url('assets/loading.gif') no-repeat center center;
+  background-size: 20px 20px;
+  transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease;
+  > span {
+    display: none;
+  }
+  > img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    -o-object-fit: cover;
+       object-fit: cover;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    overflow: hidden;
+    pointer-events: none;
+  }
 }
 
 #current-file-type {
@@ -1113,10 +1100,6 @@ main {
 [data-countchildren]:has(> :nth-child(5):last-child) > * {
   --nth-siblings: 1;
   transform: scale(1)
-}
-
-.hover\:cursor-move:hover {
-  cursor: move;
 }
 
 .hover\:bg-green-300:hover {

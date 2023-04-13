@@ -6,12 +6,9 @@ export const updateFileList = (fileList) => {
 
     let totalNumberOfFiles = fileList.length;
     let totalNumberOfFilesElement = document.getElementById("total-number-of-files");
-    totalNumberOfFilesElement.innerText = totalNumberOfFiles;
+    totalNumberOfFilesElement.innerText = totalNumberOfFiles + ' files';
 
     if(fileList.length > 0) {
-
-        let introScreen = document.getElementById("intro-screen");
-        introScreen.style.display = "none";
         
         let currentFile = fileList[0].name
         let currentFileName = document.getElementById("current-file-name");
@@ -45,10 +42,10 @@ export const updateFileList = (fileList) => {
 
     if(fileList.length === 0) {
        
-        let currentFileName = document.getElementById("current-file");
+        /*let currentFileName = document.getElementById("current-file");
         if(currentFileName) {
             currentFileName.remove();
-        }
+        }*/
         let congratsDiv = document.getElementsByClassName("congrats")[0];
         if(!congratsDiv) {
 
@@ -61,7 +58,7 @@ export const updateFileList = (fileList) => {
 
             let congratsText = document.createElement("span");
             congratsText.classList.add("congrats-text", "text-slate-600", "mt-5", "block");
-            congratsText.innerText = "This folder has no files! Pick another folder below.";
+            congratsText.innerText = "Folder Empty! No more files.";
             congratsDiv.appendChild(congratsText);
 
             let files = document.getElementById("files");

@@ -73,7 +73,8 @@ main {
         #current-file {
             max-width: 33vw;
             max-height: 50vw;
-            //overflow: hidden;
+            height: 100px;
+            width: 100px;
             background: white url('assets/loading.gif') no-repeat center center;
             background-size: 20px 20px;
             transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease;
@@ -86,18 +87,6 @@ main {
                 border-top-right-radius: 0.25rem;
                 overflow: hidden;
                 pointer-events: none;
-            }
-            &.dropping-file {
-                border: 3px solid blue;
-                height: 65px;
-                width: 65px;
-                border-radius: 100%;
-                pointer-events: none;
-                overflow: hidden;
-                transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease, transform 0.5s ease;
-                > span {
-                    display: none;
-                }
             }
         }
         li {
@@ -145,6 +134,35 @@ main {
 
 .drop-target {
     border: 3px solid greenyellow !important;
+}
+
+#root-folder-info {
+    z-index: 150;
+}
+
+.dropping-file {
+    border: 3px solid blue;
+    height: 65px;
+    width: 65px;
+    border-radius: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    background: white url('assets/loading.gif') no-repeat center center;
+    background-size: 20px 20px;
+    transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease;
+    > span {
+        display: none;
+    }
+    > img {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+        overflow: hidden;
+        pointer-events: none;
+    }
 }
 
 #current-file-type {
