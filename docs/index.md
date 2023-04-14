@@ -2,7 +2,21 @@
 
 # ✨File*swiper*
 
-A tiny Mac OSX app that lets you sort out the contents of a folder by swiping files into buckets. Built with Electron. 
+A tiny macOS app that lets you sort out the contents of a folder by swiping files into buckets. Built with Electron. 
+
+
+### Features
+- File previews for all native macOS file types
+- Drag (or throw) files from the stack into buckets to move them
+- Skip files by swiping them upwards
+- Trash files by swiping them into the trash can
+- Add up to 5 buckets to sort files into
+- Sort files by name, size, and last modified date
+- See file size, type, and last modified date at a glance
+- Move history, undo the last move
+- Folder watching, file list updates on OS level file changes
+- Double click to preview file at full size
+
 
 ### Interesting bits: 
 
@@ -28,7 +42,7 @@ To Do:
 - ~~add trash and folder icons!!~~ 
 - ~~add physics to main area so you can throw files into buckets, p2.js?~~ Interact.js
 - bug: moving files too fast breaks the animation flow
-- add: lock window size
+- ~~add: lock window size~~ 
 - change: move add folder button to the circle path UI
 - folders add / remove in one direction
 - 
