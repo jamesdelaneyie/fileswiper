@@ -1,8 +1,6 @@
-import interact from "interactjs";
-
 export const addFolderToDom = (location) => {
     let locationParent = document.getElementById("locations");
-    let div = document.createElement("div");
+    let div = document.createElement("li");
     div.setAttribute("data-folder-location", location);
     div.classList.add(
       "location",
@@ -22,10 +20,10 @@ export const addFolderToDom = (location) => {
       "justify-center",
       "hover:cursor-pointer"
     );
-    //div.setAttribute("draggable", true);
-    //
+
     let innerDiv = document.createElement("div");
     innerDiv.setAttribute("class", "text-center");
+    
     let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 50 50");
     svg.setAttribute("class", "fill-slate-400 w-9 inline");
@@ -34,6 +32,7 @@ export const addFolderToDom = (location) => {
     svg.appendChild(path);
     innerDiv.appendChild(svg);
     
+    console.log(location)
 
     let locationText = location.split("/").pop();
     let locationTextDiv = document.createElement("span");
@@ -50,12 +49,15 @@ export const addFolderToDom = (location) => {
     
     // Right click
     div.addEventListener("contextmenu", (e) => {
+      e.target.classList.add("removing");
       e.preventDefault();
-      e.target.remove();
       let localLocations = JSON.parse(localStorage.getItem("locations"));
       let location = e.target.getAttribute("data-folder-location");
       let newLocations = localLocations.filter((item) => item !== location);
       localStorage.setItem("locations", JSON.stringify(newLocations));
+      setTimeout(() => {
+        e.target.remove();
+      }, 100);
     });
     locationParent.appendChild(div);
   };

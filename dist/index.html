@@ -10,40 +10,45 @@
 
     <header>
         <div class="logo absolute top-10 left-10 py-2 px-5 bg-white text-sm text-slate-500 font-bold z-50 rounded-md border">✨ File<span class="italic font-medium">Swiper</span></div>
-        <div id="quit" class="ui-button absolute bottom-10 right-10 py-2 px-5 bg-slate-900 text-white text-sm rounded-md border z-50 hover:bg-slate-700 cursor-pointer">&nbsp;Quit&nbsp;</div>
-    </header>
-
-    <main id="main-area">
-
-        <div id="background-circle" class="absolute w-80vh h-80vw border-4 border-slate-300 rounded-full translate-center z-0 pointer-events-none"></div>
-
-        <div id="skip" data-folder-location="skip" class="absolute location top-0 left-0 w-full text-center block text-xs uppercase font-medium tracking-widest text-slate-500 pt-3">
-            <span>Skip</span>
-        </div>
-
-        <div id="root-folder-info" class="absolute top-12 center-horizontally">
-            <div class="text-sm text-slate-500 bg-white px-3 py-1 rounded-md border">
+        <div id="root-folder-info" class="absolute left-12">
+            <div class="text-sm text-slate-500">
                 <svg class="inline fill-slate-500"  width="17px" height="17px" style="vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M853.333333 938.666667 42.666667 938.666667c-25.6 0-42.666667-17.066667-42.666667-42.666667L0 128c0-25.6 17.066667-42.666667 42.666667-42.666667l298.666667 0c25.6 0 42.666667 17.066667 42.666667 42.666667l0 42.666667 469.333333 0c25.6 0 42.666667 17.066667 42.666667 42.666667l0 170.666667c0 25.6-17.066667 42.666667-42.666667 42.666667s-42.666667-17.066667-42.666667-42.666667L810.666667 256 341.333333 256C315.733333 256 298.666667 238.933333 298.666667 213.333333L298.666667 170.666667 85.333333 170.666667l0 682.666667 768 0c25.6 0 42.666667 17.066667 42.666667 42.666667S878.933333 938.666667 853.333333 938.666667z"  /><path d="M853.333333 938.666667 42.666667 938.666667c-12.8 0-25.6-4.266667-34.133333-17.066667S0 900.266667 0 887.466667l128-512C132.266667 354.133333 149.333333 341.333333 170.666667 341.333333l810.666667 0c12.8 0 25.6 4.266667 34.133333 17.066667S1024 379.733333 1024 392.533333l-128 512C891.733333 925.866667 874.666667 938.666667 853.333333 938.666667zM98.133333 853.333333l721.066667 0 106.666667-426.666667L204.8 426.666667 98.133333 853.333333z"  /></svg>
                 <span id="current-folder-name"></span>
             </div>
-            <span id="total-number-of-files" class="ui-button inline-block mt-1 text-sm text-slate-500 bg-white px-3 py-1 pr-7 rounded-md border"></span>
-            <span id="sort-by" class="ui-button inline-block mt-1 text-sm text-slate-500 bg-white px-3 py-1 rounded-md border">
+            <span id="total-number-of-files" class="ui-button inline-block mt-1 text-sm text-slate-500"></span>
+            &bull;
+            <span id="sort-by" class="ui-button inline-block mt-1 text-sm text-slate-500">
+                Sort By:
                 <span id="sort-by-text"></span>
                 <!--<span class="absolute right-5 text-xxs inline ml-1">▼</span>-->
             </span>
         </div>
+        <div id="quit" class="ui-button absolute bottom-10 right-10 py-2 px-5 bg-slate-900 text-white text-sm rounded-md border z-50 hover:bg-slate-700 cursor-pointer">&nbsp;Quit&nbsp;</div>
+    </header>
+
+    <div id="background-circle" class="absolute w-80vh h-80vw border-4 border-slate-300 rounded-full translate-center z-0 pointer-events-none"></div>
+
+
+    <div id="skip" data-folder-location="skip" class="absolute location top-0 left-0 w-full text-center block text-xs uppercase font-medium tracking-widest text-slate-500 pt-3">
+        <span>Skip</span>
+    </div>
+    
+    <main id="workspace">
+
 
         <ul id="files" class="flex flex-col items-center justify-center">
 
         </ul>
 
 
-
         <ul id="locations" class="translate-center-folders" data-countchildren>
+
+            <li id="add-folder" class="ui-button py-2 px-2 text-xl bg-green-400 text-white rounded-full border border-green-500 z-50 hover:bg-green-300 border-green-400 cursor-pointer">
+                <span>+</span>
+            </li>
             
         </ul>
 
-        <div id="add-folder" class="ui-button py-2 px-2 text-xl bg-green-400 text-white rounded-full border border-green-500 z-50 hover:bg-green-300 border-green-400 cursor-pointer">+</div>
 
         <div id="folder-select" class="ui-button absolute bottom-10 center-horizontally py-2 px-5 bg-slate-300 border-slate-400 text-sm text-slate-700 rounded-md border z-50 hover:bg-slate-400 cursor-pointer">Select Folder <span class="absolute right-5 text-xxs inline ml-1">▼</span></div>
 

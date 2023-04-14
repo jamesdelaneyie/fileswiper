@@ -10,7 +10,7 @@ A tiny macOS app that lets you sort out the contents of a folder by swiping file
 - Drag (or throw) files from the stack into buckets to move them
 - Skip files by swiping them upwards
 - Trash files by swiping them into the trash can
-- Add up to 5 buckets to sort files into
+- Add up to 8 buckets at once to sort files into
 - Sort files by name, size, and last modified date
 - See file size, type, and last modified date at a glance
 - Move history, undo the last move
@@ -21,11 +21,9 @@ A tiny macOS app that lets you sort out the contents of a folder by swiping file
 ### Interesting bits: 
 
 - Preview images are generated using the qlmanage command line tool in a child process, allowing all native OSX file types have preview images.
-- AI: The main file list is a React component, which is updated by the main process when a file is moved to a bucket.
 - Interact.js is used to add physics to the main file list, allowing you to throw files into buckets.
 - The new trigonomic positioning of the buckets is calculated using the new CSS Math.sin and Math.cos functions.
 - Live reloading during development is using webpack --watch and electron-reload.
-
 
 
 To Do:

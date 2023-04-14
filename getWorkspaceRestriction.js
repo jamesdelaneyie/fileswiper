@@ -1,5 +1,5 @@
 export const getWorkspaceRestriction = () => {
-    let mainArea = document.getElementById('main-area')
+    let mainArea = document.getElementById('workspace')
     let mainAreaRect = mainArea.getBoundingClientRect()
     let mainAreaX = mainAreaRect.x
     let mainAreaY = mainAreaRect.y

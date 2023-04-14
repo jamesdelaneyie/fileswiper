@@ -2,29 +2,28 @@ import interact from "interactjs";
 
 export const dragMoveListener = (interactSettings, randomClassName, event) => {
 
-    let target = document.querySelector(`.${randomClassName}`)
+    let filebeingDragged = document.querySelector(`.${randomClassName}`)
 
-    var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
-    var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+    var x = (parseFloat(filebeingDragged.getAttribute('data-x')) || 0) + event.dx
+    var y = (parseFloat(filebeingDragged.getAttribute('data-y')) || 0) + event.dy
   
-    target.setAttribute('data-x', x)
-    target.setAttribute('data-y', y)
+    filebeingDragged.setAttribute('data-x', x)
+    filebeingDragged.setAttribute('data-y', y)
 
-    target.style.cursor = 'grabbing'
-
+    filebeingDragged.style.cursor = 'grabbing'
+    
     let scale = 1 - (Math.abs(x)) / 450
-    target.style.transform = `translate(${x}px, ${y}px) scale(${scale})`
+
+    filebeingDragged.style.transform = `translate(${x}px, ${y}px) scale(${scale})`
 
     if(event.dropzone) {
       if(document.querySelector('.drop-target')) {
 
-        //unset the current file as draggable
         interact(`.${randomClassName}`).unset()
         
+        filebeingDragged.classList.add('dropping-file')
+        filebeingDragged.removeAttribute('id')
 
-        event.target.classList.add('dropping-file')
-        //remove the currentfile id from the current file
-        event.target.removeAttribute('id')
         let dropTarget = document.querySelector('.drop-target')
         let dropTargetX = dropTarget.getBoundingClientRect().x
         let dropTargetY = dropTarget.getBoundingClientRect().y
@@ -32,6 +31,7 @@ export const dragMoveListener = (interactSettings, randomClassName, event) => {
         let dropTargetHeight = dropTarget.getBoundingClientRect().height
         let dropTargetCenterX = dropTargetX + (dropTargetWidth / 2)
         let dropTargetCenterY = dropTargetY + (dropTargetHeight / 2)
+
         let currentFileScale = document.querySelector('.dropping-file').style.transform
         let currentFileScaleValue = parseFloat(currentFileScale.split('scale(')[1].split(')')[0])
         let screenWidth = window.innerWidth
@@ -58,31 +58,29 @@ export const dragMoveListener = (interactSettings, randomClassName, event) => {
         
         let fileBeingDropped = document.querySelector('.'+randomClass)
         let preFinal
-        console.log(location)
+        
         if(location == 'trash') {
           preFinal = 'translate('+dropTargetCenterX+'px, '+(dropTargetCenterY)+'px) translateY(-55px) rotate(30deg) scale(0.15)'
         } else {
           preFinal = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-55px) rotate(30deg) scale(0.15)'
         }
         let finalTransform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-20px) rotate(90deg) scale(0.15)'
-        
-        
-        
-        //console.log(rootFolder, location)
+      
         
         if(location == rootFolder) {
           fileBeingDropped.style.transform = 'translate(0px, 0px) scale(1)'
           fileBeingDropped.setAttribute('data-x', 0)
           fileBeingDropped.setAttribute('data-y', 0)
           dropTarget.classList.add('drop-target-rejected')
+          fileBeingDropped.classList.add('rejected')
           setTimeout(() => {
             dropTarget.classList.remove('drop-target')
             dropTarget.classList.remove('drop-target-rejected')
+            interact(`.${randomClassName}`).draggable(interactSettings)
           }, 200)
           setTimeout(() => {
             fileBeingDropped.classList.remove('dropping-file')
-            
-            interact(`.${randomClassName}`).draggable(interactSettings)
+            fileBeingDropped.classList.remove('rejected')
           }, 1000)
           return;
         }
@@ -91,8 +89,6 @@ export const dragMoveListener = (interactSettings, randomClassName, event) => {
 
         setTimeout(() => {
           fileBeingDropped.style.transform = preFinal
-          
-          
           window.fileswiper.sendRootFolder(rootFolder);
           dropTarget.classList.remove('drop-target')
         }, 200);

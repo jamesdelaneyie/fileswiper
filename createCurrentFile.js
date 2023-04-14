@@ -50,10 +50,11 @@ export const createCurrentFile = (file) => {
         }
         currentFile.appendChild(currentFileSizeText);
 
+
+        //if this is the last file in the list, add a class to it
         let randomAngle = Math.floor(Math.random() * 10) - 5;
         currentFile.style.transform = `rotate(${randomAngle}deg)`;
 
-        //set data-x and data-y attributes to 0
         currentFile.setAttribute('data-x', 0)
         currentFile.setAttribute('data-y', 0)
 
@@ -65,7 +66,6 @@ export const createCurrentFile = (file) => {
 
         //let files = document.getElementById("files");
         files.appendChild(currentFile);
-        
 
         const interactableFile = interact(`.${randomClassName}`)
 
@@ -98,6 +98,16 @@ export const createCurrentFile = (file) => {
           listeners: {
             start (event) {
               event.target.classList.add('dragging')
+              let filebeingDragged = document.querySelector(`.${randomClassName}`)
+              let fileWidth = filebeingDragged.getBoundingClientRect().width
+              let fileHeight = filebeingDragged.getBoundingClientRect().height
+              let mouseX = event.clientX
+              let mouseY = event.clientY
+              let fileX = filebeingDragged.getBoundingClientRect().x
+              let fileY = filebeingDragged.getBoundingClientRect().y
+              let transformOriginX = ((mouseX - fileX) / fileWidth) * 100
+              let transformOriginY = ((mouseY - fileY) / fileHeight) * 100
+              filebeingDragged.style.transformOrigin = `${transformOriginX}% ${transformOriginY}%`
             },
             move (event) {
               dragMoveListenerWrapper(randomClassName, event)
@@ -110,6 +120,7 @@ export const createCurrentFile = (file) => {
         }
 
         interactableFile.draggable(interactSettings)
+
         let doubleTapped = false;
         interactableFile.on('doubletap', (event) => {
           if(doubleTapped == false) {

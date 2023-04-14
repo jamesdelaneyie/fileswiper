@@ -25,9 +25,7 @@ contextBridge.exposeInMainWorld('fileswiper', {
     fileDropped: (fileMoveDetails) => ipcRenderer.invoke('fileDropped', fileMoveDetails),
     // Receive the list of files from the main process
     selectRootFolder: (locationAndFiles) => ipcRenderer.on('selectRootFolder', locationAndFiles),
-    sendPreviewImage: (previewImage) => ipcRenderer.on('sendPreviewImage', previewImage),  
     sendRootFolder: (rootFolder) => ipcRenderer.invoke('sendRootFolder', rootFolder),
-    
     
 })
 

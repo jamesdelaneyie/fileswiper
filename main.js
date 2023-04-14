@@ -5,10 +5,6 @@ const path = require('path')
 const sharp = require('sharp');
 const sound = require("sound-play");
 const thumbnail = require('quicklook-thumbnail');
-let trash;
-import('trash').then((module) => {
-  trash = module.default;
-});
 
 const codeFileTypes = require('./codeFileTypes.js');
 const getFileListFromDirectory = require('./getFileListFromDirectory.js');
@@ -17,15 +13,21 @@ const moveFile = require('./moveFile.js');
 const moveSound = path.join(__dirname, 'dist', 'assets', 'move_to.aif');
 const trashSound = path.join(__dirname, 'dist', 'assets', 'empty_trash.aif');
 
+let trash;
+import('trash').then((module) => {
+  trash = module.default;
+});
+
 app.setName('FileSwiper');
 
 let fileMoves = []
 let rootFolder = null;
 
-
-
 function createWindow () {
 
+  /*
+	*   Create the app window
+	*/
   let win = new BrowserWindow({
     width: 880,
     height: 780,
@@ -40,7 +42,6 @@ function createWindow () {
     }
   })
 
-  // Load the index.html of the app from the dist folder
   const startUrl = process.env.ELECTRON_START_URL || url.format({
     pathname: path.join(__dirname, 'dist', 'index.html'),
     protocol: 'file:',
@@ -49,11 +50,11 @@ function createWindow () {
 
   win.loadURL(startUrl);
 
-  let configSent = false;
-  
   
 
-  // undo the last move 
+  /*
+	*   Undo the last file move
+	*/
   ipcMain.handle('undo', () => {
       let lastMove = fileMoves.pop();
       let oldPath = lastMove.newPath;
@@ -61,7 +62,13 @@ function createWindow () {
       moveFile(fileMoves, oldPath, newPath);
   })
 
-  // quit the app
+
+
+  /*
+  *   Quit the app
+  *   Gets the size and position of the window and sends to renderer to save in local storage
+  *   Removes the .thumbnails folder
+  */
   ipcMain.handle('quit', () => {
       const size = win.getSize(); 
       const position = win.getPosition();
@@ -72,6 +79,7 @@ function createWindow () {
         y: position[1]
       }
       win.webContents.send('receiveConfig', config);
+    
       let thumbnailDir = rootFolder + '/.thumbnails';
       if (fs.existsSync(thumbnailDir)){
         fs.rmdirSync(thumbnailDir, { recursive: true });
@@ -82,24 +90,21 @@ function createWindow () {
 
   
 
-
+  /*
+  *   Handle the file dropped event
+  */
   ipcMain.handle('fileDropped', (event, fileMoveDetails) => {
-    let filename = fileMoveDetails.filename;
-    let moveToLocation = fileMoveDetails.location;
+   const { filename, location } = fileMoveDetails;
 
-    let oldPath = rootFolder + `/${filename}`;
-    let newPath = `${moveToLocation}/${filename}`;
+    const oldPath = path.join(rootFolder, filename);
+    const newPath = path.join(location, filename);
 
-    if(oldPath === newPath) {
-        // TO DO 
-        console.log('same location')
-        return;
-    }
-
-    if(moveToLocation === "trash") {
-        trash(rootFolder + `/${filename}`);
-        fileMoves.push({oldPath: rootFolder + `/${filename}`, newPath: `${process.env.HOME}/.Trash/${filename}`});
-        sound.play(trashSound);
+    if(location === "trash") {
+        trash(oldPath);
+        fileMoves.push({oldPath: oldPath, newPath: `${process.env.HOME}/.Trash/${filename}`});
+        setTimeout(() => {
+          sound.play(trashSound);
+        }, 250);
     } else {
         moveFile(fileMoves, oldPath, newPath);  
         sound.play(moveSound);  
@@ -201,22 +206,24 @@ function createWindow () {
 
 
     
-      /*
-      *   Handle sending a new root folder to the DOM who's files will be displayed
-      *   @param {string} rootFolderPath - the location of the directory
-      *   @param {win} win - the BrowserWindow object
-      */
+    /*
+    *   Handle sending a new root folder to the DOM who's files will be displayed
+    *   @param {string} rootFolderPath - the location of the directory
+    *   @param {win} win - the BrowserWindow object
+    */
+
+    let configSent = false;
+
     ipcMain.handle('sendRootFolder', (_event, rootFolderPath) => {
       if(!configSent) {
         win.webContents.on('did-finish-load', () => {
           sendFilesToWindow(win, rootFolderPath, 'name');
           configSent = true;
         })
-      }
-      if(configSent) {
+      } else {
         sendFilesToWindow(win, rootFolderPath, 'name');
       }
-      // Make a directory for the file previews
+
       let filePreviewDir = rootFolderPath + '/.thumbnails';
       if (!fs.existsSync(filePreviewDir)){
         fs.mkdirSync(filePreviewDir);
@@ -246,14 +253,19 @@ function createWindow () {
     */
     ipcMain.handle('openFolderDialog', async () => {
       try {
-        const { filePaths: [folderPath] } = await dialog.showOpenDialog({ buttonLabel: 'Add Folder', properties: ['openDirectory', 'createDirectory'] });
-        if (folderPath) {
-          win.webContents.send('addNewFolder', folderPath);
+        const folderPaths = await dialog.showOpenDialog({ buttonLabel: 'Add Folder', properties: ['multiSelections', 'openDirectory', 'createDirectory' ] });
+        //console.log(folderPaths)
+        if (folderPaths) {
+          folderPaths.filePaths.forEach(folderPath => {
+            win.webContents.send('addNewFolder', folderPath);
+          })
         }
       } catch (error) {
         console.log(error);
       }
     });
+
+
 
     /*
     *   Handle sending a new root folder to the DOM who's files will be displayed
@@ -278,7 +290,6 @@ function createWindow () {
 app.whenReady().then(() => {
 
   createWindow()
-
 
 }).catch((err) => {
   console.log(err)

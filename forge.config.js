@@ -1,6 +1,6 @@
 module.exports = {
   packagerConfig: {
-    icon: 'appstore' // no file extension required
+    icon: './dist/icon' 
   },
   rebuildConfig: {},
   makers: [

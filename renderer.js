@@ -9,7 +9,6 @@ const func = async () => {
 
     let files = [];
 
-
     // Quit App button
     const quitButton = document.getElementById("quit");
     quitButton.addEventListener("click", () => {
@@ -108,6 +107,7 @@ const func = async () => {
     // Handle the addition of a new folder to the DOM
     // Add it to the local storage for the user
     window.fileswiper.addNewFolder((event, folderPath) => {
+        console.log('New folder added: ' + folderPath)
         updateSavedFolders(folderPath);
         addFolderToDom(folderPath);
     })
@@ -149,11 +149,6 @@ const func = async () => {
     // Handle the root folder selection
     window.fileswiper.selectRootFolder((event, locationAndFiles) => {
 
-
-        let sortBy = locationAndFiles.sortBy;
-        let sortByText = document.getElementById("sort-by-text");
-        sortByText.textContent = sortBy;
-
         localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
         
         let locationText = locationAndFiles.location.split("/");
@@ -162,44 +157,16 @@ const func = async () => {
         let currentFolderName = document.getElementById("current-folder-name");
             currentFolderName.textContent = locationText;
 
+        let sortBy = locationAndFiles.sortBy;
+        
+        let sortByText = document.getElementById("sort-by-text");
+            sortByText.textContent = sortBy;
+
         let filesList = locationAndFiles.files;
 
-       //console.log('update file list')
-        files = updateFileList(filesList);
+        updateFileList(filesList);
 
     });
-
-    
-
-    
-
-
-    
-
-    
-
-    window.fileswiper.sendPreviewImage((event, image) => {
-        //console.log('recieving preview image')
-        //console.log(image)
-        let currentFilePreview = document.querySelector("#current-file #current-file-preview");
-        currentFilePreview.src = image.image;
-        //add a loaded class to the current file preview
-        let currentFilePreviewWrapper = document.querySelector("#current-file #current-file-wrapper");
-        currentFilePreviewWrapper.classList.add("loaded");
-        //the max width and height of the preview is 150px
-        // if the image is wider than it is tall, set the width to 150px and scale the height accordingly
-        let currentFile = document.querySelector("#current-file")
-        if(image.width > image.height) {
-            //currentFilePreview.style.width = "150px";
-            //currentFilePreview.style.height = "auto";
-        } else {
-            //currentFilePreview.style.height = "150px";
-            //currentFilePreview.style.width = "auto";
-        }
-
-        //console.log(image.width)
-        //console.log(image.height)
-    })
 
 
 

@@ -12,14 +12,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "addFolderToDom": () => (/* binding */ addFolderToDom)
 /* harmony export */ });
-
 var addFolderToDom = function addFolderToDom(location) {
   var locationParent = document.getElementById("locations");
-  var div = document.createElement("div");
+  var div = document.createElement("li");
   div.setAttribute("data-folder-location", location);
   div.classList.add("location", "ui-button", "bg-white", "border-3", "border-slate-300", "p-10", "text-sm", "h-40", "w-40", "rounded-full", "text-center", "border", "flex", "items-center", "justify-center", "hover:cursor-pointer");
-  //div.setAttribute("draggable", true);
-  //
   var innerDiv = document.createElement("div");
   innerDiv.setAttribute("class", "text-center");
   var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -29,6 +26,7 @@ var addFolderToDom = function addFolderToDom(location) {
   path.setAttribute("d", "M 5 4 C 3.3550302 4 2 5.3550302 2 7 L 2 16 L 2 18 L 2 43 C 2 44.64497 3.3550302 46 5 46 L 45 46 C 46.64497 46 48 44.64497 48 43 L 48 19 L 48 16 L 48 11 C 48 9.3550302 46.64497 8 45 8 L 18 8 C 18.08657 8 17.96899 8.000364 17.724609 7.71875 C 17.480227 7.437136 17.179419 6.9699412 16.865234 6.46875 C 16.55105 5.9675588 16.221777 5.4327899 15.806641 4.9628906 C 15.391504 4.4929914 14.818754 4 14 4 L 5 4 z M 5 6 L 14 6 C 13.93925 6 14.06114 6.00701 14.308594 6.2871094 C 14.556051 6.5672101 14.857231 7.0324412 15.169922 7.53125 C 15.482613 8.0300588 15.806429 8.562864 16.212891 9.03125 C 16.619352 9.499636 17.178927 10 18 10 L 45 10 C 45.56503 10 46 10.43497 46 11 L 46 13.1875 C 45.685108 13.07394 45.351843 13 45 13 L 5 13 C 4.6481575 13 4.3148915 13.07394 4 13.1875 L 4 7 C 4 6.4349698 4.4349698 6 5 6 z M 5 15 L 45 15 C 45.56503 15 46 15.43497 46 16 L 46 19 L 46 43 C 46 43.56503 45.56503 44 45 44 L 5 44 C 4.4349698 44 4 43.56503 4 43 L 4 18 L 4 16 C 4 15.43497 4.4349698 15 5 15 z");
   svg.appendChild(path);
   innerDiv.appendChild(svg);
+  console.log(location);
   var locationText = location.split("/").pop();
   var locationTextDiv = document.createElement("span");
   locationTextDiv.innerText = locationText;
@@ -44,14 +42,17 @@ var addFolderToDom = function addFolderToDom(location) {
 
   // Right click
   div.addEventListener("contextmenu", function (e) {
+    e.target.classList.add("removing");
     e.preventDefault();
-    e.target.remove();
     var localLocations = JSON.parse(localStorage.getItem("locations"));
     var location = e.target.getAttribute("data-folder-location");
     var newLocations = localLocations.filter(function (item) {
       return item !== location;
     });
     localStorage.setItem("locations", JSON.stringify(newLocations));
+    setTimeout(function () {
+      e.target.remove();
+    }, 100);
   });
   locationParent.appendChild(div);
 };
@@ -114,10 +115,10 @@ var createCurrentFile = function createCurrentFile(file) {
     currentFileSizeText.innerText = currentFileSizeInBytes + " B";
   }
   currentFile.appendChild(currentFileSizeText);
+
+  //if this is the last file in the list, add a class to it
   var randomAngle = Math.floor(Math.random() * 10) - 5;
   currentFile.style.transform = "rotate(".concat(randomAngle, "deg)");
-
-  //set data-x and data-y attributes to 0
   currentFile.setAttribute('data-x', 0);
   currentFile.setAttribute('data-y', 0);
 
@@ -156,6 +157,16 @@ var createCurrentFile = function createCurrentFile(file) {
     listeners: {
       start: function start(event) {
         event.target.classList.add('dragging');
+        var filebeingDragged = document.querySelector(".".concat(randomClassName));
+        var fileWidth = filebeingDragged.getBoundingClientRect().width;
+        var fileHeight = filebeingDragged.getBoundingClientRect().height;
+        var mouseX = event.clientX;
+        var mouseY = event.clientY;
+        var fileX = filebeingDragged.getBoundingClientRect().x;
+        var fileY = filebeingDragged.getBoundingClientRect().y;
+        var transformOriginX = (mouseX - fileX) / fileWidth * 100;
+        var transformOriginY = (mouseY - fileY) / fileHeight * 100;
+        filebeingDragged.style.transformOrigin = "".concat(transformOriginX, "% ").concat(transformOriginY, "%");
       },
       move: function move(event) {
         dragMoveListenerWrapper(randomClassName, event);
@@ -226,21 +237,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(interactjs__WEBPACK_IMPORTED_MODULE_0__);
 
 var dragMoveListener = function dragMoveListener(interactSettings, randomClassName, event) {
-  var target = document.querySelector(".".concat(randomClassName));
-  var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-  var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-  target.setAttribute('data-x', x);
-  target.setAttribute('data-y', y);
-  target.style.cursor = 'grabbing';
+  var filebeingDragged = document.querySelector(".".concat(randomClassName));
+  var x = (parseFloat(filebeingDragged.getAttribute('data-x')) || 0) + event.dx;
+  var y = (parseFloat(filebeingDragged.getAttribute('data-y')) || 0) + event.dy;
+  filebeingDragged.setAttribute('data-x', x);
+  filebeingDragged.setAttribute('data-y', y);
+  filebeingDragged.style.cursor = 'grabbing';
   var scale = 1 - Math.abs(x) / 450;
-  target.style.transform = "translate(".concat(x, "px, ").concat(y, "px) scale(").concat(scale, ")");
+  filebeingDragged.style.transform = "translate(".concat(x, "px, ").concat(y, "px) scale(").concat(scale, ")");
   if (event.dropzone) {
     if (document.querySelector('.drop-target')) {
-      //unset the current file as draggable
       interactjs__WEBPACK_IMPORTED_MODULE_0___default()(".".concat(randomClassName)).unset();
-      event.target.classList.add('dropping-file');
-      //remove the currentfile id from the current file
-      event.target.removeAttribute('id');
+      filebeingDragged.classList.add('dropping-file');
+      filebeingDragged.removeAttribute('id');
       var dropTarget = document.querySelector('.drop-target');
       var dropTargetX = dropTarget.getBoundingClientRect().x;
       var dropTargetY = dropTarget.getBoundingClientRect().y;
@@ -270,28 +279,26 @@ var dragMoveListener = function dragMoveListener(interactSettings, randomClassNa
       fileBeingDroppedRef.classList.add(randomClass);
       var fileBeingDropped = document.querySelector('.' + randomClass);
       var preFinal;
-      console.log(location);
       if (location == 'trash') {
         preFinal = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-55px) rotate(30deg) scale(0.15)';
       } else {
         preFinal = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-55px) rotate(30deg) scale(0.15)';
       }
       var finalTransform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-20px) rotate(90deg) scale(0.15)';
-
-      //console.log(rootFolder, location)
-
       if (location == rootFolder) {
         fileBeingDropped.style.transform = 'translate(0px, 0px) scale(1)';
         fileBeingDropped.setAttribute('data-x', 0);
         fileBeingDropped.setAttribute('data-y', 0);
         dropTarget.classList.add('drop-target-rejected');
+        fileBeingDropped.classList.add('rejected');
         setTimeout(function () {
           dropTarget.classList.remove('drop-target');
           dropTarget.classList.remove('drop-target-rejected');
+          interactjs__WEBPACK_IMPORTED_MODULE_0___default()(".".concat(randomClassName)).draggable(interactSettings);
         }, 200);
         setTimeout(function () {
           fileBeingDropped.classList.remove('dropping-file');
-          interactjs__WEBPACK_IMPORTED_MODULE_0___default()(".".concat(randomClassName)).draggable(interactSettings);
+          fileBeingDropped.classList.remove('rejected');
         }, 1000);
         return;
       }
@@ -371,7 +378,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getWorkspaceRestriction": () => (/* binding */ getWorkspaceRestriction)
 /* harmony export */ });
 var getWorkspaceRestriction = function getWorkspaceRestriction() {
-  var mainArea = document.getElementById('main-area');
+  var mainArea = document.getElementById('workspace');
   var mainAreaRect = mainArea.getBoundingClientRect();
   var mainAreaX = mainAreaRect.x;
   var mainAreaY = mainAreaRect.y;
@@ -697,6 +704,7 @@ var func = /*#__PURE__*/function () {
           // Handle the addition of a new folder to the DOM
           // Add it to the local storage for the user
           window.fileswiper.addNewFolder(function (event, folderPath) {
+            console.log('New folder added: ' + folderPath);
             (0,_updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__.updateSavedFolders)(folderPath);
             (0,_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(folderPath);
           });
@@ -729,42 +737,18 @@ var func = /*#__PURE__*/function () {
 
           // Handle the root folder selection
           window.fileswiper.selectRootFolder(function (event, locationAndFiles) {
-            var sortBy = locationAndFiles.sortBy;
-            var sortByText = document.getElementById("sort-by-text");
-            sortByText.textContent = sortBy;
             localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
             var locationText = locationAndFiles.location.split("/");
             locationText = locationText[locationText.length - 1];
             var currentFolderName = document.getElementById("current-folder-name");
             currentFolderName.textContent = locationText;
+            var sortBy = locationAndFiles.sortBy;
+            var sortByText = document.getElementById("sort-by-text");
+            sortByText.textContent = sortBy;
             var filesList = locationAndFiles.files;
-
-            //console.log('update file list')
-            files = (0,_updateFileList_js__WEBPACK_IMPORTED_MODULE_1__.updateFileList)(filesList);
+            (0,_updateFileList_js__WEBPACK_IMPORTED_MODULE_1__.updateFileList)(filesList);
           });
-          window.fileswiper.sendPreviewImage(function (event, image) {
-            //console.log('recieving preview image')
-            //console.log(image)
-            var currentFilePreview = document.querySelector("#current-file #current-file-preview");
-            currentFilePreview.src = image.image;
-            //add a loaded class to the current file preview
-            var currentFilePreviewWrapper = document.querySelector("#current-file #current-file-wrapper");
-            currentFilePreviewWrapper.classList.add("loaded");
-            //the max width and height of the preview is 150px
-            // if the image is wider than it is tall, set the width to 150px and scale the height accordingly
-            var currentFile = document.querySelector("#current-file");
-            if (image.width > image.height) {
-              //currentFilePreview.style.width = "150px";
-              //currentFilePreview.style.height = "auto";
-            } else {
-              //currentFilePreview.style.height = "150px";
-              //currentFilePreview.style.width = "auto";
-            }
-
-            //console.log(image.width)
-            //console.log(image.height)
-          });
-        case 27:
+        case 26:
         case "end":
           return _context.stop();
       }
