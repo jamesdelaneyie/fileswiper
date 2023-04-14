@@ -39,7 +39,9 @@
     "quicklook-thumbnail": "^1.0.0",
     "sharp": "^0.32.0",
     "sound-play": "^1.1.0",
-    "trash": "^8.1.1"
+    "source-map-loader": "^4.0.1",
+    "trash": "^8.1.1",
+    "ts-loader": "^9.4.2"
   },
   "scripts": {
     "start": "concurrently \"webpack --watch --mode development\" \"electron .\"",

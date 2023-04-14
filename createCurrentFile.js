@@ -10,13 +10,17 @@ export const createCurrentFile = () => {
         currentFile.setAttribute("id", "current-file");
         currentFile.classList.add("ui-button","absolute","bg-white","border-slate-300","w-60","h-80","z-50","border-2","rounded","cursor-grab", "text-center", "hover:cursor-grabbing");
         
+        let currentFileWrapper = document.createElement("div");
+        currentFileWrapper.setAttribute("id", "current-file-wrapper");
+        currentFile.appendChild(currentFileWrapper);
+
         let currentFilePreviewImage = document.createElement("img");
         currentFilePreviewImage.setAttribute("id", "current-file-preview");
-        currentFile.appendChild(currentFilePreviewImage);
+        currentFileWrapper.appendChild(currentFilePreviewImage);
 
         let currentFileTextTitle = document.createElement("span");
         currentFileTextTitle.setAttribute("id", "current-file-name");
-        currentFile.appendChild(currentFileTextTitle);
+        currentFileWrapper.appendChild(currentFileTextTitle);
 
         let currentFileTypeText = document.createElement("span");
         currentFileTypeText.setAttribute("id", "current-file-type");
@@ -67,8 +71,8 @@ export const createCurrentFile = () => {
                     fileBeingDroppedRef.classList.add(randomClass)
                     
                     let fileBeingDropped = document.querySelector('.'+randomClass)
-                    let preFinal = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-150px) scale(0.25)'
-                    let finalTransform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-75px) scale(0.25)'
+                    let preFinal = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-118px) rotate(30deg) scale(0.25)'
+                    let finalTransform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-75px) rotate(120deg) scale(0.25)'
                     
                     let filename = document.getElementById('current-file-name').innerText;
                     let location = dropTarget.getAttribute("data-folder-location");
@@ -77,7 +81,7 @@ export const createCurrentFile = () => {
 
                     setTimeout(() => {
                       fileBeingDropped.style.transform = preFinal
-                      dropTarget.classList.remove('drop-target')
+                      
                       let rootFolder = JSON.parse(localStorage.getItem('root-folder'));
                       window.fileswiper.sendRootFolder(rootFolder);
                     }, 200);
@@ -85,11 +89,11 @@ export const createCurrentFile = () => {
                     setTimeout(() => {
                       fileBeingDropped.style.transform = finalTransform
                       fileBeingDropped.style.opacity = 0
-                      
                     }, 800);
 
                     setTimeout(() => {
                       fileBeingDropped.remove()
+                      dropTarget.classList.remove('drop-target')
                     }, 1000)
                   }
                 }

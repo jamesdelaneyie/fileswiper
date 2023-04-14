@@ -811,6 +811,9 @@ main {
     left: 50%;
     transform: translate(-50%, -50%);
     margin-left: -340px;
+    @media screen and (max-width: 795px) {
+      margin-left: -41vw;
+    }
     width: 120px;
     height: 120px;
     display: flex;
@@ -837,7 +840,7 @@ main {
     #current-file {
       max-width: 33vw;
       max-height: 50vw;
-      height: 150px;
+      height: 210px;
       width: 150px;
       background: white url('assets/loading.gif') no-repeat center center;
       background-size: 20px 20px;
@@ -858,10 +861,17 @@ main {
   #locations {
     --radius: 320px;
     --tracksize: 75px;
+    @media screen and (max-width: 795px) {
+      --radius: 41vw;
+
+      --tracksize: 60px;
+    }
     z-index: 100;
     > div {
       width: 120px;
       height: 120px;
+      max-width: 15vw;
+      max-height: 15vw;
       --offset-per-child: calc(var(--layout-angle) / (var(--nth-siblings) + 1));
       --angle-offset: calc(1 * var(--offset-per-child));
       border-radius: 50%;
@@ -898,11 +908,18 @@ main {
   z-index: 150;
 }
 
+#current-file-wrapper {
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 2px 4px 0 rgba(0,0,0,0.1);
+  height: 100%;
+}
+
 .dropping-file {
   border: 3px solid blue;
-  height: 65px;
+  height: 85px;
   width: 65px;
-  border-radius: 100%;
+  border-radius: 5px;
   pointer-events: none;
   overflow: hidden;
   background: white url('assets/loading.gif') no-repeat center center;
@@ -969,6 +986,11 @@ main {
   &.zip {
     background-color: #f4b59f;
     color: #795548;
+    border-color: currentColor;
+  }
+  &.js {
+    background-color: #edfe8c;
+    color: #9d9853;
     border-color: currentColor;
   }
 }
@@ -1054,7 +1076,7 @@ main {
 }
 
 #skip {
-  background: -webkit-radial-gradient(top, 50% 50%, #a9cff4, #F1F6F9);
+  background: -webkit-radial-gradient(top, 50% 50%, #a9cff4, #F1F6F900);
   overflow: visible;
   height: 80px;
   top: -80px;
@@ -1086,7 +1108,7 @@ main {
       left: 0;
       width: 100%;
       height: 80px;
-      background: -webkit-radial-gradient(top, 50% 100%, #a9cff4, #F1F6F9);
+      background: -webkit-radial-gradient(top, 50% 100%, #a9cff4, #F1F6F900);
       background-position: 50% 50%;
       mix-blend-mode: darken;
       opacity: 1;

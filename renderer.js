@@ -9,11 +9,89 @@ const func = async () => {
 
     let files = [];
 
-     // Quit button
-     const quitButton = document.getElementById("quit");
-     quitButton.addEventListener("click", () => {
-         window.fileswiper.quit();
-     })
+
+    // Quit App button
+    const quitButton = document.getElementById("quit");
+    quitButton.addEventListener("click", () => {
+        window.fileswiper.quit();
+    })
+
+
+    // Undo button
+    const undoButton = document.getElementById("undo");
+    undoButton.addEventListener("click", () => {
+        window.fileswiper.undo();
+    })
+
+
+    // Add new folder bucket button
+    const addFolder = document.getElementById("add-folder");
+    addFolder.addEventListener("click", () => {
+        window.fileswiper.openFolderDialog();
+    })
+
+
+    // Select new root folder for swiping
+    const folderSelect = document.getElementById("folder-select");
+    folderSelect.addEventListener("click", () => {
+        window.fileswiper.openRootFolderDialog();
+    })
+
+
+    // Get the config from local storage and send it to the main process
+    // This sets the window size and position on startup to the last used
+    const config = JSON.parse(localStorage.getItem('config'));
+    if(config !== null) {
+        window.fileswiper.sendConfig(config);
+    } else {
+        let introScreen = document.getElementById("intro-screen");
+        introScreen.style.display = "block";
+    }
+
+    let rootFolder = JSON.parse(localStorage.getItem('root-folder'));
+    if(rootFolder !== null) {
+        window.fileswiper.sendRootFolder(rootFolder);
+    }
+
+
+
+    let timeoutId = null;
+
+    // Save the window size and position to local storage
+    window.addEventListener('resize', () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            let config = {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                x: window.screenX,
+                y: window.screenY
+            };
+            localStorage.setItem("config", JSON.stringify(config));
+        }, 250);
+    });
+
+    window.addEventListener('move', () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            let config = {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                x: window.screenX,
+                y: window.screenY
+            };
+            localStorage.setItem("config", JSON.stringify(config));
+        }, 250);
+    });
+
+    
+    // Receive the config on quit from the main process
+    // Save it to local storage
+    window.fileswiper.receiveConfig((event, config) => {
+        localStorage.setItem("config", JSON.stringify(config));
+    })
+
+
 
     // Load the last folders used by the user    
     const listOfFolders = JSON.parse(localStorage.getItem("locations"));
@@ -27,8 +105,14 @@ const func = async () => {
         console.log('No folders found in local storage')
     }
 
+    // Handle the addition of a new folder to the DOM
+    // Add it to the local storage for the user
+    window.fileswiper.addNewFolder((event, folderPath) => {
+        updateSavedFolders(folderPath);
+        addFolderToDom(folderPath);
+    })
 
-    window.isOverDrop = false;
+
 
     // Interact.js set as dropzone
     interact('.location').dropzone({
@@ -85,35 +169,14 @@ const func = async () => {
 
     });
 
-    // Add folder button
-    const addFolder = document.getElementById("add-folder");
-    addFolder.addEventListener("click", () => {
-        window.fileswiper.openDialog();
-    })
+    
 
-    const undoButton = document.getElementById("undo");
-    undoButton.addEventListener("click", () => {
-        window.fileswiper.undo();
-    })
+    
 
 
-    // Select root folder
-    let folderSelect = document.getElementById("folder-select");
-    folderSelect.addEventListener("click", () => {
-        window.fileswiper.openRootDialog();
-    })
+    
 
-    // Save the config to local storage
-    window.fileswiper.sendConfig((event, config) => {
-        if(typeof config === "undefined") {
-            let introScreen = document.getElementById("intro-screen");
-            introScreen.style.display = "block";
-        } else {
-            localStorage.setItem("config", JSON.stringify(config));
-        }
-        
-    })
-
+    
 
     window.fileswiper.sendPreviewImage((event, image) => {
         console.log('recieving preview image')
@@ -136,15 +199,7 @@ const func = async () => {
     })
 
     
-    // Handle the addition of a new folder to the DOM
-    // Add it to the local storage for the user
-    window.fileswiper.folderLocation((event, location) => {
-        if(typeof location === "undefined") {
-            return;
-        }
-        updateSavedFolders(location);
-        addFolderToDom(location);
-    })
+    
 
     /*
           /*const numberOfFilesInStack = 3

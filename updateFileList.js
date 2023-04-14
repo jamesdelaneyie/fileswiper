@@ -21,8 +21,6 @@ export const updateFileList = (fileList) => {
         let currentFileType = document.querySelector("#current-file #current-file-type");
         let currentFileSize = document.querySelector("#current-file #current-file-size");
 
-        //console.log(currentFile)
-
         currentFileName.innerText = currentFile;
         currentFileType.innerText = currentFile.split(".").pop(); 
         currentFileType.classList.add(currentFileType.innerText.toLowerCase());
@@ -32,8 +30,10 @@ export const updateFileList = (fileList) => {
         let currentFileSizeInMegabytes = currentFileSizeInKilobytes / 1000;
         if (currentFileSizeInMegabytes > 1) {
             currentFileSize.innerText = currentFileSizeInMegabytes.toFixed(2) + " MB";
+        } else if (currentFileSizeInKilobytes > 1) {
+            currentFileSize.innerText = currentFileSizeInKilobytes.toFixed(3) + " KB";
         } else {
-            currentFileSize.innerText = currentFileSizeInKilobytes.toFixed(2) + " KB";
+            currentFileSize.innerText = currentFileSizeInBytes + " B";
         }
         
     }

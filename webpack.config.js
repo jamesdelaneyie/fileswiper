@@ -16,6 +16,10 @@ module.exports = {
   },
   devtool: 'source-map',
   mode: "development", // or "production"
+  resolve: {
+    // Add '.ts' and '.tsx' as resolvable extensions.
+    extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
+  },
   devServer: {
     static: './dist/',
     hot: true,
@@ -28,6 +32,7 @@ module.exports = {
   ],
   module: {
     rules: [
+      { test: /\.tsx?$/, loader: "ts-loader" },
       {
         test: /\.js$/,
         exclude: /node_modules/,

@@ -1,137 +1,48 @@
-const { app, BrowserWindow, ipcMain, dialog, protocol } = require('electron')
-const path = require('path')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const fs = require('fs')
 const url = require('url')
+const path = require('path')
+const sharp = require('sharp');
 const sound = require("sound-play");
-const chokidar = require("chokidar");
 
 const thumbnail = require('quicklook-thumbnail');
 
-const filesToIgnore = require('./filesToIgnore.js');
-const sharp = require('sharp');
+
+const codeFileTypes = require('./codeFileTypes.js');
+const getFileListFromDirectory = require('./getFileListFromDirectory.js');
+const moveFile = require('./moveFile.js');
 
 app.setName('FileSwiper');
 
 let fileMoves = []
 let rootFolder = null;
 
-function startWatcher(win, location){
-  
-  var watcher = chokidar.watch(location, {
-      ignored: /[\/\\]\./,
-      depth: 0,
-      ignoreInitial: true,
-      persistent: true
-  });
-        
-  // Declare the listeners of the watcher
-  watcher.on('add', function(path) {
-        //console.log('File', path, 'has been added');
-        let files = getFileListFromDirectory(location)   
-        //win.webContents.send('selectRootFolder', {location: location, files: files});
-        //console.log(files)
-  }).on('unlink', function(path) {
-        //console.log('File', path, 'has been removed');
-        let files = getFileListFromDirectory(location)   
-        //win.webContents.send('selectRootFolder', {location: location, files: files});
-  }).on('error', function(error) {
-       console.log('Error happened', error);
-  })
-}
 
-function moveFile(oldPath, newPath) {
-  fs.rename(oldPath, newPath, function (err) {
-    if (err) {
-      if (err.code === 'EXDEV') {
-        copy();
-      } else {
-        console.log(err);
-      }
-      return;
-    }
-    fs.utimesSync(newPath, new Date(), new Date());
-    fileMoves.push({oldPath: oldPath, newPath: newPath});
-  })
-
-}
-
-function getFileListFromDirectory(dir, sortBy = 'name') {
-  let fileList = []
-  fs.readdirSync(dir, {withFileTypes: true})
-    .filter(item => !item.isDirectory())
-    .map(item => {
-      const name = item.name;
-      const stats = fs.statSync(dir + '/' + name);
-      const size = stats.size;
-      const fileExtension = name.split('.').pop();
-      const lastModified = stats.mtime;
-      return { name, size, fileExtension, lastModified };
-    })
-    .forEach(item => fileList.push(item))
-  fileList = fileList.filter(item => !filesToIgnore.includes(item.name));
-  fileList.sort((a, b) => {
-    if (sortBy === 'name') {
-      return a.name.localeCompare(b.name);
-    } else if (sortBy === 'size') {
-      return a.size - b.size;
-    } else if (sortBy === 'lastModified') {
-      return a.lastModified - b.lastModified;
-    } else if (sortBy === 'fileExtension') {
-      return a.fileExtension.localeCompare(b.fileExtension);
-    }
-  });
-  if(sortBy === 'size') {
-    fileList.reverse();
-  }
-  return fileList;
-}
 
 function createWindow () {
 
-  let client;
-
   let win = new BrowserWindow({
-    width: 900,
+    width: 880,
     height: 780,
+    minWidth: 400,
+    minHeight: 400,
     frame: false,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
-      webviewTag: true,
-      contextIsolation: true,
     }
   })
-  
-  
-  win.loadURL(url.format({
+
+  // Load the index.html of the app from the dist folder
+  const startUrl = process.env.ELECTRON_START_URL || url.format({
     pathname: path.join(__dirname, 'dist', 'index.html'),
     protocol: 'file:',
     slashes: true
-  }));
-
-
-
-
-  //open the dev tools
-  win.webContents.openDevTools()
-
-  let files = []
-
-
-  // Cleanup when the window is closed
-  win.on('closed', () => {
-    win = null;
-    if (client) {
-      client.stop();
-      client = null;
-    }
   });
 
-
-  ipcMain.handle('config', (event, config) => {
-    win.setSize(config.width, config.height);
-    win.setPosition(config.x, config.y);
-  })
+  win.loadURL(startUrl);
+  
 
   // undo the last move 
   ipcMain.handle('undo', () => {
@@ -143,7 +54,7 @@ function createWindow () {
 
   // quit the app
   ipcMain.handle('quit', () => {
-      const size = win.getSize(); // returns an array [width, height]
+      const size = win.getSize(); 
       const position = win.getPosition();
       const config = {
         width: size[0],
@@ -151,11 +62,11 @@ function createWindow () {
         x: position[0],
         y: position[1]
       }
+      win.webContents.send('receiveConfig', config);
       let thumbnailDir = rootFolder + '/.thumbnails';
       if (fs.existsSync(thumbnailDir)){
         fs.rmdirSync(thumbnailDir, { recursive: true });
       }
-      win.webContents.send('sendConfig', config);
       app.quit();
   })
 
@@ -185,7 +96,7 @@ function createWindow () {
     } else {
         
         moveFile(oldPath, newPath);  
-        //sound.play("move_to.aif");  
+        sound.play("move_to.aif");  
     }
 
   })
@@ -194,29 +105,20 @@ function createWindow () {
 
   
 
-  ipcMain.handle('hey-open-my-dialog-now', () => {
-        dialog.showOpenDialog({properties: ['openDirectory', 'createDirectory']}).then(result => {
-            let location = result.filePaths[0];
-            win.webContents.send('folderLocation', location);
-        }).catch(err => {
-            console.log(err)
-        })
-    });
+    
 
 
-    const sendFilesToWindow = (win, location, sortBy='name') => {
+    const sendFilesToWindow = (win, location, sortBy) => {
 
       let files = getFileListFromDirectory(location, sortBy);
+      
       //startWatcher(win, location);
 
       // make a directory for the thumbnails 
       let thumbnailDir = location + '/.thumbnails';
       if (!fs.existsSync(thumbnailDir)){
-        //fs.mkdirSync(thumbnailDir);
+        fs.mkdirSync(thumbnailDir);
       }
-      console.log(location)
-      console.log(files)
-      console.log(sortBy)
 
       win.webContents.send('selectRootFolder', {location: location, files: files, sortBy: sortBy});
       
@@ -226,28 +128,45 @@ function createWindow () {
                 size: 1024,
                 folder: thumbnailDir
           };
-
-          console.log('sending thumb')
           
           try {
             thumbnail.create(location + '/' + files[0].name, options, function(err, result){
               if(result) {
                 var imageAsBase64 = fs.readFileSync(result, 'base64');
-                //crop the image using sharp
                 var buffer = Buffer.from(imageAsBase64, 'base64');
-                sharp(buffer).trim().toBuffer().then(data => { 
-                  var imageAsBase64 = data.toString('base64');
-                  imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
-                  //get the image size
-                  var image = sharp(data);
-                  image.metadata().then(function(metadata) {
-                    var width = metadata.width;
-                    var height = metadata.height;
-                    var imageData = {image: imageAsBase64, width: width, height: height};
-                    // Store the image data in a variable
-                    sendPreview(imageData);
-                  });
-                })
+
+                if(codeFileTypes.includes(files[0].fileExtension)) {
+                  sharp(buffer).trim().toBuffer().then(data => {
+                    //add padding to the image
+                    var imageAsBase64 = data.toString('base64');
+                    imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
+                    var image = sharp(data);
+                    image.metadata().then(function(metadata) {
+                      var width = metadata.width;
+                      var height = metadata.height;
+                      var imageData = {image: imageAsBase64, width: width, height: height};
+                      // Store the image data in a variable
+                      sendPreview(imageData);
+                    });
+                  })
+
+                } else {
+                  sharp(buffer).toBuffer().then(data => { 
+                    var imageAsBase64 = data.toString('base64');
+                    imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
+                    var image = sharp(data);
+                    image.metadata().then(function(metadata) {
+                      var width = metadata.width;
+                      var height = metadata.height;
+                      var imageData = {image: imageAsBase64, width: width, height: height};
+                      // Store the image data in a variable
+                      sendPreview(imageData);
+                    });
+                  })
+
+                }
+                
+                
               }
             })
           } catch (error) {
@@ -255,7 +174,6 @@ function createWindow () {
           }
 
           function sendPreview(imageData) {
-            // Call the sendPreviewImage method once with the image data
             win.webContents.send('sendPreviewImage', imageData);
           }
           
@@ -264,52 +182,77 @@ function createWindow () {
   }
 
 
-    ipcMain.handle('rootFolderStartUp', (_event, location) => {
-      //wait for the window to be ready then send the files
+
+
+    
+    /*
+    *   Handle sending a new root folder to the DOM who's files will be displayed
+    *   It will send a list of 5 files and their properties to the renderer process
+    *   @param {string} rootFolderPath - the location of the directory
+    *   @param {win} win - the BrowserWindow object
+    */
+    ipcMain.handle('sendRootFolder', (_event, rootFolderPath) => {
       win.webContents.on('did-finish-load', () => {
-        sendFilesToWindow(win, location, 'name');
+        sendFilesToWindow(win, rootFolderPath, 'name');
       })
     })
 
-    ipcMain.handle('sendRootFolder', (_event, location) => {
-      console.log('sending updated files')
-      sendFilesToWindow(win, location, 'size');
+
+    /*
+    *   Handle receiving the config from the renderer process on startup
+    *   Set the size and position of the window and then show it
+    *   @param {object} config - the width, height, x, and y of the window
+    */
+    ipcMain.handle('sendConfig', (event, config) => {
+      if(config) {
+        win.setSize(config.width, config.height);
+        win.setPosition(config.x, config.y);
+      } 
+      win.show();
     })
 
 
-    ipcMain.handle('hey-open-my-root-dialog-now', () => {
-
-      dialog.showOpenDialog({properties: ['openDirectory', 'createDirectory']}).then(result => {
-
-        if(result.filePaths.length > 0) {
-
-          let location = result.filePaths[0];
-          sendFilesToWindow(win, location);
-
+    /*
+    *   Handle sending a new folder to the DOM as a bucket
+    *   It will send the folder location to the renderer process
+    *   to be added to the DOM and saved in the local storage
+    *   @param {string} folderPath - the location of the directory
+    */
+    ipcMain.handle('openFolderDialog', async () => {
+      try {
+        const { filePaths: [folderPath] } = await dialog.showOpenDialog({ buttonLabel: 'Add Folder', properties: ['openDirectory', 'createDirectory'] });
+        if (folderPath) {
+          win.webContents.send('AddNewFolder', folderPath);
         }
+      } catch (error) {
+        console.log(error);
+      }
+    });
 
-      }).catch(err => {
-        console.log(err)
-      })
-    })
+    /*
+    *   Handle sending a new root folder to the DOM who's files will be displayed
+    *   It will send a list of 5 files and their properties to the renderer process
+    *   @param {string} rootFolderPath - the location of the directory
+    *   @param {win} win - the BrowserWindow object
+    */
+    ipcMain.handle('openRootFolderDialog', async () => {
+      try {
+        const { filePaths: [rootFolderPath] } = await dialog.showOpenDialog({ properties: ['openDirectory', 'createDirectory'] });
+        if (rootFolderPath) {
+          sendFilesToWindow(win, rootFolderPath);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
 
     
 }
 
 app.whenReady().then(() => {
 
-  protocol.registerFileProtocol('atom', (request, callback) => {
-    const url = request.url.substr(7)
-    callback(url)
-  })
-
   createWindow()
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
-    }
-  })
 
 }).catch((err) => {
   console.log(err)
@@ -319,7 +262,6 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    //remove the thumbnails directory
     app.quit()
   }
 })

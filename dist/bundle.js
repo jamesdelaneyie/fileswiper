@@ -79,12 +79,15 @@ var createCurrentFile = function createCurrentFile() {
   var currentFile = document.createElement("li");
   currentFile.setAttribute("id", "current-file");
   currentFile.classList.add("ui-button", "absolute", "bg-white", "border-slate-300", "w-60", "h-80", "z-50", "border-2", "rounded", "cursor-grab", "text-center", "hover:cursor-grabbing");
+  var currentFileWrapper = document.createElement("div");
+  currentFileWrapper.setAttribute("id", "current-file-wrapper");
+  currentFile.appendChild(currentFileWrapper);
   var currentFilePreviewImage = document.createElement("img");
   currentFilePreviewImage.setAttribute("id", "current-file-preview");
-  currentFile.appendChild(currentFilePreviewImage);
+  currentFileWrapper.appendChild(currentFilePreviewImage);
   var currentFileTextTitle = document.createElement("span");
   currentFileTextTitle.setAttribute("id", "current-file-name");
-  currentFile.appendChild(currentFileTextTitle);
+  currentFileWrapper.appendChild(currentFileTextTitle);
   var currentFileTypeText = document.createElement("span");
   currentFileTypeText.setAttribute("id", "current-file-type");
   currentFile.appendChild(currentFileTypeText);
@@ -131,8 +134,8 @@ var createCurrentFile = function createCurrentFile() {
         randomClass = randomClass.replace(/[0-9]/g, '');
         fileBeingDroppedRef.classList.add(randomClass);
         var fileBeingDropped = document.querySelector('.' + randomClass);
-        var preFinal = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-150px) scale(0.25)';
-        var finalTransform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-75px) scale(0.25)';
+        var preFinal = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-118px) rotate(30deg) scale(0.25)';
+        var finalTransform = 'translate(' + dropTargetCenterX + 'px, ' + dropTargetCenterY + 'px) translateY(-75px) rotate(120deg) scale(0.25)';
         var filename = document.getElementById('current-file-name').innerText;
         var location = dropTarget.getAttribute("data-folder-location");
         window.fileswiper.fileDropped({
@@ -141,7 +144,6 @@ var createCurrentFile = function createCurrentFile() {
         });
         setTimeout(function () {
           fileBeingDropped.style.transform = preFinal;
-          dropTarget.classList.remove('drop-target');
           var rootFolder = JSON.parse(localStorage.getItem('root-folder'));
           window.fileswiper.sendRootFolder(rootFolder);
         }, 200);
@@ -151,6 +153,7 @@ var createCurrentFile = function createCurrentFile() {
         }, 800);
         setTimeout(function () {
           fileBeingDropped.remove();
+          dropTarget.classList.remove('drop-target');
         }, 1000);
       }
     }
@@ -346,9 +349,6 @@ var updateFileList = function updateFileList(fileList) {
     var currentFileName = document.querySelector("#current-file #current-file-name");
     var currentFileType = document.querySelector("#current-file #current-file-type");
     var currentFileSize = document.querySelector("#current-file #current-file-size");
-
-    //console.log(currentFile)
-
     currentFileName.innerText = currentFile;
     currentFileType.innerText = currentFile.split(".").pop();
     currentFileType.classList.add(currentFileType.innerText.toLowerCase());
@@ -357,8 +357,10 @@ var updateFileList = function updateFileList(fileList) {
     var currentFileSizeInMegabytes = currentFileSizeInKilobytes / 1000;
     if (currentFileSizeInMegabytes > 1) {
       currentFileSize.innerText = currentFileSizeInMegabytes.toFixed(2) + " MB";
+    } else if (currentFileSizeInKilobytes > 1) {
+      currentFileSize.innerText = currentFileSizeInKilobytes.toFixed(3) + " KB";
     } else {
-      currentFileSize.innerText = currentFileSizeInKilobytes.toFixed(2) + " KB";
+      currentFileSize.innerText = currentFileSizeInBytes + " B";
     }
   }
   if (fileList.length === 0) {
@@ -519,14 +521,77 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var func = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var files, quitButton, listOfFolders, _iterator, _step, folder, trash, main, addFolder, undoButton, folderSelect;
+    var files, quitButton, undoButton, addFolder, folderSelect, config, introScreen, rootFolder, timeoutId, listOfFolders, _iterator, _step, folder, trash, main;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          files = []; // Quit button
+          files = []; // Quit App button
           quitButton = document.getElementById("quit");
           quitButton.addEventListener("click", function () {
             window.fileswiper.quit();
+          });
+
+          // Undo button
+          undoButton = document.getElementById("undo");
+          undoButton.addEventListener("click", function () {
+            window.fileswiper.undo();
+          });
+
+          // Add new folder bucket button
+          addFolder = document.getElementById("add-folder");
+          addFolder.addEventListener("click", function () {
+            window.fileswiper.openFolderDialog();
+          });
+
+          // Select new root folder for swiping
+          folderSelect = document.getElementById("folder-select");
+          folderSelect.addEventListener("click", function () {
+            window.fileswiper.openRootFolderDialog();
+          });
+
+          // Get the config from local storage and send it to the main process
+          // This sets the window size and position on startup to the last used
+          config = JSON.parse(localStorage.getItem('config'));
+          if (config !== null) {
+            window.fileswiper.sendConfig(config);
+          } else {
+            introScreen = document.getElementById("intro-screen");
+            introScreen.style.display = "block";
+          }
+          rootFolder = JSON.parse(localStorage.getItem('root-folder'));
+          if (rootFolder !== null) {
+            window.fileswiper.sendRootFolder(rootFolder);
+          }
+          timeoutId = null; // Save the window size and position to local storage
+          window.addEventListener('resize', function () {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(function () {
+              var config = {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                x: window.screenX,
+                y: window.screenY
+              };
+              localStorage.setItem("config", JSON.stringify(config));
+            }, 250);
+          });
+          window.addEventListener('move', function () {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(function () {
+              var config = {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                x: window.screenX,
+                y: window.screenY
+              };
+              localStorage.setItem("config", JSON.stringify(config));
+            }, 250);
+          });
+
+          // Receive the config on quit from the main process
+          // Save it to local storage
+          window.fileswiper.receiveConfig(function (event, config) {
+            localStorage.setItem("config", JSON.stringify(config));
           });
 
           // Load the last folders used by the user    
@@ -547,7 +612,13 @@ var func = /*#__PURE__*/function () {
           } else {
             console.log('No folders found in local storage');
           }
-          window.isOverDrop = false;
+
+          // Handle the addition of a new folder to the DOM
+          // Add it to the local storage for the user
+          window.fileswiper.addNewFolder(function (event, folderPath) {
+            (0,_updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__.updateSavedFolders)(folderPath);
+            (0,_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(folderPath);
+          });
 
           // Interact.js set as dropzone
           interactjs__WEBPACK_IMPORTED_MODULE_4___default()('.location').dropzone({
@@ -593,32 +664,6 @@ var func = /*#__PURE__*/function () {
             console.log('update file list');
             files = (0,_updateFileList_js__WEBPACK_IMPORTED_MODULE_1__.updateFileList)(filesList);
           });
-
-          // Add folder button
-          addFolder = document.getElementById("add-folder");
-          addFolder.addEventListener("click", function () {
-            window.fileswiper.openDialog();
-          });
-          undoButton = document.getElementById("undo");
-          undoButton.addEventListener("click", function () {
-            window.fileswiper.undo();
-          });
-
-          // Select root folder
-          folderSelect = document.getElementById("folder-select");
-          folderSelect.addEventListener("click", function () {
-            window.fileswiper.openRootDialog();
-          });
-
-          // Save the config to local storage
-          window.fileswiper.sendConfig(function (event, config) {
-            if (typeof config === "undefined") {
-              var introScreen = document.getElementById("intro-screen");
-              introScreen.style.display = "block";
-            } else {
-              localStorage.setItem("config", JSON.stringify(config));
-            }
-          });
           window.fileswiper.sendPreviewImage(function (event, image) {
             console.log('recieving preview image');
             console.log(image);
@@ -639,16 +684,6 @@ var func = /*#__PURE__*/function () {
             //console.log(image.height)
           });
 
-          // Handle the addition of a new folder to the DOM
-          // Add it to the local storage for the user
-          window.fileswiper.folderLocation(function (event, location) {
-            if (typeof location === "undefined") {
-              return;
-            }
-            (0,_updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__.updateSavedFolders)(location);
-            (0,_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(location);
-          });
-
           /*
                 /*const numberOfFilesInStack = 3
             for(let i = 0; i < numberOfFilesInStack; i++) {
@@ -660,7 +695,7 @@ var func = /*#__PURE__*/function () {
               //add file to the stack
               files.appendChild(file);
             }*/
-        case 20:
+        case 26:
         case "end":
           return _context.stop();
       }
