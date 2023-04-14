@@ -4,13 +4,18 @@ const url = require('url')
 const path = require('path')
 const sharp = require('sharp');
 const sound = require("sound-play");
-
 const thumbnail = require('quicklook-thumbnail');
-
+let trash;
+import('trash').then((module) => {
+  trash = module.default;
+});
 
 const codeFileTypes = require('./codeFileTypes.js');
 const getFileListFromDirectory = require('./getFileListFromDirectory.js');
 const moveFile = require('./moveFile.js');
+
+const moveSound = path.join(__dirname, 'dist', 'assets', 'move_to.aif');
+const trashSound = path.join(__dirname, 'dist', 'assets', 'empty_trash.aif');
 
 app.setName('FileSwiper');
 
@@ -28,6 +33,7 @@ function createWindow () {
     minHeight: 400,
     frame: false,
     show: false,
+    icon: path.join(__dirname, 'dist', 'assets', 'icon.icns'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -42,6 +48,9 @@ function createWindow () {
   });
 
   win.loadURL(startUrl);
+
+  let configSent = false;
+  
   
 
   // undo the last move 
@@ -49,7 +58,7 @@ function createWindow () {
       let lastMove = fileMoves.pop();
       let oldPath = lastMove.newPath;
       let newPath = lastMove.oldPath;
-      moveFile(oldPath, newPath);
+      moveFile(fileMoves, oldPath, newPath);
   })
 
   // quit the app
@@ -74,127 +83,144 @@ function createWindow () {
   
 
 
-  ipcMain.handle('file-dropped', (event, filenameAndLocation) => {
-    let filename = filenameAndLocation.filename;
-    let location = filenameAndLocation.location;
+  ipcMain.handle('fileDropped', (event, fileMoveDetails) => {
+    let filename = fileMoveDetails.filename;
+    let moveToLocation = fileMoveDetails.location;
 
     let oldPath = rootFolder + `/${filename}`;
-    let newPath = `${location}/${filename}`;
+    let newPath = `${moveToLocation}/${filename}`;
 
     if(oldPath === newPath) {
+        // TO DO 
         console.log('same location')
         return;
     }
 
-    if(location === "trash") {
-        import('trash').then((module) => {
-            const trash = module.default;
-            trash(rootFolder + `/${filename}`);
-            sound.play("empty_trash.aif");
-            fileMoves.push({oldPath: rootFolder + `/${filename}`, newPath: `${process.env.HOME}/.Trash/${filename}`});
-        });
+    if(moveToLocation === "trash") {
+        trash(rootFolder + `/${filename}`);
+        fileMoves.push({oldPath: rootFolder + `/${filename}`, newPath: `${process.env.HOME}/.Trash/${filename}`});
+        sound.play(trashSound);
     } else {
-        
-        moveFile(oldPath, newPath);  
-        sound.play("move_to.aif");  
+        moveFile(fileMoves, oldPath, newPath);  
+        sound.play(moveSound);  
     }
 
   })
 
 
 
-  
-
-    
-
-
-    const sendFilesToWindow = (win, location, sortBy) => {
-
-      let files = getFileListFromDirectory(location, sortBy);
-      
-      //startWatcher(win, location);
-
-      // make a directory for the thumbnails 
-      let thumbnailDir = location + '/.thumbnails';
-      if (!fs.existsSync(thumbnailDir)){
-        fs.mkdirSync(thumbnailDir);
-      }
-
-      win.webContents.send('selectRootFolder', {location: location, files: files, sortBy: sortBy});
-      
-      if(files.length > 0) {
-
-          var options = {
-                size: 1024,
-                folder: thumbnailDir
-          };
-          
-          try {
-            thumbnail.create(location + '/' + files[0].name, options, function(err, result){
-              if(result) {
-                var imageAsBase64 = fs.readFileSync(result, 'base64');
-                var buffer = Buffer.from(imageAsBase64, 'base64');
-
-                if(codeFileTypes.includes(files[0].fileExtension)) {
-                  sharp(buffer).trim().toBuffer().then(data => {
-                    //add padding to the image
-                    var imageAsBase64 = data.toString('base64');
-                    imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
-                    var image = sharp(data);
-                    image.metadata().then(function(metadata) {
-                      var width = metadata.width;
-                      var height = metadata.height;
-                      var imageData = {image: imageAsBase64, width: width, height: height};
-                      // Store the image data in a variable
-                      sendPreview(imageData);
-                    });
-                  })
-
-                } else {
-                  sharp(buffer).toBuffer().then(data => { 
-                    var imageAsBase64 = data.toString('base64');
-                    imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
-                    var image = sharp(data);
-                    image.metadata().then(function(metadata) {
-                      var width = metadata.width;
-                      var height = metadata.height;
-                      var imageData = {image: imageAsBase64, width: width, height: height};
-                      // Store the image data in a variable
-                      sendPreview(imageData);
-                    });
-                  })
-
-                }
-                
-                
-              }
-            })
-          } catch (error) {
-            console.log(error)
-          }
-
-          function sendPreview(imageData) {
-            win.webContents.send('sendPreviewImage', imageData);
-          }
-          
-      }
-      rootFolder = location;
-  }
-
-
-
-
-    
     /*
-    *   Handle sending a new root folder to the DOM who's files will be displayed
+    *   Send the initial batch of files to the window when the root folder is selected
     *   It will send a list of 5 files and their properties to the renderer process
     *   @param {string} rootFolderPath - the location of the directory
     *   @param {win} win - the BrowserWindow object
     */
+    const sendNextFile = (win, rootFolderPath) => {
+    
+    }
+
+    
+
+    /*
+    *   Send the initial batch of files to the window when the root folder is selected
+    *   It will send a list of 5 files and their properties to the renderer process
+    *   @param {string} rootFolderPath - the location of the directory
+    *   @param {win} win - the BrowserWindow object
+    */
+    const sendFilesToWindow = async (win, rootFolderPath, sortBy) => {
+      let files = getFileListFromDirectory(rootFolderPath, sortBy);
+      let filePreviewDir = rootFolderPath + '/.thumbnails';
+      // limit the files to the first 5
+      files = files.slice(0, 5);
+      let fileThumbnailData = [];
+    
+      // create thumbnail promises for each file
+      let thumbnailPromises = files.map(file => {
+        let options = {
+          size: 1024,
+          folder: filePreviewDir
+        };
+        return new Promise((resolve, reject) => {
+          thumbnail.create(rootFolderPath + '/' + file.name, options, function(err, result){
+            if(result) {
+              var imageAsBase64 = fs.readFileSync(result, 'base64');
+              var buffer = Buffer.from(imageAsBase64, 'base64');
+              if(codeFileTypes.includes(files[0].fileExtension)) {
+                sharp(buffer).trim().toBuffer().then(data => {
+                  //add padding to the image
+                  var imageAsBase64 = data.toString('base64');
+                  imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
+                  var image = sharp(data);
+                  image.metadata().then(function(metadata) {
+                    var width = metadata.width;
+                    var height = metadata.height;
+                    var imageData = {image: imageAsBase64, width: width, height: height};
+                    resolve(imageData);
+                  });
+                })
+    
+              } else {
+                sharp(buffer).toBuffer().then(data => { 
+                  var imageAsBase64 = data.toString('base64');
+                  imageAsBase64 = 'data:image/png;base64,' + imageAsBase64;
+                  var image = sharp(data);
+                  image.metadata().then(function(metadata) {
+                    var width = metadata.width;
+                    var height = metadata.height;
+                    var imageData = {image: imageAsBase64, width: width, height: height};
+                    resolve(imageData);
+                  });
+                })
+              }
+            } else {
+              reject(err);
+            }
+          });
+        });
+      });
+    
+      try {
+        // wait for all thumbnail promises to resolve before sending file data to window
+        fileThumbnailData = await Promise.all(thumbnailPromises);
+        // add the thumbnail data to the file object
+        files = files.map((file, index) => {
+          file.thumbnail = fileThumbnailData[index].image;
+          file.width = fileThumbnailData[index].width;
+          file.height = fileThumbnailData[index].height;
+          return file;
+        });
+        win.webContents.send('selectRootFolder', {location: rootFolderPath, files: files, sortBy: sortBy});
+      } catch (error) {
+        console.log(error);
+      }
+    
+      rootFolder = rootFolderPath;
+    };
+
+
+
+
+    
+      /*
+      *   Handle sending a new root folder to the DOM who's files will be displayed
+      *   @param {string} rootFolderPath - the location of the directory
+      *   @param {win} win - the BrowserWindow object
+      */
     ipcMain.handle('sendRootFolder', (_event, rootFolderPath) => {
-      win.webContents.on('did-finish-load', () => {
+      if(!configSent) {
+        win.webContents.on('did-finish-load', () => {
+          sendFilesToWindow(win, rootFolderPath, 'name');
+          configSent = true;
+        })
+      }
+      if(configSent) {
         sendFilesToWindow(win, rootFolderPath, 'name');
-      })
+      }
+      // Make a directory for the file previews
+      let filePreviewDir = rootFolderPath + '/.thumbnails';
+      if (!fs.existsSync(filePreviewDir)){
+        fs.mkdirSync(filePreviewDir);
+      }
     })
 
 
@@ -222,7 +248,7 @@ function createWindow () {
       try {
         const { filePaths: [folderPath] } = await dialog.showOpenDialog({ buttonLabel: 'Add Folder', properties: ['openDirectory', 'createDirectory'] });
         if (folderPath) {
-          win.webContents.send('AddNewFolder', folderPath);
+          win.webContents.send('addNewFolder', folderPath);
         }
       } catch (error) {
         console.log(error);

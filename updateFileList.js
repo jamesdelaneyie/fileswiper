@@ -10,30 +10,11 @@ export const updateFileList = (fileList) => {
 
     if(fileList.length > 0) {
         
-        let currentFile = fileList[0].name
-        
         //if the current file does not exist, create it
         if(!document.querySelector("#current-file")) {
-            createCurrentFile();
-        }
-
-        let currentFileName = document.querySelector("#current-file #current-file-name");
-        let currentFileType = document.querySelector("#current-file #current-file-type");
-        let currentFileSize = document.querySelector("#current-file #current-file-size");
-
-        currentFileName.innerText = currentFile;
-        currentFileType.innerText = currentFile.split(".").pop(); 
-        currentFileType.classList.add(currentFileType.innerText.toLowerCase());
-
-        let currentFileSizeInBytes = fileList[0].size;
-        let currentFileSizeInKilobytes = currentFileSizeInBytes / 1000;
-        let currentFileSizeInMegabytes = currentFileSizeInKilobytes / 1000;
-        if (currentFileSizeInMegabytes > 1) {
-            currentFileSize.innerText = currentFileSizeInMegabytes.toFixed(2) + " MB";
-        } else if (currentFileSizeInKilobytes > 1) {
-            currentFileSize.innerText = currentFileSizeInKilobytes.toFixed(3) + " KB";
-        } else {
-            currentFileSize.innerText = currentFileSizeInBytes + " B";
+            for(const file of fileList) {
+                createCurrentFile(file);
+            }
         }
         
     }

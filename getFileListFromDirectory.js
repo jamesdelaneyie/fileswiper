@@ -32,6 +32,6 @@ const getFileListFromDirectory = (dir, sortBy) => {
       fileList.reverse();
     }
     return fileList;
-  }
+  } 
 
   module.exports = getFileListFromDirectory;

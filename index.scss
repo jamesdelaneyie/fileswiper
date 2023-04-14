@@ -41,30 +41,6 @@ main {
         top: 50%;
         transform: translateY(-50%);
     }
-    #trash {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        margin-left: -340px;
-        @media screen and (max-width: 795px) {
-            margin-left: -41vw;
-        }
-        width: 120px;
-        height: 120px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        > div {
-            text-align: center;
-            > svg {
-                width: 40px;
-                > path {
-                    fill: #777ea2;
-                }
-            }
-        }
-    }
     #files {
         position: absolute;
         top: 50%;
@@ -73,24 +49,46 @@ main {
         height: 350px;
         width: 240px;
         z-index: 100;
-        #current-file {
+        > li {
             max-width: 33vw;
             max-height: 50vw;
             height: 210px;
             width: 150px;
-            background: white url('assets/loading.gif') no-repeat center center;
-            background-size: 20px 20px;
+            min-width: 150px;
+            min-height: 210px;
             transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease;
-            > img {
-                height: 100%;
-                width: 100%;
-                object-fit: cover;
-                border-top-left-radius: 0.25rem;
-                border-top-right-radius: 0.25rem;
-                overflow: hidden;
-                pointer-events: none;
-                padding-bottom: 20px;
+            > span {
+                display: none;
             }
+            &:last-child {
+                box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 2px 4px 0 rgba(0,0,0,0.1);
+                > span {
+                    display: block;
+                }
+            }
+            &.double-tapped {
+                transform: rotate(0) !important;
+                max-width: 80vw;
+                max-height: 60vw;
+                > div {
+                    > img {
+                        object-fit: contain;
+                    }
+                }
+            }
+            > div {
+                > img {
+                    height: 100%;
+                    width: 100%;
+                    object-fit: cover;
+                    border-top-left-radius: 0.25rem;
+                    border-top-right-radius: 0.25rem;
+                    overflow: hidden;
+                    pointer-events: none;
+                    padding-bottom: 20px;
+                }
+            }
+            
         }
     }
     #locations {
@@ -114,7 +112,7 @@ main {
             top: calc(50% - (var(--tracksize) / 2));
             translate: calc(cos((var(--angle) + var(--angle-offset))) * var(--radius))
                         calc(sin((var(--angle) + var(--angle-offset))) * var(--radius) * -1);
-            transition: all 0.2s ease, transform 0.2s ease 0.2s;
+            transition: all 0.2s ease, transform 0.2s ease 0.2s, border 0.2s ease 1s;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -136,18 +134,58 @@ main {
 
 .drop-target {
     border: 3px solid greenyellow !important;
+    transition: border 0.2s ease !important;
+}
+
+.drop-target-rejected {
+    border: 3px solid #fe8c8c !important;
+    box-shadow: 0 0 10px 2px #fe8c8c !important;
+    transition: border 0.2s ease !important;
 }
 
 #root-folder-info {
     z-index: 150;
 }
 
+.file {
+    background-color: white;
+}
+
 #current-file-wrapper {
     overflow: hidden;
-    border-radius: 4px;
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 2px 4px 0 rgba(0,0,0,0.1);
+    border-radius: 3px;
+    background-color: white; 
+    border: 1px solid rgba(0,0,0,0.1);
     height: 100%;
+    pointer-events: none;
+    &.loaded {
+        background: white;
+    }
 }
+
+#trash {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    > div {
+        text-align: center;
+        > svg {
+            width: 40px;
+            > path {
+                fill: #777ea2;
+            }
+        }
+    }
+}
+
+/*
+//url('assets/loading.gif') no-repeat center center;
+*/
 
 .dropping-file {
     border: 3px solid blue;

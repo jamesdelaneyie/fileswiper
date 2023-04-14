@@ -22,6 +22,7 @@
     "electron-connect": "^0.6.3",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-reloader": "^1.2.3",
+    "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
     "interactjs": "^1.10.17",
     "js-file-download": "^0.4.12",

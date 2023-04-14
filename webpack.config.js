@@ -1,6 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
+const fileLoader = require('file-loader');
 
 module.exports = {
   target: "electron-renderer",
@@ -18,7 +18,7 @@ module.exports = {
   mode: "development", // or "production"
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
-    extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
+    extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".aif"],
   },
   devServer: {
     static: './dist/',
@@ -32,7 +32,14 @@ module.exports = {
   ],
   module: {
     rules: [
-      { test: /\.tsx?$/, loader: "ts-loader" },
+      {
+        test: /\.aif$/,
+        loader: 'file-loader',
+      },
+      { 
+        test: /\.tsx?$/, 
+        loader: "ts-loader"
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,

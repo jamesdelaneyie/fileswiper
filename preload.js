@@ -13,7 +13,7 @@ contextBridge.exposeInMainWorld('fileswiper', {
     openFolderDialog: () => ipcRenderer.invoke('openFolderDialog'),
     openRootFolderDialog: () => ipcRenderer.invoke('openRootFolderDialog'),
     // Add new folder to the DOM
-    addNewFolder: (folderPath) => ipcRenderer.on('AddNewFolder', folderPath), 
+    addNewFolder: (folderPath) => ipcRenderer.on('addNewFolder', folderPath), 
     // Send the config to the main process
     sendConfig: (config) => ipcRenderer.invoke('sendConfig', config),
     // Receive config from main process and save it to local storage
@@ -21,11 +21,13 @@ contextBridge.exposeInMainWorld('fileswiper', {
     // Undo & Quit buttons
     undo: () => ipcRenderer.invoke('undo'),
     quit: () => ipcRenderer.invoke('quit'), 
-    //
+    // Move a file
+    fileDropped: (fileMoveDetails) => ipcRenderer.invoke('fileDropped', fileMoveDetails),
+    // Receive the list of files from the main process
     selectRootFolder: (locationAndFiles) => ipcRenderer.on('selectRootFolder', locationAndFiles),
     sendPreviewImage: (previewImage) => ipcRenderer.on('sendPreviewImage', previewImage),  
     sendRootFolder: (rootFolder) => ipcRenderer.invoke('sendRootFolder', rootFolder),
-    fileDropped: (filenameAndLocation) => ipcRenderer.invoke('file-dropped', filenameAndLocation),
+    
     
 })
 
