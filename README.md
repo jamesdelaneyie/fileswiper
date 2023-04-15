@@ -6,8 +6,8 @@ A tiny macOS app that lets you sort out the contents of a folder by swiping file
 
 
 ### Features
+- Swipe, drag, or throw files into the folder buckets to move them
 - File previews for all native macOS file types
-- Drag (or throw) files from the stack into buckets to move them
 - Skip files by swiping them upwards
 - Trash files by swiping them into the trash can
 - Add up to 8 buckets at once to sort files into
@@ -39,11 +39,22 @@ To Do:
 - ~~add file dialog to select directory for swiping !!~~ 
 - ~~add trash and folder icons!!~~ 
 - ~~add physics to main area so you can throw files into buckets, p2.js?~~ Interact.js
-- bug: moving files too fast breaks the animation flow
+- ~~bug: moving files too fast breaks the animation flow~~
 - ~~add: lock window size~~ 
-- change: move add folder button to the circle path UI
-- folders add / remove in one direction
-- 
+- ~~change: move add folder button to the circle path UI~~
+- ~~folders add / remove in one direction~~
+- Remove tailwind, and/or move it to being used in stylesheet 
+- Improve the responsive layout from fullscreen -> mobile
+- Implement the sort by option in the UI
+- Implement file filtering in UI
+- Move js files into src folder
+- Add drop folder from finder functionality / both as root folder and as a bucket
+- All drop files from finder functionality
+- Double click bucket to make root folder
+- Add x icon for removing folders, currently right click
+- Add search function to filter files
+- Keyboard shortcuts for moving files into buckets, skip, undo, trash
+- Add ability to rename buckets / folders
 
 
 Development:

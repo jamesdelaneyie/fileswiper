@@ -52,8 +52,6 @@ const func = async () => {
         window.fileswiper.sendRootFolder(rootFolder);
     }
 
-
-
     let timeoutId = null;
 
     // Save the window size and position to local storage

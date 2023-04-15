@@ -30,7 +30,7 @@ var addFolderToDom = function addFolderToDom(location) {
   var locationText = location.split("/").pop();
   var locationTextDiv = document.createElement("span");
   locationTextDiv.innerText = locationText;
-  locationTextDiv.classList.add("text-slate-500", "text-sm");
+  locationTextDiv.classList.add("text-slate-500", "text-xs", "leading-3");
   innerDiv.appendChild(locationTextDiv);
   div.appendChild(innerDiv);
 
@@ -392,8 +392,8 @@ var getWorkspaceRestriction = function getWorkspaceRestriction() {
 
   // Calculate the width and height of the element being moved
   var elementTag = document.getElementById('current-file');
-  var elementWidth = elementTag.getBoundingClientRect().width * 2;
-  var elementHeight = elementTag.getBoundingClientRect().height * 2;
+  var elementWidth = elementTag.getBoundingClientRect().width * 1.5;
+  var elementHeight = elementTag.getBoundingClientRect().height * 1.5;
 
   // Calculate the maximum distance from the center of the circle that the element can be moved
   var maxDistance = radius - Math.sqrt(Math.pow(elementWidth, 2) + Math.pow(elementHeight, 2)) / 2;

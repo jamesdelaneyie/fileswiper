@@ -37,7 +37,7 @@ export const addFolderToDom = (location) => {
     let locationText = location.split("/").pop();
     let locationTextDiv = document.createElement("span");
     locationTextDiv.innerText = locationText;
-    locationTextDiv.classList.add("text-slate-500", "text-sm");
+    locationTextDiv.classList.add("text-slate-500", "text-xs", "leading-3");
     innerDiv.appendChild(locationTextDiv);
     div.appendChild(innerDiv);
 

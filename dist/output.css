@@ -521,6 +521,10 @@ video {
   position: absolute;
 }
 
+.relative {
+  position: relative;
+}
+
 .bottom-10 {
   bottom: 2.5rem;
 }
@@ -595,6 +599,10 @@ video {
 
 .w-full {
   width: 100%;
+}
+
+.transform {
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .cursor-pointer {
@@ -855,6 +863,7 @@ main {
       align-items: center;
       justify-content: center;
       z-index: 50;
+      font-size: 12px;
       //box-shadow: 0 0 5px 3px rgba(0,0,0,0.1);
       &#add-folder {
         margin: 44px;
@@ -906,6 +915,13 @@ main {
 #root-folder-info {
   z-index: 150;
   top: 85px;
+  > div {
+    > svg {
+      position: relative;
+      top: -2px;
+      left: 5px;
+    }
+  }
 }
 
 .file {
