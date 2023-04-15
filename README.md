@@ -1,21 +1,23 @@
-![Fileswiper](https://github.com/jamesdelaneyie/fileswiper/blob/master/progress_gifs/fileswiper-progress-3.png)
+<p align="center">
+    <img src="https://raw.githubusercontent.com/jamesdelaneyie/fileswiper/master/dist/assets/fileswiper-logo.png">
+</p>
 
-# ✨File*swiper*
+# File*swiper*
 
 A tiny macOS app that lets you sort out the contents of a folder by swiping files into buckets. Built with Electron. 
 
 
 ### Features
-- Swipe, drag, or throw files into the folder buckets to move them
-- File previews for all native macOS file types
-- Skip files by swiping them upwards
-- Trash files by swiping them into the trash can
-- Add up to 8 buckets at once to sort files into
-- Sort files by name, size, and last modified date
-- See file size, type, and last modified date at a glance
-- Move history, undo the last move
-- Folder watching, file list updates on OS level file changes
-- Double click to preview file at full size
+- ➡️ Swipe, drag, or throw files into the folder buckets to move them
+- 🖼️ File previews for all native macOS file types
+- 🖼️ Skip files by swiping them upwards
+- 🗑️ Trash files by swiping them into the trash can
+- 🪣 Add up to 8 buckets at once to sort files into
+- 🔠 Sort files by name, size, and last modified date
+- 🔬 See file size, type, and last modified date at a glance
+- ↩️ Move history, undo the last move
+- 🕵️ Folder watching, file list updates on OS level file changes
+- 🔍 Double click to preview file at full size
 
 
 ### Interesting bits: 
