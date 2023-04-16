@@ -1,6 +1,6 @@
 <p align="center">
     <img src="https://raw.githubusercontent.com/jamesdelaneyie/fileswiper/master/dist/assets/fileswiper-logo.png">
-    <img src="https://raw.githubusercontent.com/jamesdelaneyie/fileswiper/master/progress-gifs/fileswiper-progress-4.gif">
+    <img src="https://raw.githubusercontent.com/jamesdelaneyie/fileswiper/master/progress_gifs/fileswiper-progress-4.gif">
 </p>
 
 # File*Swiper*
