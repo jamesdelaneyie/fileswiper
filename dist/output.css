@@ -525,10 +525,6 @@ video {
   position: relative;
 }
 
-.bottom-10 {
-  bottom: 2.5rem;
-}
-
 .left-0 {
   left: 0px;
 }
@@ -539,10 +535,6 @@ video {
 
 .left-12 {
   left: 3rem;
-}
-
-.right-10 {
-  right: 2.5rem;
 }
 
 .right-5 {
@@ -652,24 +644,9 @@ video {
   border-color: rgb(203 213 225 / var(--tw-border-opacity));
 }
 
-.border-slate-400 {
-  --tw-border-opacity: 1;
-  border-color: rgb(148 163 184 / var(--tw-border-opacity));
-}
-
 .bg-green-400 {
   --tw-bg-opacity: 1;
   background-color: rgb(74 222 128 / var(--tw-bg-opacity));
-}
-
-.bg-slate-300 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(203 213 225 / var(--tw-bg-opacity));
-}
-
-.bg-slate-900 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(15 23 42 / var(--tw-bg-opacity));
 }
 
 .bg-white {
@@ -858,13 +835,20 @@ main {
       top: calc(50% - (var(--tracksize) / 2));
       translate: calc(cos((var(--angle) + var(--angle-offset))) * var(--radius))
                         calc(sin((var(--angle) + var(--angle-offset))) * var(--radius) * -1);
-      transition: all 0.2s ease, transform 0.2s ease 0.2s, border 0.2s ease 1s;
+      transition: all 0.2s ease, transform 0.2s ease, border 0.2s ease 1s;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 50;
       font-size: 12px;
       //box-shadow: 0 0 5px 3px rgba(0,0,0,0.1);
+      &.setting-as-root {
+        translate: none;
+        transform: translateX(-50%) translateY(-50%) scale(2);
+        opacity: 0;
+        top: 50%;
+        left: 50%;
+      }
       &#add-folder {
         margin: 44px;
         width: 44px;
@@ -926,6 +910,31 @@ main {
 
 .file {
   background-color: white;
+}
+
+#quit {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  width: 34px;
+  height: 34px;
+  padding: 5px;
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 20px;
+  text-indent: 4px;
+  color: #969fab;
+  opacity: 0.5;
+  z-index: 100;
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  &:hover {
+    background-color: transparent;
+    border: 1px solid #969fab;
+    color: #777ea2;
+    opacity: 0.6;
+  }
 }
 
 #undo {
@@ -1334,16 +1343,6 @@ main {
 .hover\:bg-green-300:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(134 239 172 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-slate-400:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(148 163 184 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-slate-700:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(51 65 85 / var(--tw-bg-opacity));
 }
 
 

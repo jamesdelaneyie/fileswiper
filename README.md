@@ -46,14 +46,16 @@ A tiny macOS app that lets you sort out the contents of a folder by swiping file
 - ~~add: lock window size~~ 
 - ~~change: move add folder button to the circle path UI~~
 - ~~folders add / remove in one direction~~
+- ~~Move js files into src folder~~
+- ~~move skip button to offset center of screen~~
+- ~~move folder select to current folder area~~
 - Remove tailwind, and/or move it to being used in stylesheet 
 - Improve the responsive layout from fullscreen -> mobile
 - Implement the sort by option in the UI
 - Implement file filtering in UI
-- ~~Move js files into src folder~~
 - Add drop folder from finder functionality / both as root folder and as a bucket
 - All drop files from finder functionality
-- Double click bucket to make root folder
+- ~~Double click bucket to make root folder~~
 - Add x icon for removing folders, currently right click
 - Add search function to filter files
 - Keyboard shortcuts for moving files into buckets, skip, undo, trash

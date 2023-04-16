@@ -40,6 +40,17 @@ var addFolderToDom = function addFolderToDom(location) {
     //window.versions.openDialog();
   });
 
+  //add on double click
+  div.addEventListener("dblclick", function (e) {
+    e.preventDefault();
+    e.target.classList.add('setting-as-root');
+    var location = e.target.getAttribute("data-folder-location");
+    window.fileswiper.sendRootFolder(location);
+    setTimeout(function () {
+      e.target.remove();
+    }, 250);
+  });
+
   // Right click
   div.addEventListener("contextmenu", function (e) {
     e.target.classList.add("removing");

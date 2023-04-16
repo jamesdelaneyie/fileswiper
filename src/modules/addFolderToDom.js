@@ -48,6 +48,17 @@ export const addFolderToDom = (location) => {
     div.addEventListener("click", (e) => {
       //window.versions.openDialog();
     });
+
+    //add on double click
+    div.addEventListener("dblclick", (e) => {
+      e.preventDefault();
+      e.target.classList.add('setting-as-root')
+      let location = e.target.getAttribute("data-folder-location");
+      window.fileswiper.sendRootFolder(location);
+      setTimeout(() => {
+        e.target.remove();
+      }, 250);
+    });
     
     // Right click
     div.addEventListener("contextmenu", (e) => {
