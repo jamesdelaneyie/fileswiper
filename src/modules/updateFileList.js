@@ -2,7 +2,7 @@ import { createCurrentFile } from "./createCurrentFile.js";
 
 export const updateFileList = (fileList) => {
 
-    console.log(fileList);
+    //console.log(fileList);
 
     let totalNumberOfFiles = fileList.length;
     let totalNumberOfFilesElement = document.getElementById("total-number-of-files");
@@ -10,11 +10,9 @@ export const updateFileList = (fileList) => {
 
     if(fileList.length > 0) {
         
-        //if the current file does not exist, create it
-        if(!document.querySelector("#current-file")) {
-            for(const file of fileList) {
-                createCurrentFile(file);
-            }
+        let numberOfFilesInStack = document.querySelectorAll("#current-file").length;
+        for(let i = (numberOfFilesInStack); i < totalNumberOfFiles; i++) {
+            createCurrentFile(fileList[i]);
         }
         
     }

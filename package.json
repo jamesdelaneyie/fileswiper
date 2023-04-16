@@ -3,7 +3,7 @@
   "productName": "FileSwiper",
   "version": "1.0.0",
   "description": "An interface for sorting files quickly",
-  "main": "main.js",
+  "main": "./src/main.js",
   "author": "jamesdelaney.ie",
   "license": "MIT",
   "devDependencies": {

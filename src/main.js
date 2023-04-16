@@ -6,12 +6,12 @@ const sharp = require('sharp');
 const sound = require("sound-play");
 const thumbnail = require('quicklook-thumbnail');
 
-const codeFileTypes = require('./codeFileTypes.js');
-const getFileListFromDirectory = require('./getFileListFromDirectory.js');
-const moveFile = require('./moveFile.js');
+const codeFileTypes = require('./modules/codeFileTypes.js');
+const getFileListFromDirectory = require('./modules/getFileListFromDirectory.js');
+const moveFile = require('./modules/moveFile.js');
 
-const moveSound = path.join(__dirname, 'dist', 'assets', 'move_to.aif');
-const trashSound = path.join(__dirname, 'dist', 'assets', 'empty_trash.aif');
+const moveSound = path.join(__dirname, '../', 'dist', 'assets', 'move_to.aif');
+const trashSound = path.join(__dirname, '../', 'dist', 'assets', 'empty_trash.aif');
 
 let trash;
 import('trash').then((module) => {
@@ -34,7 +34,7 @@ function createWindow () {
     minWidth: 400,
     minHeight: 400,
     frame: false,
-    show: false,
+    //show: false,
     icon: path.join(__dirname, 'dist', 'assets', 'icon.icns'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -43,7 +43,7 @@ function createWindow () {
   })
 
   const startUrl = process.env.ELECTRON_START_URL || url.format({
-    pathname: path.join(__dirname, 'dist', 'index.html'),
+    pathname: path.join(__dirname, '../', 'dist', 'index.html'),
     protocol: 'file:',
     slashes: true
   });
@@ -52,14 +52,23 @@ function createWindow () {
 
   
 
+  
   /*
 	*   Undo the last file move
 	*/
   ipcMain.handle('undo', () => {
+      //console.log('undo')
       let lastMove = fileMoves.pop();
       let oldPath = lastMove.newPath;
       let newPath = lastMove.oldPath;
-      moveFile(fileMoves, oldPath, newPath);
+      moveFile(fileMoves, oldPath, newPath, true).then(() => {
+        setTimeout(() => {
+          //to do - add folder from other direction
+          sendFilesToWindow(win, rootFolder, 'name');
+        }, 500);
+      });
+      //console.log(win, rootFolder)
+      
   })
 
 
@@ -178,7 +187,12 @@ function createWindow () {
                 })
               }
             } else {
+              //console.log('error!')
+              console.log('Error creating thumbnail')
               reject(err);
+              //console.log('Error creating thumbnail')
+              //resolve({image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Ug8AAm0BdTu/QFEAAAAASUVORK5CYII=', width: 0, height: 0})
+            
             }
           });
         });

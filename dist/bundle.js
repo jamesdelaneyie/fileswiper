@@ -1,10 +1,10 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./addFolderToDom.js":
-/*!***************************!*\
-  !*** ./addFolderToDom.js ***!
-  \***************************/
+/***/ "./src/modules/addFolderToDom.js":
+/*!***************************************!*\
+  !*** ./src/modules/addFolderToDom.js ***!
+  \***************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -59,10 +59,10 @@ var addFolderToDom = function addFolderToDom(location) {
 
 /***/ }),
 
-/***/ "./createCurrentFile.js":
-/*!******************************!*\
-  !*** ./createCurrentFile.js ***!
-  \******************************/
+/***/ "./src/modules/createCurrentFile.js":
+/*!******************************************!*\
+  !*** ./src/modules/createCurrentFile.js ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -72,9 +72,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! interactjs */ "./node_modules/interactjs/dist/interact.min.js");
 /* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(interactjs__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _dragMoveListener_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./dragMoveListener.js */ "./dragMoveListener.js");
-/* harmony import */ var _getDropZoneCenters_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getDropZoneCenters.js */ "./getDropZoneCenters.js");
-/* harmony import */ var _getWorkspaceRestriction_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getWorkspaceRestriction.js */ "./getWorkspaceRestriction.js");
+/* harmony import */ var _getDropZoneCenters_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getDropZoneCenters.js */ "./src/modules/getDropZoneCenters.js");
+/* harmony import */ var _dragMoveListener_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./dragMoveListener.js */ "./src/modules/dragMoveListener.js");
+/* harmony import */ var _getWorkspaceRestriction_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getWorkspaceRestriction.js */ "./src/modules/getWorkspaceRestriction.js");
 
 
 
@@ -129,10 +129,10 @@ var createCurrentFile = function createCurrentFile(file) {
   currentFile.classList.add(randomClassName);
 
   //let files = document.getElementById("files");
-  files.appendChild(currentFile);
+  files.prepend(currentFile);
   var interactableFile = interactjs__WEBPACK_IMPORTED_MODULE_3___default()(".".concat(randomClassName));
   var dragMoveListenerWrapper = function dragMoveListenerWrapper(randomClassName, event) {
-    (0,_dragMoveListener_js__WEBPACK_IMPORTED_MODULE_0__.dragMoveListener)(interactSettings, randomClassName, event);
+    (0,_dragMoveListener_js__WEBPACK_IMPORTED_MODULE_1__.dragMoveListener)(interactSettings, randomClassName, event);
   };
   var interactSettings = {
     inertia: {
@@ -146,7 +146,7 @@ var createCurrentFile = function createCurrentFile(file) {
       restriction: (0,_getWorkspaceRestriction_js__WEBPACK_IMPORTED_MODULE_2__.getWorkspaceRestriction)(),
       endOnly: true
     }), interactjs__WEBPACK_IMPORTED_MODULE_3___default().modifiers.snap({
-      targets: (0,_getDropZoneCenters_js__WEBPACK_IMPORTED_MODULE_1__.getDropZoneCenters)(),
+      targets: (0,_getDropZoneCenters_js__WEBPACK_IMPORTED_MODULE_0__.getDropZoneCenters)(),
       relativePoints: [{
         x: 0.5,
         y: 0.5
@@ -200,10 +200,10 @@ var createCurrentFile = function createCurrentFile(file) {
 
 /***/ }),
 
-/***/ "./createTrash.js":
-/*!************************!*\
-  !*** ./createTrash.js ***!
-  \************************/
+/***/ "./src/modules/createTrash.js":
+/*!************************************!*\
+  !*** ./src/modules/createTrash.js ***!
+  \************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -222,10 +222,10 @@ var createTrash = function createTrash() {
 
 /***/ }),
 
-/***/ "./dragMoveListener.js":
-/*!*****************************!*\
-  !*** ./dragMoveListener.js ***!
-  \*****************************/
+/***/ "./src/modules/dragMoveListener.js":
+/*!*****************************************!*\
+  !*** ./src/modules/dragMoveListener.js ***!
+  \*****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -316,7 +316,7 @@ var dragMoveListener = function dragMoveListener(interactSettings, randomClassNa
         fileBeingDropped.style.opacity = 0;
       }, 800);
       setTimeout(function () {
-        fileBeingDropped.remove();
+        //fileBeingDropped.remove()
       }, 1000);
     }
   }
@@ -324,10 +324,10 @@ var dragMoveListener = function dragMoveListener(interactSettings, randomClassNa
 
 /***/ }),
 
-/***/ "./getDropZoneCenters.js":
-/*!*******************************!*\
-  !*** ./getDropZoneCenters.js ***!
-  \*******************************/
+/***/ "./src/modules/getDropZoneCenters.js":
+/*!*******************************************!*\
+  !*** ./src/modules/getDropZoneCenters.js ***!
+  \*******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -366,10 +366,10 @@ var getDropZoneCenters = function getDropZoneCenters() {
 
 /***/ }),
 
-/***/ "./getWorkspaceRestriction.js":
-/*!************************************!*\
-  !*** ./getWorkspaceRestriction.js ***!
-  \************************************/
+/***/ "./src/modules/getWorkspaceRestriction.js":
+/*!************************************************!*\
+  !*** ./src/modules/getWorkspaceRestriction.js ***!
+  \************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -413,10 +413,10 @@ var getWorkspaceRestriction = function getWorkspaceRestriction() {
 
 /***/ }),
 
-/***/ "./updateFileList.js":
-/*!***************************!*\
-  !*** ./updateFileList.js ***!
-  \***************************/
+/***/ "./src/modules/updateFileList.js":
+/*!***************************************!*\
+  !*** ./src/modules/updateFileList.js ***!
+  \***************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -424,31 +424,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "updateFileList": () => (/* binding */ updateFileList)
 /* harmony export */ });
-/* harmony import */ var _createCurrentFile_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./createCurrentFile.js */ "./createCurrentFile.js");
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+/* harmony import */ var _createCurrentFile_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./createCurrentFile.js */ "./src/modules/createCurrentFile.js");
 
 var updateFileList = function updateFileList(fileList) {
-  console.log(fileList);
+  //console.log(fileList);
+
   var totalNumberOfFiles = fileList.length;
   var totalNumberOfFilesElement = document.getElementById("total-number-of-files");
   totalNumberOfFilesElement.innerText = totalNumberOfFiles + ' files';
   if (fileList.length > 0) {
-    //if the current file does not exist, create it
-    if (!document.querySelector("#current-file")) {
-      var _iterator = _createForOfIteratorHelper(fileList),
-        _step;
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var file = _step.value;
-          (0,_createCurrentFile_js__WEBPACK_IMPORTED_MODULE_0__.createCurrentFile)(file);
-        }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
-      }
+    var numberOfFilesInStack = document.querySelectorAll("#current-file").length;
+    for (var i = numberOfFilesInStack; i < totalNumberOfFiles; i++) {
+      (0,_createCurrentFile_js__WEBPACK_IMPORTED_MODULE_0__.createCurrentFile)(fileList[i]);
     }
   }
   if (fileList.length === 0) {
@@ -478,10 +465,10 @@ var updateFileList = function updateFileList(fileList) {
 
 /***/ }),
 
-/***/ "./updateSavedFolders.js":
-/*!*******************************!*\
-  !*** ./updateSavedFolders.js ***!
-  \*******************************/
+/***/ "./src/modules/updateSavedFolders.js":
+/*!*******************************************!*\
+  !*** ./src/modules/updateSavedFolders.js ***!
+  \*******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -585,14 +572,14 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
 "use strict";
-/*!*********************!*\
-  !*** ./renderer.js ***!
-  \*********************/
+/*!*************************!*\
+  !*** ./src/renderer.js ***!
+  \*************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./addFolderToDom.js */ "./addFolderToDom.js");
-/* harmony import */ var _updateFileList_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./updateFileList.js */ "./updateFileList.js");
-/* harmony import */ var _createTrash_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./createTrash.js */ "./createTrash.js");
-/* harmony import */ var _updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./updateSavedFolders.js */ "./updateSavedFolders.js");
+/* harmony import */ var _modules_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/addFolderToDom.js */ "./src/modules/addFolderToDom.js");
+/* harmony import */ var _modules_updateFileList_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/updateFileList.js */ "./src/modules/updateFileList.js");
+/* harmony import */ var _modules_createTrash_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/createTrash.js */ "./src/modules/createTrash.js");
+/* harmony import */ var _modules_updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/updateSavedFolders.js */ "./src/modules/updateSavedFolders.js");
 /* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! interactjs */ "./node_modules/interactjs/dist/interact.min.js");
 /* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(interactjs__WEBPACK_IMPORTED_MODULE_4__);
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -609,11 +596,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var func = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var files, quitButton, undoButton, addFolder, folderSelect, config, introScreen, rootFolder, timeoutId, listOfFolders, _iterator, _step, folder, trash, main;
+    var quitButton, undoButton, addFolder, folderSelect, config, introScreen, rootFolder, timeoutId, listOfFolders, _iterator2, _step2, folder, trash, main;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          files = []; // Quit App button
+          // Quit App button
           quitButton = document.getElementById("quit");
           quitButton.addEventListener("click", function () {
             window.fileswiper.quit();
@@ -635,6 +622,33 @@ var func = /*#__PURE__*/function () {
           folderSelect = document.getElementById("folder-select");
           folderSelect.addEventListener("click", function () {
             window.fileswiper.openRootFolderDialog();
+          });
+
+          // Handling dragging files / folder into the app
+          document.addEventListener('drop', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var pathArr = [];
+            var _iterator = _createForOfIteratorHelper(event.dataTransfer.files),
+              _step;
+            try {
+              for (_iterator.s(); !(_step = _iterator.n()).done;) {
+                var f = _step.value;
+                console.log('File Path of dragged files: ', f.path);
+                pathArr.push(f.path);
+              }
+            } catch (err) {
+              _iterator.e(err);
+            } finally {
+              _iterator.f();
+            }
+            console.log(pathArr);
+          });
+
+          // Dragover event for dragging files / folder into the app
+          document.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
           });
 
           // Get the config from local storage and send it to the main process
@@ -685,17 +699,17 @@ var func = /*#__PURE__*/function () {
           // Load the last folders used by the user    
           listOfFolders = JSON.parse(localStorage.getItem("locations")); //if list of folders is not null, add the folders to the DOM
           if (Array.isArray(listOfFolders)) {
-            _iterator = _createForOfIteratorHelper(listOfFolders);
+            _iterator2 = _createForOfIteratorHelper(listOfFolders);
             try {
-              for (_iterator.s(); !(_step = _iterator.n()).done;) {
-                folder = _step.value;
+              for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+                folder = _step2.value;
                 // Add the folders used by the user to the DOM
-                (0,_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(folder);
+                (0,_modules_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(folder);
               }
             } catch (err) {
-              _iterator.e(err);
+              _iterator2.e(err);
             } finally {
-              _iterator.f();
+              _iterator2.f();
             }
           } else {
             console.log('No folders found in local storage');
@@ -705,12 +719,12 @@ var func = /*#__PURE__*/function () {
           // Add it to the local storage for the user
           window.fileswiper.addNewFolder(function (event, folderPath) {
             console.log('New folder added: ' + folderPath);
-            (0,_updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__.updateSavedFolders)(folderPath);
-            (0,_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(folderPath);
+            (0,_modules_updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__.updateSavedFolders)(folderPath);
+            (0,_modules_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(folderPath);
           });
 
           // Add the trash can to the DOM
-          trash = (0,_createTrash_js__WEBPACK_IMPORTED_MODULE_2__.createTrash)();
+          trash = (0,_modules_createTrash_js__WEBPACK_IMPORTED_MODULE_2__.createTrash)();
           main = document.querySelector("body");
           main.appendChild(trash);
 
@@ -746,9 +760,15 @@ var func = /*#__PURE__*/function () {
             var sortByText = document.getElementById("sort-by-text");
             sortByText.textContent = sortBy;
             var filesList = locationAndFiles.files;
-            (0,_updateFileList_js__WEBPACK_IMPORTED_MODULE_1__.updateFileList)(filesList);
+            var files = document.getElementById("files");
+            if (locationAndFiles.location !== rootFolder) {
+              while (files.firstChild) {
+                files.removeChild(files.firstChild);
+              }
+            }
+            (0,_modules_updateFileList_js__WEBPACK_IMPORTED_MODULE_1__.updateFileList)(filesList);
           });
-        case 26:
+        case 27:
         case "end":
           return _context.stop();
       }

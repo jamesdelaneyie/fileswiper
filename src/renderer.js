@@ -1,13 +1,11 @@
-import { addFolderToDom } from "./addFolderToDom.js";
-import { updateFileList } from "./updateFileList.js";
-import { createTrash } from "./createTrash.js";
-import { updateSavedFolders } from "./updateSavedFolders.js";
+import { addFolderToDom } from "./modules/addFolderToDom.js";
+import { updateFileList } from "./modules/updateFileList.js";
+import { createTrash } from "./modules/createTrash.js";
+import { updateSavedFolders } from "./modules/updateSavedFolders.js";
 
 import interact from "interactjs";
 
 const func = async () => {
-
-    let files = [];
 
     // Quit App button
     const quitButton = document.getElementById("quit");
@@ -35,6 +33,26 @@ const func = async () => {
     folderSelect.addEventListener("click", () => {
         window.fileswiper.openRootFolderDialog();
     })
+
+
+    // Handling dragging files / folder into the app
+    document.addEventListener('drop', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+    
+        let pathArr = [];
+        for (const f of event.dataTransfer.files) {
+            console.log('File Path of dragged files: ', f.path)
+            pathArr.push(f.path);
+        }
+        console.log(pathArr);
+    });
+
+    // Dragover event for dragging files / folder into the app
+    document.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    });
 
 
     // Get the config from local storage and send it to the main process
@@ -161,6 +179,14 @@ const func = async () => {
             sortByText.textContent = sortBy;
 
         let filesList = locationAndFiles.files;
+
+        let files = document.getElementById("files");
+        if(locationAndFiles.location !== rootFolder) {
+            while (files.firstChild) {
+                files.removeChild(files.firstChild);
+            }
+        }
+        
 
         updateFileList(filesList);
 

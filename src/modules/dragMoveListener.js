@@ -99,7 +99,7 @@ export const dragMoveListener = (interactSettings, randomClassName, event) => {
         }, 800);
 
         setTimeout(() => {
-          fileBeingDropped.remove()
+          //fileBeingDropped.remove()
         }, 1000)
       }
     }

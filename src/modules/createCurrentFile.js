@@ -1,6 +1,6 @@
 import interact from "interactjs";
-import { dragMoveListener } from "./dragMoveListener.js";
 import { getDropZoneCenters } from "./getDropZoneCenters.js";
+import { dragMoveListener } from "./dragMoveListener.js";
 import { getWorkspaceRestriction } from "./getWorkspaceRestriction.js";
 
 
@@ -65,7 +65,7 @@ export const createCurrentFile = (file) => {
         currentFile.classList.add(randomClassName);
 
         //let files = document.getElementById("files");
-        files.appendChild(currentFile);
+        files.prepend(currentFile);
 
         const interactableFile = interact(`.${randomClassName}`)
 

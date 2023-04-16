@@ -4,30 +4,21 @@ const fileLoader = require('file-loader');
 
 module.exports = {
   target: "electron-renderer",
-  entry: "./renderer.js", // Path to your renderer.js file
-  //watch: true,
+  entry: "./src/renderer.js",
   output: {
     path: __dirname + "/dist",
     publicPath: "./",
     filename: "bundle.js",
-    // The following two lines are necessary for Electron to load the bundle correctly
-    //libraryTarget: "commonjs2",
     libraryExport: "default",
   },
   devtool: 'source-map',
   mode: "development", // or "production"
   resolve: {
-    // Add '.ts' and '.tsx' as resolvable extensions.
     extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".aif"],
-  },
-  devServer: {
-    static: './dist/',
-    hot: true,
-    port: 8080
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html'
+      template: './src/index.html'
     })
   ],
   module: {

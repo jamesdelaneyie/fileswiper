@@ -49,7 +49,7 @@ A tiny macOS app that lets you sort out the contents of a folder by swiping file
 - Improve the responsive layout from fullscreen -> mobile
 - Implement the sort by option in the UI
 - Implement file filtering in UI
-- Move js files into src folder
+- ~~Move js files into src folder~~
 - Add drop folder from finder functionality / both as root folder and as a bucket
 - All drop files from finder functionality
 - Double click bucket to make root folder

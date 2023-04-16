@@ -21,6 +21,8 @@ export const addFolderToDom = (location) => {
       "hover:cursor-pointer"
     );
 
+    
+
     let innerDiv = document.createElement("div");
     innerDiv.setAttribute("class", "text-center");
     
