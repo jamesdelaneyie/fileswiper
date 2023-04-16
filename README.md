@@ -1,8 +1,9 @@
 <p align="center">
     <img src="https://raw.githubusercontent.com/jamesdelaneyie/fileswiper/master/dist/assets/fileswiper-logo.png">
+    <img src="https://raw.githubusercontent.com/jamesdelaneyie/fileswiper/master/progress-gifs/fileswiper-progress-4.gif">
 </p>
 
-# File*swiper*
+# File*Swiper*
 
 A tiny macOS app that lets you sort out the contents of a folder by swiping files into buckets.
 
