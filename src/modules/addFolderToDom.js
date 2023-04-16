@@ -39,7 +39,7 @@ export const addFolderToDom = (location) => {
     let locationText = location.split("/").pop();
     let locationTextDiv = document.createElement("span");
     locationTextDiv.innerText = locationText;
-    locationTextDiv.classList.add("text-slate-500", "text-xs", "leading-3");
+    locationTextDiv.classList.add("text-slate-500", "text-xs", "leading-3", "block");
     innerDiv.appendChild(locationTextDiv);
     div.appendChild(innerDiv);
 
@@ -73,5 +73,8 @@ export const addFolderToDom = (location) => {
       }, 100);
     });
     locationParent.appendChild(div);
+    setTimeout(() => {
+      div.classList.add('loaded')
+    }, 100);
   };
   

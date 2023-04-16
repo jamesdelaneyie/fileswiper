@@ -81,7 +81,7 @@ main {
     #locations {
         z-index: 100;
         --radius: 330px;
-        --tracksize: 120px;
+        --tracksize: 106px;
         @media screen and (max-width: 795px) {
             --radius: 41vw;
             --tracksize: 60px;
@@ -105,7 +105,13 @@ main {
             justify-content: center;
             z-index: 50;
             font-size: 12px;
+            opacity: 0;
+            transform: scale(0);
             //box-shadow: 0 0 5px 3px rgba(0,0,0,0.1);
+            &.loaded {
+                opacity: 1;
+                transform: scale(1);
+            }
             &.setting-as-root {
                 translate: none;
                 transform: translateX(-50%) translateY(-50%) scale(2);
@@ -115,12 +121,14 @@ main {
             }
             &#add-folder {
                 margin: 44px;
-                width: 44px;
-                height: 44px;
-                font-size: 38px;
+                width: 34px;
+                height: 34px;
+                font-size: 30px;
                 font-weight: 300;
                 line-height: 0;
                 text-align: center;
+                opacity: 1;
+                transform: scale(1);
                 > span {
                     display: block;
                     position: relative;
@@ -206,23 +214,24 @@ main {
 
 #undo {
     position: absolute;
-    top: 50%;
-    left: 25%;
+    top: 95%;
+    left: 97%;
     transform: translate(-50%, -25%);
-    width: 44px;
-    height: 44px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     cursor: pointer;
     z-index: 50;
-    padding: 10px;
+    padding: 6px;
     -webkit-app-region: no-drag;
     -webkit-user-select: none;
-    background-color: #cbd5e1;
+    //background-color: #cbd5e1;
     border: 1px solid #969fab;
     color: #777ea2;
     opacity: 0.5;
     &:hover {
         opacity: 1;
+        background-color: transparent;
     }
     > svg {
         position: relative;
@@ -275,6 +284,7 @@ main {
 
 /*
 //url('assets/loading.gif') no-repeat center center;
+    outline: 15px solid #f4a9a9;
 */
 
 .dropping-file {
@@ -287,6 +297,7 @@ main {
     background: white url('assets/loading.gif') no-repeat center center;
     background-size: 20px 20px;
     transition: height 0.2s ease, width 0.2s ease, border-radius 0.2s ease, opacity 0.5s ease, transform 0.2s ease !important;
+    transform-origin: 50% 50% !important;
     > span {
         display: none;
     }
@@ -313,6 +324,14 @@ main {
             }
         }
     }
+}
+
+.dropping-file #current-file-name {
+    display: none;
+}
+
+.dropping-file #current-file-preview {
+    padding-bottom: 0;
 }
 
 #current-file-type {
@@ -463,12 +482,21 @@ main {
 }
 
 #skip {
-    background: -webkit-radial-gradient(top, 50% 50%, #a9cff4, #F1F6F900);
+    background: -webkit-radial-gradient(left, 100% 40%, #a9cff4, #F1F6F900);
     overflow: visible;
-    height: 80px;
-    top: 0px;
+    height: 100vh;
+    width: 50px;
+    margin-right: 200px;
+    line-height: 100vh;
+    text-indent: 30px;
+    top: 0%;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: #889ec9;
     mix-blend-mode: darken;
     transition: all 0.5s ease;
+    opacity: 0.5;
     > span {
         pointer-events: none;
     }
@@ -485,8 +513,10 @@ main {
     }
     &.drop-active {
         border: 0;
+        opacity: 1;
     }
     &.drop-target {
+       
         border: 0 !important;
         &:after {
             content: '';
@@ -495,7 +525,7 @@ main {
             left: 0;
             width: 100%;
             height: 80px;
-            background: -webkit-radial-gradient(top, 50% 100%, #a9cff4, #F1F6F900);
+            background: -webkit-radial-gradient(right, 50% 100%, #a9cff4, #F1F6F900);
             background-position: 50% 50%;
             mix-blend-mode: darken;
             opacity: 1;

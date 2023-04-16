@@ -12,7 +12,16 @@ export const dragMoveListener = (interactSettings, randomClassName, event) => {
 
     filebeingDragged.style.cursor = 'grabbing'
     
-    let scale = 1 - (Math.abs(x)) / 450
+    let scale
+    let centerPointOffilebeingDragged = (filebeingDragged.getBoundingClientRect().width / 2) + filebeingDragged.getBoundingClientRect().x
+    let minScale = 0.25
+    if(centerPointOffilebeingDragged < (window.innerWidth / 2)) {
+      scale = 1 - (Math.abs(x)) / 1000
+    } else {
+      scale = 1 - (Math.abs(x)) / 450
+      scale = scale < minScale ? minScale : scale
+    }
+    
 
     filebeingDragged.style.transform = `translate(${x}px, ${y}px) scale(${scale})`
 
@@ -61,11 +70,17 @@ export const dragMoveListener = (interactSettings, randomClassName, event) => {
         
         if(location == 'trash') {
           preFinal = 'translate('+dropTargetCenterX+'px, '+(dropTargetCenterY)+'px) translateY(-55px) rotate(30deg) scale(0.15)'
+          fileBeingDropped.style.borderRadius = '50%'
+          fileBeingDropped.style.height = '100px'
+          fileBeingDropped.style.width = '100px'
+          fileBeingDropped.style.minHeight = '100px'
+          fileBeingDropped.style.minWidth = '100px'
         } else {
           preFinal = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-55px) rotate(30deg) scale(0.15)'
         }
         let finalTransform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-20px) rotate(90deg) scale(0.15)'
       
+
         
         if(location == rootFolder) {
           fileBeingDropped.style.transform = 'translate(0px, 0px) scale(1)'
@@ -87,16 +102,18 @@ export const dragMoveListener = (interactSettings, randomClassName, event) => {
 
         window.fileswiper.fileDropped({filename: filename, location: location});
 
+        fileBeingDropped.style.transform = preFinal
+
         setTimeout(() => {
-          fileBeingDropped.style.transform = preFinal
           window.fileswiper.sendRootFolder(rootFolder);
           dropTarget.classList.remove('drop-target')
+          dropTarget.classList.add('drop-target-accepted')
         }, 200);
 
         setTimeout(() => {
           fileBeingDropped.style.transform = finalTransform
           fileBeingDropped.style.opacity = 0
-        }, 800);
+        }, 700);
 
         setTimeout(() => {
           //fileBeingDropped.remove()
