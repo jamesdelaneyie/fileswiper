@@ -10,6 +10,11 @@ const codeFileTypes = require('./modules/codeFileTypes.js');
 const getFileListFromDirectory = require('./modules/getFileListFromDirectory.js');
 const moveFile = require('./modules/moveFile.js');
 
+const { WebSocketServer } = require('ws');
+const wss = new WebSocketServer({ port: 8080 });
+
+const QRCode = require('qrcode');
+
 const moveSound = path.join(__dirname, '../', 'dist', 'assets', 'move_to.aif');
 const trashSound = path.join(__dirname, '../', 'dist', 'assets', 'empty_trash.aif');
 
@@ -22,6 +27,7 @@ app.setName('FileSwiper');
 
 let fileMoves = []
 let rootFolder = null;
+let filesForWS = null;
 
 function createWindow () {
 
@@ -38,7 +44,6 @@ function createWindow () {
     icon: path.join(__dirname, 'dist', 'assets', 'icon.icns'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
     }
   })
 
@@ -50,7 +55,44 @@ function createWindow () {
 
   win.loadURL(startUrl);
 
+  win.on('move', () => {
+    const size = win.getSize(); 
+    const position = win.getPosition();
+    const config = {
+      width: size[0],
+      height: size[1],
+      x: position[0],
+      y: position[1]
+    }
+    win.webContents.send('receiveConfig', config);
+  })
+
   
+  wss.on('connection', function connection(ws, req) {
+
+    QRCode.toDataURL('http://192.168.1.4:9000', function (err, url) {
+      ws.send(JSON.stringify(url));
+    })
+
+    console.log(req)
+
+    if(req.headers.origin == 'http://localhost:9000') {
+      console.log('connection from web app')
+      let files = {location: rootFolder, files: filesForWS, sortBy: 'name'}
+      ws.send(JSON.stringify(files));
+    }
+
+    if(req.headers.origin == 'http://192.168.1.4:9000') {
+      console.log('connection from mobile app')
+      let files = {location: rootFolder, files: filesForWS, sortBy: 'name'}
+      ws.send(JSON.stringify(files));
+    }
+
+    ws.on('message', function incoming(message) {
+      console.log('received: %s', message);
+    });
+    
+  });
 
   
   /*
@@ -207,7 +249,8 @@ function createWindow () {
           file.width = fileThumbnailData[index].width;
           file.height = fileThumbnailData[index].height;
           return file;
-        });
+        })
+        filesForWS = files;
         win.webContents.send('selectRootFolder', {location: rootFolderPath, files: files, sortBy: sortBy});
       } catch (error) {
         console.log(error);
@@ -254,7 +297,9 @@ function createWindow () {
       if(config) {
         win.setSize(config.width, config.height);
         win.setPosition(config.x, config.y);
-      } 
+      } else {
+        console.log('Web App')
+      }
       win.show();
     })
 

@@ -1,4 +1,5 @@
 import interact from "interactjs";
+import { animateFileToLocation } from "./animateFileToLocation.js";
 
 export const dragMoveListener = (interactSettings, randomClassName, event) => {
 
@@ -27,6 +28,8 @@ export const dragMoveListener = (interactSettings, randomClassName, event) => {
 
     if(event.dropzone) {
       if(document.querySelector('.drop-target')) {
+
+        animateFileToLocation(filebeingDragged)
 
         interact(`.${randomClassName}`).unset()
         

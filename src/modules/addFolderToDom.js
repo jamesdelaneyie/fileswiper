@@ -34,7 +34,7 @@ export const addFolderToDom = (location) => {
     svg.appendChild(path);
     innerDiv.appendChild(svg);
     
-    console.log(location)
+    //console.log(location)
 
     let locationText = location.split("/").pop();
     let locationTextDiv = document.createElement("span");

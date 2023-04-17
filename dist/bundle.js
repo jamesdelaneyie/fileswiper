@@ -26,7 +26,9 @@ var addFolderToDom = function addFolderToDom(location) {
   path.setAttribute("d", "M 5 4 C 3.3550302 4 2 5.3550302 2 7 L 2 16 L 2 18 L 2 43 C 2 44.64497 3.3550302 46 5 46 L 45 46 C 46.64497 46 48 44.64497 48 43 L 48 19 L 48 16 L 48 11 C 48 9.3550302 46.64497 8 45 8 L 18 8 C 18.08657 8 17.96899 8.000364 17.724609 7.71875 C 17.480227 7.437136 17.179419 6.9699412 16.865234 6.46875 C 16.55105 5.9675588 16.221777 5.4327899 15.806641 4.9628906 C 15.391504 4.4929914 14.818754 4 14 4 L 5 4 z M 5 6 L 14 6 C 13.93925 6 14.06114 6.00701 14.308594 6.2871094 C 14.556051 6.5672101 14.857231 7.0324412 15.169922 7.53125 C 15.482613 8.0300588 15.806429 8.562864 16.212891 9.03125 C 16.619352 9.499636 17.178927 10 18 10 L 45 10 C 45.56503 10 46 10.43497 46 11 L 46 13.1875 C 45.685108 13.07394 45.351843 13 45 13 L 5 13 C 4.6481575 13 4.3148915 13.07394 4 13.1875 L 4 7 C 4 6.4349698 4.4349698 6 5 6 z M 5 15 L 45 15 C 45.56503 15 46 15.43497 46 16 L 46 19 L 46 43 C 46 43.56503 45.56503 44 45 44 L 5 44 C 4.4349698 44 4 43.56503 4 43 L 4 18 L 4 16 C 4 15.43497 4.4349698 15 5 15 z");
   svg.appendChild(path);
   innerDiv.appendChild(svg);
-  console.log(location);
+
+  //console.log(location)
+
   var locationText = location.split("/").pop();
   var locationTextDiv = document.createElement("span");
   locationTextDiv.innerText = locationText;
@@ -69,6 +71,24 @@ var addFolderToDom = function addFolderToDom(location) {
   setTimeout(function () {
     div.classList.add('loaded');
   }, 100);
+};
+
+/***/ }),
+
+/***/ "./src/modules/animateFileToLocation.js":
+/*!**********************************************!*\
+  !*** ./src/modules/animateFileToLocation.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "animateFileToLocation": () => (/* binding */ animateFileToLocation)
+/* harmony export */ });
+var animateFileToLocation = function animateFileToLocation(filebeingDragged) {
+  console.log('move');
+  console.log(filebeingDragged);
 };
 
 /***/ }),
@@ -247,8 +267,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "dragMoveListener": () => (/* binding */ dragMoveListener)
 /* harmony export */ });
-/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! interactjs */ "./node_modules/interactjs/dist/interact.min.js");
-/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(interactjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! interactjs */ "./node_modules/interactjs/dist/interact.min.js");
+/* harmony import */ var interactjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(interactjs__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _animateFileToLocation_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animateFileToLocation.js */ "./src/modules/animateFileToLocation.js");
+
 
 var dragMoveListener = function dragMoveListener(interactSettings, randomClassName, event) {
   var filebeingDragged = document.querySelector(".".concat(randomClassName));
@@ -269,7 +291,8 @@ var dragMoveListener = function dragMoveListener(interactSettings, randomClassNa
   filebeingDragged.style.transform = "translate(".concat(x, "px, ").concat(y, "px) scale(").concat(scale, ")");
   if (event.dropzone) {
     if (document.querySelector('.drop-target')) {
-      interactjs__WEBPACK_IMPORTED_MODULE_0___default()(".".concat(randomClassName)).unset();
+      (0,_animateFileToLocation_js__WEBPACK_IMPORTED_MODULE_0__.animateFileToLocation)(filebeingDragged);
+      interactjs__WEBPACK_IMPORTED_MODULE_1___default()(".".concat(randomClassName)).unset();
       filebeingDragged.classList.add('dropping-file');
       filebeingDragged.removeAttribute('id');
       var dropTarget = document.querySelector('.drop-target');
@@ -321,7 +344,7 @@ var dragMoveListener = function dragMoveListener(interactSettings, randomClassNa
         setTimeout(function () {
           dropTarget.classList.remove('drop-target');
           dropTarget.classList.remove('drop-target-rejected');
-          interactjs__WEBPACK_IMPORTED_MODULE_0___default()(".".concat(randomClassName)).draggable(interactSettings);
+          interactjs__WEBPACK_IMPORTED_MODULE_1___default()(".".concat(randomClassName)).draggable(interactSettings);
         }, 200);
         setTimeout(function () {
           fileBeingDropped.classList.remove('dropping-file');
@@ -375,7 +398,7 @@ var getDropZoneCenters = function getDropZoneCenters() {
     var locationHeight = locationRect.height;
     var locationCenterX = locationX + locationWidth / 2;
     var locationCenterY = locationY + locationHeight / 2;
-    console.log(location.id);
+    //console.log(location.id)
     //if the location is the trash then set the range as 250
     if (location.id === 'trash') {
       centerPoints.push({
@@ -385,7 +408,7 @@ var getDropZoneCenters = function getDropZoneCenters() {
       });
     } else if (location.id === 'skip') {
       centerPoints.push({
-        x: locationCenterX - 100,
+        x: locationCenterX - 2000,
         y: locationCenterY,
         range: 0
       });
@@ -428,8 +451,8 @@ var getWorkspaceRestriction = function getWorkspaceRestriction() {
 
   // Calculate the width and height of the element being moved
   var elementTag = document.getElementById('current-file');
-  var elementWidth = elementTag.getBoundingClientRect().width * 1.5;
-  var elementHeight = elementTag.getBoundingClientRect().height * 1.5;
+  var elementWidth = elementTag.getBoundingClientRect().width * 1; //1.5
+  var elementHeight = elementTag.getBoundingClientRect().height * 1; //1.5
 
   // Calculate the maximum distance from the center of the circle that the element can be moved
   var maxDistance = radius - Math.sqrt(Math.pow(elementWidth, 2) + Math.pow(elementHeight, 2)) / 2;
@@ -632,10 +655,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var func = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var quitButton, undoButton, addFolder, folderSelect, config, introScreen, rootFolder, timeoutId, listOfFolders, _iterator2, _step2, folder, trash, main;
+    var quitButton, undoButton, addFolder, folderSelect, currentURL, currentURLDiv, config, introScreen, isValidJSON, rootFolder, rootFolderSave, _rootFolder, timeoutId, ws, listOfFolders, maxNumberOfFolders, _iterator3, _step3, folder, trash, main;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
+          isValidJSON = function _isValidJSON(str) {
+            try {
+              JSON.parse(str);
+            } catch (e) {
+              return false;
+            }
+            return true;
+          };
           // Quit App button
           quitButton = document.getElementById("quit");
           quitButton.addEventListener("click", function () {
@@ -660,45 +691,149 @@ var func = /*#__PURE__*/function () {
             window.fileswiper.openRootFolderDialog();
           });
 
+          //current URL of the app
+          currentURL = window.location.href; //add the current URL in a div to the DOM
+          currentURLDiv = document.createElement("div");
+          currentURLDiv.setAttribute("id", "currentURL");
+          currentURLDiv.innerText = currentURL;
+          document.body.appendChild(currentURLDiv);
+
           // Handling dragging files / folder into the app
           document.addEventListener('drop', function (event) {
             event.preventDefault();
             event.stopPropagation();
-            var pathArr = [];
-            var _iterator = _createForOfIteratorHelper(event.dataTransfer.files),
-              _step;
-            try {
-              for (_iterator.s(); !(_step = _iterator.n()).done;) {
-                var f = _step.value;
-                console.log('File Path of dragged files: ', f.path);
-                pathArr.push(f.path);
+
+            //get the x, y coordinates of the drop
+            var x = event.clientX;
+            var y = event.clientY;
+
+            //if the x,y is inside a circle with the height and width of the #workspace main element
+            //then add the class to the element
+            var workspace = document.getElementById("workspace");
+            var workspaceX = workspace.getBoundingClientRect().x;
+            var workspaceY = workspace.getBoundingClientRect().y;
+            var workspaceWidth = workspace.getBoundingClientRect().width;
+            var workspaceHeight = workspace.getBoundingClientRect().height;
+            var workspaceCenterX = workspaceX + workspaceWidth / 2;
+            var workspaceCenterY = workspaceY + workspaceHeight / 2;
+            var workspaceRadius = Math.min(workspaceWidth, workspaceHeight) / 2;
+            var distance = Math.sqrt(Math.pow(x - workspaceCenterX, 2) + Math.pow(y - workspaceCenterY, 2));
+
+            //if the distance is less than the radius then add the class
+            if (distance < workspaceRadius) {
+              console.log('inside the circle');
+              var pathArr = [];
+              var _iterator = _createForOfIteratorHelper(event.dataTransfer.files),
+                _step;
+              try {
+                for (_iterator.s(); !(_step = _iterator.n()).done;) {
+                  var f = _step.value;
+                  if (f.type == "") {
+                    window.fileswiper.sendRootFolder(f.path);
+                  }
+                }
+              } catch (err) {
+                _iterator.e(err);
+              } finally {
+                _iterator.f();
               }
-            } catch (err) {
-              _iterator.e(err);
-            } finally {
-              _iterator.f();
+            } else {
+              console.log('outside the circle');
+              var _pathArr = [];
+              var _iterator2 = _createForOfIteratorHelper(event.dataTransfer.files),
+                _step2;
+              try {
+                for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+                  var _f = _step2.value;
+                  if (_f.type == "") {
+                    var numberOfFolders = document.querySelectorAll(".location").length;
+                    if (numberOfFolders <= maxNumberOfFolders) {
+                      (0,_modules_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(_f.path);
+                      (0,_modules_updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__.updateSavedFolders)(_f.path);
+                    }
+                    _pathArr.push(_f.path);
+                  }
+                }
+              } catch (err) {
+                _iterator2.e(err);
+              } finally {
+                _iterator2.f();
+              }
+              console.log(_pathArr);
             }
-            console.log(pathArr);
           });
 
           // Dragover event for dragging files / folder into the app
           document.addEventListener('dragover', function (e) {
             e.preventDefault();
             e.stopPropagation();
+            console.log('dragover');
+            //if event.target is inside the background-circle div then add the class
           });
+
+          // Keydown event for the backspace key
+          document.addEventListener('keydown', function (e) {
+            if (e.key == "Backspace") {
+              //get the last file in the file list
+              var lastFile = document.querySelector("#files li:last-child");
+              //add the auto-move class to the last file
+              lastFile.classList.add("auto-move");
+              //move last file to the center of the trash element
+              var _trash = document.getElementById("trash");
+              var trashX = _trash.getBoundingClientRect().x;
+              var trashY = _trash.getBoundingClientRect().y;
+              var trashWidth = _trash.getBoundingClientRect().width;
+              var trashHeight = _trash.getBoundingClientRect().height;
+              var trashCenterX = trashX + trashWidth / 2;
+              var trashCenterY = trashY + trashHeight / 2;
+              //move the last file to the center of the trash element with transform
+              //this needs to be calculated as a move from the current x,y position of the last file
+              //to the center of the trash element
+              var lastFileX = lastFile.getBoundingClientRect().x;
+              var lastFileY = lastFile.getBoundingClientRect().y;
+              var lastFileWidth = lastFile.getBoundingClientRect().width;
+              var lastFileHeight = lastFile.getBoundingClientRect().height;
+              var lastFileCenterX = lastFileX + lastFileWidth / 2;
+              var lastFileCenterY = lastFileY + lastFileHeight / 2;
+              var translateX = trashCenterX - lastFileCenterX;
+              var translateY = trashCenterY - lastFileCenterY;
+              lastFile.style.transform = "translate(".concat(translateX, "px, ").concat(translateY, "px)");
+              var filename = lastFile.querySelector("#current-file-name").innerHTML;
+              var location = 'trash';
+              window.fileswiper.fileDropped({
+                filename: filename,
+                location: location
+              });
+            }
+          });
+
+          //console.log('checker')
 
           // Get the config from local storage and send it to the main process
           // This sets the window size and position on startup to the last used
           config = JSON.parse(localStorage.getItem('config'));
           if (config !== null) {
-            window.fileswiper.sendConfig(config);
+            if (window.fileswiper) {
+              window.fileswiper.sendConfig(config);
+            }
           } else {
             introScreen = document.getElementById("intro-screen");
             introScreen.style.display = "block";
           }
-          rootFolder = JSON.parse(localStorage.getItem('root-folder'));
-          if (rootFolder !== null) {
-            window.fileswiper.sendRootFolder(rootFolder);
+
+          //check if valid JSON
+          rootFolder = null;
+          if (window.fileswiper) {
+            rootFolder = JSON.parse(localStorage.getItem('root-folder'));
+          }
+          rootFolderSave = localStorage.getItem('root-folder');
+          if (isValidJSON(rootFolderSave)) {
+            _rootFolder = JSON.parse(rootFolderSave);
+            if (_rootFolder !== null) {
+              if (window.fileswiper) {
+                window.fileswiper.sendRootFolder(_rootFolder);
+              }
+            }
           }
           timeoutId = null; // Save the window size and position to local storage
           window.addEventListener('resize', function () {
@@ -713,39 +848,68 @@ var func = /*#__PURE__*/function () {
               localStorage.setItem("config", JSON.stringify(config));
             }, 250);
           });
-          window.addEventListener('move', function () {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(function () {
-              var config = {
-                width: window.innerWidth,
-                height: window.innerHeight,
-                x: window.screenX,
-                y: window.screenY
-              };
-              localStorage.setItem("config", JSON.stringify(config));
-            }, 250);
-          });
+          ws = new WebSocket('ws://192.168.1.4:8080');
+          ws.onopen = function () {
+            console.log('Connected to websocket server');
+          };
+
+          //alert('hello!')
+
+          ws.onmessage = function (message) {
+            var data = JSON.parse(message.data);
+            if (!data.location) {
+              if (window.fileswiper) {
+                var img = document.createElement("img");
+                img.src = data;
+                img.classList.add("qr-code");
+                document.body.appendChild(img);
+              }
+            } else {
+              localStorage.setItem("root-folder", JSON.stringify(data.location));
+              var locationText = data.location.split("/");
+              locationText = locationText[locationText.length - 1];
+              var currentFolderName = document.getElementById("current-folder-name");
+              currentFolderName.textContent = locationText;
+              var sortBy = data.sortBy;
+              var sortByText = document.getElementById("sort-by-text");
+              sortByText.textContent = sortBy;
+              (0,_modules_updateFileList_js__WEBPACK_IMPORTED_MODULE_1__.updateFileList)(data.files);
+            }
+
+            //console.log(data.files);*/
+          };
+
+          //if this window is not an electron app
+          //then add the class to the body
+          if (!window.fileswiper) {
+            console.log('Web app');
+          }
 
           // Receive the config on quit from the main process
           // Save it to local storage
-          window.fileswiper.receiveConfig(function (event, config) {
-            localStorage.setItem("config", JSON.stringify(config));
-          });
+          if (window.fileswiper) {
+            window.fileswiper.receiveConfig(function (event, config) {
+              localStorage.setItem("config", JSON.stringify(config));
+            });
+          }
 
           // Load the last folders used by the user    
-          listOfFolders = JSON.parse(localStorage.getItem("locations")); //if list of folders is not null, add the folders to the DOM
+          listOfFolders = JSON.parse(localStorage.getItem("locations"));
+          maxNumberOfFolders = 8; //if list of folders is not null, add the folders to the DOM
           if (Array.isArray(listOfFolders)) {
-            _iterator2 = _createForOfIteratorHelper(listOfFolders);
+            _iterator3 = _createForOfIteratorHelper(listOfFolders);
             try {
-              for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-                folder = _step2.value;
+              for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+                folder = _step3.value;
                 // Add the folders used by the user to the DOM
-                (0,_modules_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(folder);
+                if (listOfFolders.indexOf(folder) <= maxNumberOfFolders) {
+                  (0,_modules_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(folder);
+                }
               }
             } catch (err) {
-              _iterator2.e(err);
+              _iterator3.e(err);
             } finally {
-              _iterator2.f();
+              _iterator3.f();
             }
           } else {
             console.log('No folders found in local storage');
@@ -753,17 +917,20 @@ var func = /*#__PURE__*/function () {
 
           // Handle the addition of a new folder to the DOM
           // Add it to the local storage for the user
-          window.fileswiper.addNewFolder(function (event, folderPath) {
-            console.log('New folder added: ' + folderPath);
-            (0,_modules_updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__.updateSavedFolders)(folderPath);
-            (0,_modules_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(folderPath);
-          });
+          if (window.fileswiper) {
+            window.fileswiper.addNewFolder(function (event, folderPath) {
+              //console.log('New folder added: ' + folderPath)
+              var numberOfFolders = document.querySelectorAll(".location").length;
+              if (numberOfFolders <= maxNumberOfFolders) {
+                (0,_modules_addFolderToDom_js__WEBPACK_IMPORTED_MODULE_0__.addFolderToDom)(folderPath);
+                (0,_modules_updateSavedFolders_js__WEBPACK_IMPORTED_MODULE_3__.updateSavedFolders)(folderPath);
+              }
+            });
+          }
 
           // Add the trash can to the DOM
           trash = (0,_modules_createTrash_js__WEBPACK_IMPORTED_MODULE_2__.createTrash)();
-          main = document.querySelector("body");
-          main.appendChild(trash);
-
+          main = document.querySelector("body"); //main.appendChild(trash);
           // Interact.js set as dropzone
           interactjs__WEBPACK_IMPORTED_MODULE_4___default().dynamicDrop(true);
           interactjs__WEBPACK_IMPORTED_MODULE_4___default()('.location').dropzone({
@@ -786,25 +953,27 @@ var func = /*#__PURE__*/function () {
           });
 
           // Handle the root folder selection
-          window.fileswiper.selectRootFolder(function (event, locationAndFiles) {
-            localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
-            var locationText = locationAndFiles.location.split("/");
-            locationText = locationText[locationText.length - 1];
-            var currentFolderName = document.getElementById("current-folder-name");
-            currentFolderName.textContent = locationText;
-            var sortBy = locationAndFiles.sortBy;
-            var sortByText = document.getElementById("sort-by-text");
-            sortByText.textContent = sortBy;
-            var filesList = locationAndFiles.files;
-            var files = document.getElementById("files");
-            if (locationAndFiles.location !== rootFolder) {
-              while (files.firstChild) {
-                files.removeChild(files.firstChild);
+          if (window.fileswiper) {
+            window.fileswiper.selectRootFolder(function (event, locationAndFiles) {
+              localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
+              var locationText = locationAndFiles.location.split("/");
+              locationText = locationText[locationText.length - 1];
+              var currentFolderName = document.getElementById("current-folder-name");
+              currentFolderName.textContent = locationText;
+              var sortBy = locationAndFiles.sortBy;
+              var sortByText = document.getElementById("sort-by-text");
+              sortByText.textContent = sortBy;
+              var filesList = locationAndFiles.files;
+              var files = document.getElementById("files");
+              if (locationAndFiles.location !== rootFolder) {
+                while (files.firstChild) {
+                  files.removeChild(files.firstChild);
+                }
               }
-            }
-            (0,_modules_updateFileList_js__WEBPACK_IMPORTED_MODULE_1__.updateFileList)(filesList);
-          });
-        case 27:
+              (0,_modules_updateFileList_js__WEBPACK_IMPORTED_MODULE_1__.updateFileList)(filesList);
+            });
+          }
+        case 39:
         case "end":
           return _context.stop();
       }

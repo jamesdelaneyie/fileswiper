@@ -13,8 +13,8 @@ export const getWorkspaceRestriction = () => {
 
     // Calculate the width and height of the element being moved
     let elementTag = document.getElementById('current-file')
-    let elementWidth = elementTag.getBoundingClientRect().width * 1.5
-    let elementHeight = elementTag.getBoundingClientRect().height * 1.5
+    let elementWidth = elementTag.getBoundingClientRect().width * 1//1.5
+    let elementHeight = elementTag.getBoundingClientRect().height * 1//1.5
     
     // Calculate the maximum distance from the center of the circle that the element can be moved
     let maxDistance = radius - Math.sqrt(Math.pow(elementWidth, 2) + Math.pow(elementHeight, 2)) / 2

@@ -28,16 +28,20 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
+    "browserify": "^17.0.0",
     "chokidar": "^3.5.3",
     "interactjs": "^1.10.17",
+    "qrcode": "^1.5.1",
     "quicklook-thumbnail": "^1.0.0",
     "sharp": "^0.32.0",
     "sound-play": "^1.1.0",
     "source-map-loader": "^4.0.1",
-    "trash": "^8.1.1"
+    "trash": "^8.1.1",
+    "webpack-dev-server": "^4.13.3",
+    "ws": "^8.13.0"
   },
   "scripts": {
-    "start": "concurrently \"webpack --watch --mode development\" \"electron .\"",
+    "start": "concurrently \"webpack --watch --mode development\" \"electron .\" \"webpack-dev-server\"",
     "package": "electron-forge package",
     "make": "electron-forge make"
   }

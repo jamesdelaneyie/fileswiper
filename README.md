@@ -23,10 +23,16 @@ A tiny macOS app that lets you sort out the contents of a folder by swiping file
 
 ### 🤓 Interesting bits: 
 
-- Preview images are generated using the qlmanage command line tool in a child process, allowing all native OSX file types have preview images.
-- Interact.js is used to add physics to the main file list, allowing you to throw files into buckets.
-- The new trigonomic positioning of the buckets is calculated using the new CSS Math.sin and Math.cos functions.
-- Live reloading during development is using webpack --watch and electron-reload.
+- [`qlmanage`](https://github.com/sidneys/quicklook-thumbnail) used to generate native file previews for macOS
+- [`interact.js`](https://github.com/taye/interact.js) used for adding physics and handling drag interactions 
+- [`CSS trigonomic functions`](https://web.dev/css-trig-functions/) used for the circular UI layout
+
+### Development Setup / Notes:
+
+- `npm install`
+- `npm start`
+
+
 
 
 ### To Do:
@@ -49,23 +55,27 @@ A tiny macOS app that lets you sort out the contents of a folder by swiping file
 - ~~Move js files into src folder~~
 - ~~move skip button to offset center of screen~~
 - ~~move folder select to current folder area~~
+- ~~Add drop folder from finder functionality / both as root folder and as a bucket~~
+- ~~Double click bucket to make root folder~~
 - Remove tailwind, and/or move it to being used in stylesheet 
 - Improve the responsive layout from fullscreen -> mobile
 - Implement the sort by option in the UI
 - Implement file filtering in UI
-- Add drop folder from finder functionality / both as root folder and as a bucket
-- All drop files from finder functionality
-- ~~Double click bucket to make root folder~~
 - Add x icon for removing folders, currently right click
 - Add search function to filter files
 - Keyboard shortcuts for moving files into buckets, skip, undo, trash
 - Add ability to rename buckets / folders
 
 
-### ⌨️ Development:
+### 🛣️ Ideas for V2:
 
-- `npm install`
-- `npm start`
+- Allow a list of files from multiple locations to populate the stack
+- Have electron serve itself from local IP so can connect on mobile devices to swipe
+- Add video previews in detailed view 
+- Dark mode + add custom themes for design and layout
+- Cloud integration, dropbox, google drive, etc
+- 
+
 
 ### 📜 License:
 MIT

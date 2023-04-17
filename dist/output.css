@@ -744,11 +744,41 @@ video {
   inherits: true;
 }
 
+@property --layout-angle {
+  syntax: '<number>';
+
+  initial-value: 0deg;
+
+  inherits: true;
+}
+
 html,
 body {
   height: 100%;
   -webkit-app-region: drag;
   background: radial-gradient(290px 290px at center, rgb(214, 190, 242) 0%, rgba(241,246,249,1) 100%);
+}
+
+body, html {
+  @media (max-width:500px) {
+    width: 350px;
+
+    height: 540px;
+
+    -webkit-app-region: no-drag;
+
+    overflow: hidden;
+
+    position: relative;
+  }
+}
+
+.qr-code {
+  z-index: 500;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 main {
@@ -1220,6 +1250,9 @@ main {
   mix-blend-mode: darken;
   transition: all 0.5s ease;
   opacity: 0.5;
+  @media (max-width: 500px) {
+    display: none;
+  }
   > span {
     pointer-events: none;
   }

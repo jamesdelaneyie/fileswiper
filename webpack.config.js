@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const fileLoader = require('file-loader');
 
 module.exports = {
-  target: "electron-renderer",
+  //target: "electron-renderer",
   entry: "./src/renderer.js",
   output: {
     path: __dirname + "/dist",
@@ -11,8 +11,13 @@ module.exports = {
     filename: "bundle.js",
     libraryExport: "default",
   },
+  devServer: {
+    static: path.join(__dirname, "dist"),
+    compress: true,
+    port: 9000,
+  },
   devtool: 'source-map',
-  mode: "development", // or "production"
+  mode: "development",
   resolve: {
     extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".aif"],
   },
