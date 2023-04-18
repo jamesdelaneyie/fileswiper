@@ -40,7 +40,7 @@ const func = async () => {
     const currentURLDiv = document.createElement("div");
     currentURLDiv.setAttribute("id", "currentURL");
     currentURLDiv.innerText = currentURL;
-    document.body.appendChild(currentURLDiv);
+    //document.body.appendChild(currentURLDiv);
 
 
     // Handling dragging files / folder into the app
@@ -189,6 +189,10 @@ const func = async () => {
     });
 
 
+    /*
+    
+    WEBSOCKETS 
+    
     const ws = new WebSocket('ws://192.168.1.4:8080');
 
     ws.onopen = function () {
@@ -230,8 +234,8 @@ const func = async () => {
 
 
        
-        //console.log(data.files);*/
-    };
+        //console.log(data.files);
+    };*/
 
     //if this window is not an electron app
     //then add the class to the body
@@ -281,7 +285,7 @@ const func = async () => {
     // Add the trash can to the DOM
     let trash = createTrash();
     const main = document.querySelector("body");
-    //main.appendChild(trash);
+    main.appendChild(trash);
 
 
 
@@ -314,6 +318,8 @@ const func = async () => {
     // Handle the root folder selection
     if(window.fileswiper) {
         window.fileswiper.selectRootFolder((event, locationAndFiles) => {
+
+            console.log(locationAndFiles)
 
             localStorage.setItem("root-folder", JSON.stringify(locationAndFiles.location));
             

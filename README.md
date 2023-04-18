@@ -1,6 +1,6 @@
 <p align="center">
     <img src="https://raw.githubusercontent.com/jamesdelaneyie/fileswiper/master/dist/assets/fileswiper-logo.png">
-    <img src="https://raw.githubusercontent.com/jamesdelaneyie/fileswiper/master/progress_gifs/fileswiper-progress-4.gif">
+    <img src="https://raw.githubusercontent.com/jamesdelaneyie/fileswiper/master/progress_gifs/fileswiper-progress-5.gif">
 </p>
 
 # File*Swiper*
@@ -14,12 +14,16 @@ A tiny macOS app that lets you sort out the contents of a folder by swiping file
 - ⏭️ Skip files by swiping them upwards
 - 🗑️ Trash files by swiping them into the trash can
 - 🪣 Add up to 8 buckets at once to sort files into
-- 🔠 Sort files by name, size, and last modified date
-- 🔬 See file size, type, and last modified date at a glance
+- 🔬 See file size and type date at a glance
 - ↩️ Move history, undo the last move
-- 🕵️ Folder watching, file list updates on OS level file changes
 - 🔍 Double click to preview file at full size
 
+### 📦 Download:
+
+- [Download the latest release Alpha v0.1.0](https://github.com/jamesdelaneyie/fileswiper/releases/)
+
+NOTE: Tested on macOS 11.4 (Big Sur) only so far, and only on my machine. Trash functionality is not working on production app yet, but works in dev mode.
+ 
 
 ### 🤓 Interesting bits: 
 
@@ -33,48 +37,26 @@ A tiny macOS app that lets you sort out the contents of a folder by swiping file
 - `npm start`
 
 
-
-
-### To Do:
-- ~~Drag main file list into bucket to move file~~
-- ~~Ability to move file to trash~~
-- ~~Add undo functionality~~
-- ~~Add a skip option on top of screen~~
-- ~~Add ability to store the last directories used in local storage~~
-- ~~Add ability to add and remove buckets from the UI~~
-- ~~Position buckets along circle path~~
-- ~~functionize the update file list~~
-- ~~actually add file previews for jpg, png, gif, pdf, txt/code files~~
-- ~~add file dialog to select directory for swiping !!~~ 
-- ~~add trash and folder icons!!~~ 
-- ~~add physics to main area so you can throw files into buckets, p2.js?~~ Interact.js
-- ~~bug: moving files too fast breaks the animation flow~~
-- ~~add: lock window size~~ 
-- ~~change: move add folder button to the circle path UI~~
-- ~~folders add / remove in one direction~~
-- ~~Move js files into src folder~~
-- ~~move skip button to offset center of screen~~
-- ~~move folder select to current folder area~~
-- ~~Add drop folder from finder functionality / both as root folder and as a bucket~~
-- ~~Double click bucket to make root folder~~
-- Remove tailwind, and/or move it to being used in stylesheet 
-- Improve the responsive layout from fullscreen -> mobile
-- Implement the sort by option in the UI
-- Implement file filtering in UI
-- Add x icon for removing folders, currently right click
-- Add search function to filter files
-- Keyboard shortcuts for moving files into buckets, skip, undo, trash
-- Add ability to rename buckets / folders
-
-
-### 🛣️ Ideas for V2:
+### 🛣️ For V1 (* = work started):
 
 - Allow a list of files from multiple locations to populate the stack
-- Have electron serve itself from local IP so can connect on mobile devices to swipe
+- Have electron serve itself from local IP so can connect on mobile devices to swipe *
+-- This works! Tested 17/04/2023. Mobile needs significant UI/UX work to be usable
+-- Improve the responsive layout from fullscreen -> mobile
+-- Use websockets to connect to Electron instance on LAN
+-- Use QR code on electron main screen to open link on mobile
+-- Then verify connection on mobile using single use PIN
+-- Then use mobile to swipe files into buckets
 - Add video previews in detailed view 
+- Keyboard shortcuts for moving files into buckets, skip, undo, trash
+- Add ability to rename buckets / folders
 - Dark mode + add custom themes for design and layout
 - Cloud integration, dropbox, google drive, etc
-- 
+- Remove tailwind, and/or move it to being used in stylesheet / clean up styles in general
+- Implement the sort by option in the UI *
+- add search / filtering to the file list *
+- 🔠 Sort files by name, size, and last modified date *
+- 🕵️ Folder watching, file list updates on OS level file changes *
 
 
 ### 📜 License:

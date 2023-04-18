@@ -1,6 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const fileLoader = require('file-loader');
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   //target: "electron-renderer",

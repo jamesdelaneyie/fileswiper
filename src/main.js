@@ -10,24 +10,23 @@ const codeFileTypes = require('./modules/codeFileTypes.js');
 const getFileListFromDirectory = require('./modules/getFileListFromDirectory.js');
 const moveFile = require('./modules/moveFile.js');
 
-const { WebSocketServer } = require('ws');
+/*const { WebSocketServer } = require('ws');
 const wss = new WebSocketServer({ port: 8080 });
-
-const QRCode = require('qrcode');
+const QRCode = require('qrcode');*/
 
 const moveSound = path.join(__dirname, '../', 'dist', 'assets', 'move_to.aif');
 const trashSound = path.join(__dirname, '../', 'dist', 'assets', 'empty_trash.aif');
 
-let trash;
-import('trash').then((module) => {
-  trash = module.default;
-});
+//let trash;
+//import('trash').then((module) => {
+//  trash = module.default;
+//});
 
 app.setName('FileSwiper');
 
 let fileMoves = []
 let rootFolder = null;
-let filesForWS = null;
+/* let filesForWS = null; */
 
 function createWindow () {
 
@@ -44,6 +43,7 @@ function createWindow () {
     icon: path.join(__dirname, 'dist', 'assets', 'icon.icns'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      webSecurity: false
     }
   })
 
@@ -68,6 +68,10 @@ function createWindow () {
   })
 
   
+  /*
+  
+  WEBSOCKETS 
+
   wss.on('connection', function connection(ws, req) {
 
     QRCode.toDataURL('http://192.168.1.4:9000', function (err, url) {
@@ -93,6 +97,7 @@ function createWindow () {
     });
     
   });
+  */
 
   
   /*
@@ -139,7 +144,7 @@ function createWindow () {
   })
 
 
-  
+  //console.log(process.env)
 
   /*
   *   Handle the file dropped event
@@ -151,7 +156,7 @@ function createWindow () {
     const newPath = path.join(location, filename);
 
     if(location === "trash") {
-        trash(oldPath);
+        //trash(oldPath);
         fileMoves.push({oldPath: oldPath, newPath: `${process.env.HOME}/.Trash/${filename}`});
         setTimeout(() => {
           sound.play(trashSound);
@@ -213,7 +218,10 @@ function createWindow () {
                     var imageData = {image: imageAsBase64, width: width, height: height};
                     resolve(imageData);
                   });
-                })
+                }).catch(err => {
+                  console.log('Error creating thumbnail:', err);
+                  reject(err);
+                });
     
               } else {
                 sharp(buffer).toBuffer().then(data => { 
@@ -226,7 +234,10 @@ function createWindow () {
                     var imageData = {image: imageAsBase64, width: width, height: height};
                     resolve(imageData);
                   });
-                })
+                }).catch(err => {
+                  console.log('Error creating thumbnail:', err);
+                  reject(err);
+                });
               }
             } else {
               //console.log('error!')
@@ -250,7 +261,7 @@ function createWindow () {
           file.height = fileThumbnailData[index].height;
           return file;
         })
-        filesForWS = files;
+        //filesForWS = files;
         win.webContents.send('selectRootFolder', {location: rootFolderPath, files: files, sortBy: sortBy});
       } catch (error) {
         console.log(error);

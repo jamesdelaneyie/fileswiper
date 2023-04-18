@@ -83,7 +83,10 @@ export const dragMoveListener = (interactSettings, randomClassName, event) => {
         }
         let finalTransform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(-20px) rotate(90deg) scale(0.15)'
       
-
+        if(location == 'skip') {
+          preFinal = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateY(0px) rotate(0deg) scale(0.15)'
+          finalTransform = 'translate('+dropTargetCenterX+'px, '+dropTargetCenterY+'px) translateX(-100px) rotate(-360deg) scale(0.15)'
+        }
         
         if(location == rootFolder) {
           fileBeingDropped.style.transform = 'translate(0px, 0px) scale(1)'
